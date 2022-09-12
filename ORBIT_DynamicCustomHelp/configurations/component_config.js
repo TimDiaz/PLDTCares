@@ -7,7 +7,8 @@ const config = {
     TSEligibility: "tseligibility.DEV",
     NumberServiceabilityPARAM: "numberServiceabilityPARAM.DEV",
     ValidateAccountNumberFormat: "validateaccountnumberformat.DEV",
-    ValidateServiceNumberFormat: "validateServiceNumberFormat.DEV"
+    ValidateServiceNumberFormat: "validateServiceNumberFormat.DEV",
+    TicketCreation: "ticketCreation.DEV"
 }
 //******************************************************************************************************************************//
 // [END] DEVELOPMENT CONFIGURATION                                                                                              //

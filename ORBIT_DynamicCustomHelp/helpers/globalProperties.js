@@ -6,7 +6,7 @@ const accountEligibilityConfig = require('../configurations/components/tsEligibi
 const numberServiceabilityConfig = require('../configurations/components/numberServiceability_config');
 const validateAccountNumberFormatConfig = require('../configurations/components/validateAccountNumberFormat_config');
 const validateServiceNumberFormatConfig = require('../configurations/components/validateServiceNumberFormat_config');
-
+const ticketCreationConfig = require('../configurations/components/ticketCreation_config');
 module.exports = {    
     APIBaseOption: apiBaseConfig,
     Logger: loggerConfig,
@@ -15,5 +15,6 @@ module.exports = {
     AccountEligibility: accountEligibilityConfig,
     NumberServiceability: numberServiceabilityConfig,
     ValidateAccountNumberFormat: validateAccountNumberFormatConfig,
-    ValidateServiceNumberFormat: validateServiceNumberFormatConfig
+    ValidateServiceNumberFormat: validateServiceNumberFormatConfig,
+    TicketCreation: ticketCreationConfig
 };

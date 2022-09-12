@@ -1,5 +1,7 @@
 "use strict";
 
+const { TicketCreation } = require("./component_config");
+
 //******************************************************************************************************************************//
 // [START] DEVELOPMENT CONFIGURATION                                                                                            //
 // NOTE: Uncomment this for development deployment                                                                              //
@@ -22,7 +24,13 @@ const bcpLogging = {
         },
         AccountEligibility: { 
             TSEligibility: "orbit_dev-accounteligibility-TSEligibility"
+        },
+        TicketCreation:{
+           TicketCreation: "orbit_dev-ticketCreation",
+           TicketCreationCreateFt: "orbit_dev-ticketcreationft",
+           TicketProm: "orbit_dev-ticketProm" 
         }
+
     },
 }
 //******************************************************************************************************************************//
@@ -77,6 +85,7 @@ module.exports = {
         AccountEligibility: 'AccountEligibility',
         ValidateAccountNumberFormat: 'ValidateAccountNumberFormat',
         ValidateServiceNumberFormat: 'ValidateServiceNumberFormat',
-        NumberServiceabilityParam: 'NumberServiceabilityParam'
+        NumberServiceabilityParam: 'NumberServiceabilityParam',
+        TicketCreation: {TicketCreation:'TicketCreation',ticketcreationcreateft:'ticketcreationcreateft',ticketProm:'ticketProm'}
     }
 }
