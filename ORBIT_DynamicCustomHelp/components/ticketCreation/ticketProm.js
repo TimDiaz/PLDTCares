@@ -97,7 +97,7 @@ module.exports = {
         emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
         emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.TicketCreation.TicketProm);
         emailLog.addContext("usertelephonenumber", serviceNumber);
-        emailLog.addContext("useraccountnumber", '');
+        emailLog.addContext("useraccountnumber", accntNumber);
 
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
         logger.info(`- [START] Ticket Creation                                                                                   -`)
