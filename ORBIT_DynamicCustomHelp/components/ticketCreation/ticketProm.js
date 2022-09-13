@@ -1,117 +1,55 @@
 "use strict";
-
-var nodemailer = require('nodemailer');
-var moment = require('moment-timezone');
-
-
-function insertbcploggingdata(apierrorcodeinit, apierrormsginit, aaccNumberinit, telNumberinit, emailrespinit){
-
-    var options = {
-        'method': 'POST',
-        'url': 'https://chatbot171.pldthome.com:7745/bcplogginginsert',
-        'headers': {
-            'Content-Type': 'application/json'
-            },
-        body: JSON.stringify({
-                "apiname": "PLDT-ticketProm",
-                "apierrorcode":  apierrorcodeinit,
-                "apierrormsg": apierrormsginit,
-                "usertel": telNumberinit,
-                "useracntnum": aaccNumberinit,
-                "emailresp": emailrespinit
-            })
-
-        };
-
-    request(options, function (error, response) {
-        if (error) {
-            console.log("error on bcp api: " + error);
-        }else{
-            console.log("successful on bcp api: " + response.body);
-        }   
-    });
-}
-
-function sendEmail(message, errorCode, accountNumber, serviceNumber){
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        auth: {
-            user: 'ndphchatbot@gmail.com',
-            pass: 'nwqiqdpeezxtdatx',
-        }
-    });
-    
-    transporter.sendMail({
-        from: 'ndphchatbot@gmail.com',
-        to: 't-tsdiaz@supplier.smart.com.ph, t-masanchez@supplier.smart.com.ph, t-jpvalete@supplier.smart.com.ph',
-        subject: '[API Error] PLDT Fault Ticket PROD - ticket prom',
-        text: 'Status Code: ' + errorCode +             
-            ' Account Number: ' + accountNumber +   
-            ' Telephone Number: ' + serviceNumber +
-            ' API: FaultTicketProd ' +  
-            ' Datetime: ' + moment.tz(Date.now(), 'Asia/Manila').format('MM-DD-YYYY hh:mm A') + 
-            ' Error: ' + message
-    }).then((t) => { 
-        console.log("then response " + t);
-        insertbcploggingdata(errorCode, message, accountNumber, serviceNumber, t); //save to db on then
-    }).catch((e) => {
-        console.log("catch response " + e);
-        insertbcploggingdata(errorCode, message, accountNumber, serviceNumber, e); //save to db on catch
-    });
-    
-}
-
+const componentName = require('../../configurations/component_config');
 
 module.exports = {
 
     metadata: function metadata() {
         return {
-            "name": "ticketProm",
-             "properties": {
-				"description": {
-                    "type": "string",
-                    "required": true
+            name: componentName.TicketCreationProm,
+             properties: {
+				description: {
+                    type: "string",
+                    required: true
                 },
-                "empeId": {
-                    "type": "string",
-                    "required": true
+                empeId: {
+                    type: "string",
+                    required: true
                 },
-  				"faultType": {
-                    "type": "string",
-                    "required": true
+  				faultType: {
+                    type: "string",
+                    required: true
                 },
-                "priority": {
-                    "type": "string",
-                    "required": true
+                priority: {
+                    type: "string",
+                    required: true
                 },
-  				"promCause": {
-                    "type": "string",
-                    "required": true
+  				promCause: {
+                    type: "string",
+                    required: true
                 },
-                "reportedBy": {
-                    "type": "string",
-                    "required": true
+                reportedBy: {
+                    type: "string",
+                    required: true
                 },
-  				"serviceNumber": {
-                    "type": "string",
-                    "required": true
+  				serviceNumber: {
+                    type: "string",
+                    required: true
                 },
-                "promSubType": {
-                    "type": "string",
-                    "required": false
+                promSubType: {
+                    type: "string",
+                    required: false
                 },
-                "promWorgName": {
-                    "type": "string",
-                    "required": false
+                promWorgName: {
+                    type: "string",
+                    required: false
                 },
-                "promCategory": {
-                    "type": "string",
-                    "required": false
+                promCategory: {
+                    type: "string",
+                    required: false
                 },
-                "promSubCategory": {
-                    "type": "string",
-                    "required": false
+                promSubCategory: {
+                    type: "string",
+                    required: false
                 }
             }, 
             supportedActions: ['SUCCESS','FAILURE','500']
@@ -119,6 +57,27 @@ module.exports = {
     },
 
     invoke: (conversation, done) => {
+
+        const request = require('request');
+        const globalProp = require('../../helpers/globalProperties');
+        const instance = require("../../helpers/logger");
+        const _logger = instance.logger(globalProp.Logger.Category.TicketCreation.ticketProm);
+        const logger = _logger.getLogger();
+        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);        
+        const emailLog = _emailLog.getLogger();
+
+        function logError(result, resultCode){
+            const strResult = JSON.stringify(result);
+            emailLog.addContext("apierrorcode", strResult);
+            emailLog.addContext("apierrormsg", resultCode);
+            const message = globalProp.Email.EmailFormat(globalProp.TicketCreation.API.Validate.Name, resultCode, strResult, serviceNumber);
+
+            logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`)
+            emailLog.error(message);
+        }
+
+        let transition = 'failure';
+
 		var mobileSdk = conversation.mobileSdk;
         var description = conversation.properties().description;
         var empeId = conversation.properties().empeId;
@@ -133,49 +92,54 @@ module.exports = {
         var promSubCategory = conversation.properties().promSubCategory;  
         var accntNumber = conversation.properties().accntNum;
 
-        var requestbody = JSON.parse(JSON.stringify({
-                        
+        logger.addContext("serviceNumber", serviceNumber);
+        emailLog.addContext("subject", globalProp.Email.Subjects.TicketCreation.TicketProm);
+        emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
+        emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.TicketCreation.TicketProm);
+        emailLog.addContext("usertelephonenumber", serviceNumber);
+        emailLog.addContext("useraccountnumber", '');
 
-        }));
-        
-        var request = require('request');
-        var options = {
-            'method': 'POST',
-            'url': 'https://www.pldt.com.ph/mobility/askpldt-api/customers/tickets',
-            'headers': {
-                'Content-Type': 'application/json',
-                'Cookie': 'incap_ses_961_2106196=1OPaFwYnzycga/DhGylWDelo82IAAAAAtRDTZWSpdpXqHgM1P7aAyA==; BIGipServerMobileITPool=2048859658.16415.0000'
-            },
-            body: JSON.stringify({
-                "description": description.toString(),
-                "empeId": empeId.toString(),
-                "faultType": faultType.toString(),
-                "priority": priority.toString(),
-                "promCause": promCause.toString(),
-                "reportedBy": reportedBy.toString(),
-                "telephoneNumber": serviceNumber.toString(),
-                "promSubType": promSubType.toString(),
-                "promWorgName": promWorgName.toString(),
-                "promCategory": promCategory.toString(),
-                "promSubCategory": promSubCategory.toString()
-        })
+        logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        logger.info(`- [START] Ticket Creation                                                                                   -`)
+        logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        const requestBody = JSON.stringify({
+            "description": description,
+            "empeId": empeId,
+            "faultType": faultType,
+            "priority": priority,
+            "promCause": promCause,
+            "reportedBy": reportedBy,
+            "telephoneNumber": serviceNumber,
+            "promSubType": promSubType,
+            "promWorgName": promWorgName,
+            "promCategory": promCategory,
+            "promSubCategory": promSubCategory
+        });
 
-        };
+    logger.debug(`Setting up the request body: ${requestBody}`);
+
+    const options = globalProp.TicketCreation.API.Validate.PostOptions(requestBody);
+    logger.debug(`Setting up the post option: ${JSON.stringify(options)}`);
+
+    logger.info(`Starting to invoke the request.`)
+    
         request(options, function (error, response) {
             if (error)
             {
                 if (error.statusCode === 500)
                 {
-                    conversation.transition('500');
-                    done();
+                    //conversation.transition('500');
+                    transition = '500';
+                    //done();
                 }
                 else {
                     //  conversation.reply({ text: 'OOPS, Error Happened! Contact Administrator.'});
-                    conversation.transition('FAILURE');
-                    done();
+                    //conversation.transition('FAILURE');
+                    transition = 'FAILURE';
+                    //done();
                 }
                 const errorreplaced = JSON.stringify(error).replace('http://', '');
-                sendEmail(errorreplaced, error.code, accntNumber, serviceNumber)
+               // sendEmail(errorreplaced, error.code, accntNumber, serviceNumber)
             }
             else
             {
@@ -188,38 +152,54 @@ module.exports = {
                         if (JSONRes.spiel)
                         {
                             console.log('Spiel is not null');
+                            logger.debug('Spiel is not null');
                             conversation.variable('spielMsg', JSONRes.spiel);
-                            conversation.transition('FAILURE');   
-                            done();                
+                            logger.debug('Spiel is not null');
+                            //conversation.transition('FAILURE');   
+                            transition = 'FAILURE';
+                            //done();                
                         }
                         else
                         {
                             console.log('Spiel is null');
+                            logger.debug('Spiel is null');
                             conversation.variable('spielMsg', JSONRes.message);
-                            conversation.transition('FAILURE');  
-                            done();    
+                            //conversation.transition('FAILURE');  
+                            transition = 'FAILURE';
+                            //done();    
                         }           
                     }
                     else if (error.statusCode === 500)
                     {
-                        conversation.transition('500');
-                        done();
+                        //conversation.transition('500');
+                        transition = '500';
+                        //done();
                     }
                     else {
                         //  conversation.reply({ text: 'OOPS, Error Happened! Contact Administrator.'});
-                        conversation.transition('FAILURE');
-                        done();
+                        //conversation.transition('FAILURE');
+                        transition = 'FAILURE';
+                        //done();
                     }
                     const errorreplaced = JSON.stringify(JSONRes).replace('http://', '');
-                    sendEmail(errorreplaced, response.statusCode, accntNumber, serviceNumber)
+                    //sendEmail(errorreplaced, response.statusCode, accntNumber, serviceNumber)
                 }
                 else{
                     conversation.variable('spielMsg', JSONRes.spiel);
                     conversation.variable('ticketNumber', JSONRes.ticketNumber);                
-                    conversation.transition('SUCCESS');
-                    done();
+                    //conversation.transition('SUCCESS');
+                    transition = 'SUCCESS';
+                    //done();
                 }
             }
+            logger.info(`[Transition]: ${transition}`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [END] Ticket Creation                                                                                     -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+
+            _logger.shutdown();
+            _emailLog.shutdown();            
+            conversation.transition(transition);               
         });
     }
 };

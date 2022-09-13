@@ -8,7 +8,9 @@ const config = {
     NumberServiceabilityPARAM: "numberServiceabilityPARAM.DEV",
     ValidateAccountNumberFormat: "validateaccountnumberformat.DEV",
     ValidateServiceNumberFormat: "validateServiceNumberFormat.DEV",
-    TicketCreation: "ticketCreation.DEV"
+    TicketCreation: "ticketCreation.DEV",
+    TicketCreationFT: "ticketCreationFT.DEV",
+    TicketCreationProm: "ticketProm.DEV"
 }
 //******************************************************************************************************************************//
 // [END] DEVELOPMENT CONFIGURATION                                                                                              //

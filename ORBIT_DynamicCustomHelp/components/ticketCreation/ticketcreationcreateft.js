@@ -1,144 +1,62 @@
 "use strict";
-
-const fetch = require('node-fetch');
-var nodemailer = require('nodemailer');
-var moment = require('moment-timezone');
-var request = require('request');
-
-function insertbcploggingdata(apierrorcodeinit, apierrormsginit, aaccNumberinit, telNumberinit, emailrespinit){
-
-    var options = {
-        'method': 'POST',
-        'url': 'https://chatbot171.pldthome.com:7745/bcplogginginsert',
-        'headers': {
-            'Content-Type': 'application/json'
-            },
-        body: JSON.stringify({
-                "apiname": "PLDT-ticketcreationcreateft",
-                "apierrorcode":  apierrorcodeinit,
-                "apierrormsg": apierrormsginit,
-                "usertel": telNumberinit,
-                "useracntnum": aaccNumberinit,
-                "emailresp": emailrespinit
-            })
-
-        };
-
-    request(options, function (error, response) {
-        if (error) {
-            console.log("error on bcp api: " + error);
-        }else{
-            console.log("successful on bcp api: " + response.body);
-        }   
-    });
-}
-
-function sendEmail(message, errorCode, accountNumber, serviceNumber){
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        auth: {
-            user: 'ndphchatbot@gmail.com',
-            pass: 'nwqiqdpeezxtdatx',
-        }
-    });
-    
-    transporter.sendMail({
-        from: 'ndphchatbot@gmail.com',
-        to: 't-tsdiaz@supplier.smart.com.ph, t-masanchez@supplier.smart.com.ph, t-jpvalete@supplier.smart.com.ph',
-        subject: '[API Error] PLDT Fault Ticket PROD - ticket creation create ft',
-        text: 'Status Code: ' + errorCode +             
-            ' Account Number: ' + accountNumber +   
-            ' Telephone Number: ' + serviceNumber +
-            ' API: FaultTicketProd ' +  
-            ' Datetime: ' + moment.tz(Date.now(), 'Asia/Manila').format('MM-DD-YYYY hh:mm A') + 
-            ' Error: ' + message
-    }).then((t) => { 
-        console.log("then response " + t);
-        insertbcploggingdata(errorCode, message, accountNumber, serviceNumber, t); //save to db on then
-    }).catch((e) => {
-        console.log("catch response " + e);
-        insertbcploggingdata(errorCode, message, accountNumber, serviceNumber, e); //save to db on catch
-    });
-    
-}
-
-
-function UpdateCreateFT(aaccNumberinit, telNumberinit, smpStartTsinit, ticketnumber, reportedBy, responseBody){
-    var data1 = { 
-                    "AccountNumber" : aaccNumberinit, 
-                    "TelephoneNumber": telNumberinit, 
-                    "smpTS": smpStartTsinit, 
-                    "TicketNumberCreateFT": ticketnumber,
-                    "ReportedBY": reportedBy,
-                    "ResponseBody": responseBody
-                };
-    var options = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data1),
-    };
-    
-    fetch('https://chatbot171.pldthome.com:7744/updateCreaeteFT', options );
-}
-
+const componentName = require('../../configurations/component_config');
 module.exports = {
 
     metadata: function metadata() {
         return {
-            "name": "ticketcreationcreateft",
-             "properties": {
-				"description": {
-                    "type": "string",
-                    "required": true
+            name: componentName.TicketCreationFT,
+             properties: {
+				description: {
+                    type: "string",
+                    required: true
                 },
-                "empeId": {
-                    "type": "string",
-                    "required": true
+                empeId: {
+                    type: "string",
+                    required: true
                 },
-  				"faultType": {
-                    "type": "string",
-                    "required": true
+  				faultType: {
+                    type: "string",
+                    required: true
                 },
-                "priority": {
-                    "type": "string",
-                    "required": true
+                priority: {
+                    type: "string",
+                    required: true
                 },
-  				"promCause": {
-                    "type": "string",
-                    "required": true
+  				promCause: {
+                    type: "string",
+                    required: true
                 },
-                "reportedBy": {
-                    "type": "string",
-                    "required": true
+                reportedBy: {
+                    type: "string",
+                    required: true
                 },
-  				"serviceNumber": {
-                    "type": "string",
-                    "required": true
+  				serviceNumber: {
+                    type: "string",
+                    required: true
                 },
-                "promSubType": {
-                    "type": "string",
-                    "required": true
+                promSubType: {
+                    type: "string",
+                    required: true
                 },
-                "promWorgName": {
-                    "type": "string",
-                    "required": true
+                promWorgName: {
+                    type: "string",
+                    required: true
                 },
-                "promCategory": {
-                    "type": "string",
-                    "required": true
+                promCategory: {
+                    type: "string",
+                    required: true
                 },
-                "promSubCategory": {
-                    "type": "string",
-                    "required": true
+                promSubCategory: {
+                    type: "string",
+                    required: true
                 },
-                "sysDate": {
-                    "type": "string",
-                    "required": true
+                sysDate: {
+                    type: "string",
+                    required: true
                 },
-                "accntNum": {
-                    "type": "string",
-                    "required": true
+                accntNum: {
+                    type: "string",
+                    required: true
                 }
              }, 
                 supportedActions: ['SUCCESS','FAILURE','500']
@@ -146,6 +64,27 @@ module.exports = {
     },
 
     invoke: (conversation, done) => {
+
+        const request = require('request');
+        const globalProp = require('../../helpers/globalProperties');
+        const instance = require("../../helpers/logger");
+        const _logger = instance.logger(globalProp.Logger.Category.TicketCreation.ticketcreationcreateft);
+        const logger = _logger.getLogger();
+        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);        
+        const emailLog = _emailLog.getLogger();
+
+        function logError(result, resultCode){
+            const strResult = JSON.stringify(result);
+            emailLog.addContext("apierrorcode", strResult);
+            emailLog.addContext("apierrormsg", resultCode);
+            const message = globalProp.Email.EmailFormat(globalProp.TicketCreation.API.Validate.Name, resultCode, strResult, serviceNumber);
+
+            logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`)
+            emailLog.error(message);
+        }
+
+        let transition = 'failure';
+
         var description = conversation.properties().description;
         var empeId = conversation.properties().empeId;
         var faultType = conversation.properties().faultType;
@@ -160,31 +99,38 @@ module.exports = {
         var sysDate = conversation.properties().sysDate;
         var accntNumber = conversation.properties().accntNum;
         
-       
-        var options = {
-            'method': 'POST',
-            'url': 'https://www.pldt.com.ph/mobility/askpldt-api/customers/tickets',
-            'headers': {
-                'Content-Type': 'application/json',
-                'Cookie': 'incap_ses_961_2106196=1OPaFwYnzycga/DhGylWDelo82IAAAAAtRDTZWSpdpXqHgM1P7aAyA==; BIGipServerMobileITPool=2048859658.16415.0000'
-            },
-            body: JSON.stringify({
-                "description": description.toString(),
-                "empeId": empeId.toString(),
-                "faultType": faultType.toString(),
-                "priority": priority.toString(),
-                "promCause": promCause.toString(),
-                "reportedBy": reportedBy.toString(),
-                "telephoneNumber": serviceNumber.toString(),
-                "promSubType": promSubType.toString(),
-                "promWorgName": promWorgName.toString(),
-                "promCategory": promCategory.toString(),
-                "promSubCategory": promSubCategory.toString()
-            })
-            //maxAttempts: 3,   //try 3 times
-            //retryDelay: 40000, //40 seconds
-            //retryStrategy: request.RetryStrategies.HTTPOrNetworkError
-        };
+        logger.addContext("serviceNumber", serviceNumber);
+        emailLog.addContext("subject", globalProp.Email.Subjects.TicketCreation.CreateFT);
+        emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
+        emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.TicketCreation.TicketCreationCreateFt);
+        emailLog.addContext("usertelephonenumber", serviceNumber);
+        emailLog.addContext("useraccountnumber", '');
+
+        logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        logger.info(`- [START] Ticket Creation                                                                                   -`)
+        logger.info(`-------------------------------------------------------------------------------------------------------------`)
+
+        const requestBody = JSON.stringify({
+                "description": description,
+                "empeId": empeId,
+                "faultType": faultType,
+                "priority": priority,
+                "promCause": promCause,
+                "reportedBy": reportedBy,
+                "telephoneNumber": serviceNumber,
+                "promSubType": promSubType,
+                "promWorgName": promWorgName,
+                "promCategory": promCategory,
+                "promSubCategory": promSubCategory
+            });
+
+        logger.debug(`Setting up the request body: ${requestBody}`);
+
+        const options = globalProp.TicketCreation.API.Validate.PostOptions(requestBody);
+        logger.debug(`Setting up the post option: ${JSON.stringify(options)}`);
+
+        logger.info(`Starting to invoke the request.`)
+
         request(options, function (error, response) {
             if (error) {                
                 const errorreplaced = JSON.stringify(error).replace('http://', '');
@@ -192,19 +138,21 @@ module.exports = {
                 if (error.statusCode === 500 || error.statusCode === 404)
                 {
                     console.log("response error raw 500 || 404",JSON.stringify(error));
-                    UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR500", reportedBy, errorreplaced);
+                    logger.debug("response error raw 500 || 404",JSON.stringify(error));
+                    //UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR500", reportedBy, errorreplaced);
                     conversation.transition('500');
                     done();        
                 }
                 else{
                     //  conversation.reply({ text: 'OOPS, Error Happened! Contact Administrator.'});
                     console.log("response error raw else on 500 || 404",JSON.stringify(error));
-                    UpdateCreateFT(accntNumber, serviceNumber, sysDate, "FAILURE", reportedBy, errorreplaced);
+                    logger.debug("response error raw else on 500 || 404",JSON.stringify(error));
+                    //UpdateCreateFT(accntNumber, serviceNumber, sysDate, "FAILURE", reportedBy, errorreplaced);
                     conversation.transition('FAILURE');
                     done();
                 }
                 
-                sendEmail(errorreplaced, error.code, accntNumber, serviceNumber)
+                //sendEmail(errorreplaced, error.code, accntNumber, serviceNumber)
             }
             else{
                 var result = response;
@@ -215,73 +163,95 @@ module.exports = {
                     if (result.statusCode === 406)
                     {
                         console.log("Stringify createRes data 406 " + JSON.stringify(createRes));
+                        logger.debug("Stringify createRes data 406 " + JSON.stringify(createRes));
                         var spiel406 = JSON.stringify(createRes.spiel).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,'');
                         var msg406 = JSON.stringify(createRes.message).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,'');
                         // console.log("Stringify createRes data ticketnumber 406: " + JSON.stringify(createRes.ticketNumber).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,''));
                         // var tcktNum = JSON.stringify(createRes.ticketNumber).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,'');
                         console.log("Stringify createRes data 406 testing2 pipe " + JSON.stringify(createRes) + " | " + spiel406 + " | " + msg406);
+                        logger.debug("Stringify createRes data 406 testing2 pipe " + JSON.stringify(createRes) + " | " + spiel406 + " | " + msg406);
                         // console.log(createRes);
 
                         if (createRes.spiel)
                         {
                             // var spiel406 = JSON.stringify(createRes.spiel).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,'');
-                            UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR406", reportedBy, responseStr);
+                            //UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR406", reportedBy, responseStr);
                             console.log('Spiel is not null: ' + spiel406);
+                            logger.debug('Spiel is not null: ' + spiel406);
                             conversation.variable('spielMsg', spiel406);
-                            conversation.transition('FAILURE');
-                            done();                           
+                            //conversation.transition('FAILURE');
+                            //done();   
+                            transition = 'FAILURE';                        
                         }
                         else
                         {
                             // var msg406 = JSON.stringify(createRes.message).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,'');
-                            UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR406", reportedBy, responseStr);
-                            console.log('Spiel is null: ' + msg406);
+                            //UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR406", reportedBy, responseStr);
+                            console.log('Spiel is not null: ' + spiel406);
+                            logger.debug('Spiel is not null: ' + spiel406);
                             conversation.variable('spielMsg', msg406);
-                            conversation.transition('FAILURE');
-                            done();
+                            //conversation.transition('FAILURE');
+                            //done();
+                            transition = 'FAILURE';
                         }                        
-                        done();
+                        //done();
                     }    
                     else if (result.statusCode === 500 || result.statusCode === 404)
                     {
                         console.log("response error raw 500 || 404",JSON.stringify(result));
-                        UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR500", reportedBy, responseStr);
-                        conversation.transition('500');
-                        done();        
+                        logger.debug("response error raw 500 || 404",JSON.stringify(result));
+                        //UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR500", reportedBy, responseStr);
+                        //conversation.transition('500');
+                        //done();        
+                        transition = '500';
                     }
                     else{
                         //  conversation.reply({ text: 'OOPS, Error Happened! Contact Administrator.'});
                         console.log("response error raw else on 500 || 404",JSON.stringify(result));
-                        UpdateCreateFT(accntNumber, serviceNumber, sysDate, "FAILURE", reportedBy, responseStr);
-                        conversation.transition('FAILURE');
-                        done();
+                        logger.debug("response error raw else on 500 || 404",JSON.stringify(result));
+                        //UpdateCreateFT(accntNumber, serviceNumber, sysDate, "FAILURE", reportedBy, responseStr);
+                        //conversation.transition('FAILURE');
+                        //done();
+                        transition = 'FAILURE';
                     }
                     
-                    sendEmail(responseStr, result.statusCode, accntNumber, serviceNumber)
+                   // sendEmail(responseStr, result.statusCode, accntNumber, serviceNumber)
                 }
                 else{
                     console.log("Stringify createRes data: " + JSON.stringify(createRes));
                     console.log("Stringify createRes data ticketnumber: " + JSON.stringify(createRes.ticketNumber).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,''));
+                    logger.debug("Stringify createRes data ticketnumber: " + JSON.stringify(createRes.ticketNumber).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,''));
                     var tcktNum = JSON.stringify(createRes.ticketNumber).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,'');
                     var spiel200 = JSON.stringify(createRes.spiel).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,'');
                     
                     
                     if(tcktNum == null){
                         var tcktNumData = JSON.stringify(result);
-                        UpdateCreateFT(accntNumber, serviceNumber, sysDate, tcktNumData, reportedBy, responseStr);
+                        //UpdateCreateFT(accntNumber, serviceNumber, sysDate, tcktNumData, reportedBy, responseStr);
                     }else{
                         var tcktNumData = tcktNum;
-                        UpdateCreateFT(accntNumber, serviceNumber, sysDate, tcktNumData, reportedBy, responseStr);
+                        //UpdateCreateFT(accntNumber, serviceNumber, sysDate, tcktNumData, reportedBy, responseStr);
                     }
 
                     console.log("raw result FLY = " , result);
+                    logger.debug("raw result FLY = " , result);
                     // var JSONRes = JSON.parse(createRes);
                     console.log("spielMsg reply to Chat FLY= " , spiel200); //OMH logger of success spiel
+                    logger.debug("spielMsg reply to Chat FLY= " , spiel200);
                     conversation.variable('spielMsg', spiel200);
                     conversation.variable('ticketNumber', tcktNum);
-                    conversation.transition('SUCCESS');
+                    //conversation.transition('SUCCESS');
+                    transition = 'SUCCESS';
                 }
             }
+            logger.info(`[Transition]: ${transition}`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [END] Ticket Creation                                                                                     -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+
+            _logger.shutdown();
+            _emailLog.shutdown();            
+            conversation.transition(transition);    
         });            
     }
 };
