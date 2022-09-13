@@ -1,5 +1,6 @@
 "use strict";
 
+const { NumberServiceability } = require("../helpers/globalProperties");
 const { TicketCreation } = require("./component_config");
 
 //******************************************************************************************************************************//
@@ -85,7 +86,7 @@ module.exports = {
         AccountEligibility: 'AccountEligibility',
         ValidateAccountNumberFormat: 'ValidateAccountNumberFormat',
         ValidateServiceNumberFormat: 'ValidateServiceNumberFormat',
-        NumberServiceabilityParam: 'NumberServiceabilityParam',
+        NumberServiceability: {NumberServiceabilityParam:'NumberServiceabilityParam',NumberServiceabilityRegion:'NumberServiceabilityRegion',NumberServiceabilityTechnology:'NumberServiceabilityTechnology'},
         TicketCreation: {TicketCreation:'TicketCreation',ticketcreationcreateft:'ticketcreationcreateft',ticketProm:'ticketProm'}
     }
 }

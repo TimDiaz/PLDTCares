@@ -1,6 +1,6 @@
 "use strict";
 
-const component = require('../../components/numberServiceability/param');
+const component = require('../../components/numberServiceability/getRegion');
 const testing = require('@oracle/bots-node-sdk/testing');
 const customComponent = require('../helpers/invokeCustomComponent');
 

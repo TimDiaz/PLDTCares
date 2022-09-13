@@ -5,7 +5,9 @@ module.exports = {
     Subjects: {
         AccountValidation: '[API Error] Account Validation DEV - Subscriber Checking',
         AccountEligibility: '[API Error] Account Eligibility DEV - Existing Ticket Checking',
-        NumberServiceabilityParam: '[API Error] NumberServiceability DEV - VIP checking',
+        NumberServiceability: {NumServiceabilityParam:'[API Error] NumberServiceability DEV - VIP checking',
+                                    NumServiceabilityRegion:'[API Error] NumberServiceability DEV - Region checking',
+                                    NumServiceabilityTechnology:'[API Error] NumberServiceability DEV - Technology checking'},
         TicketCreation: {TicketCreation:'[API Error] PLDT Fault Ticket DEV - Ticket Creation',
                          CreateFT:'[API Error] PLDT Fault Ticket DEV - Ticket Creation Create FT',
                          TicketProm:'[API Error] PLDT Fault Ticket DEV - Ticket Prom'} 
