@@ -5,11 +5,11 @@ module.exports = {
 
     metadata: function metadata() {
         return {
-            "name": "getTechnology",
-            "properties": {
-    			"serviceNumber": {
-                    "type": "string",
-                    "required": true
+            name: componentName.NumberServiceabilityTechnology,
+            properties: {
+    			serviceNumber: {
+                    type: "string",
+                    required: true
                 }
             },
             supportedActions: ['dslAcct','fibrAcct','failure','blank']
@@ -17,12 +17,48 @@ module.exports = {
     },
 
     invoke: (conversation, done) => {
+
+        const request = require('request');
+        const globalProp = require('../../helpers/globalProperties');
+        const instance = require("../../helpers/logger");
+        const _logger = instance.logger(globalProp.Logger.Category.NumberServiceability.NumberServiceabilityTechnology);
+        const logger = _logger.getLogger();
+        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);        
+        const emailLog = _emailLog.getLogger();
+
 		var serviceNumber = conversation.properties().serviceNumber;
         var areacode = "";
         var telephone = "";
 
-		//var location = conversation.properties().location;
-	    console.log("info from bot:"+serviceNumber)
+        function logError(result, resultCode) {
+            const strResult = JSON.stringify(result);
+            emailLog.addContext("apierrorcode", strResult);
+            emailLog.addContext("apierrormsg", resultCode);
+            const message = globalProp.Email.EmailFormat(globalProp.NumberServiceability.API.Serviceable.Name, resultCode, strResult, serviceNumber);
+
+            logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`)
+            emailLog.error(message);
+        }
+
+        let transition = 'failure';
+
+        var serviceNumber = conversation.properties().serviceNumber;
+        var areacode = "";
+        var telephone = "";
+        var accountNumber = "No Data";
+        logger.addContext("serviceNumber", serviceNumber)
+        emailLog.addContext("subject", globalProp.Email.Subjects.NumberServiceability.NumServiceabilityTechnology);
+        emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
+        emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.NumberServiceability.Technology);
+        emailLog.addContext("usertelephonenumber", serviceNumber);
+        emailLog.addContext("useraccountnumber", accountNumber);
+
+        logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        logger.info(`- [START] Number Serviceability - [Technology]                                                                   -`)
+        logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        
+        console.log("info from bot:" + serviceNumber)
+
         if (serviceNumber.length == 9 ) {
             var areacode = serviceNumber.substring(2,0);
             var telephone = serviceNumber.substring(2);
@@ -44,75 +80,31 @@ module.exports = {
                 var telephone = serviceNumber.substring(3);
             }
         }
+        logger.debug(`Area Code: [${areacode}].`)
+        logger.debug(`Telephone: [${telephone}].`)
 
-        var request = require('request');
-            var options = {
-            'method': 'POST',
-            'url': 'https://www.pldt.com.ph/mobility/pldthome/api/serviceability/number/serviceable',
-            'headers': {
-                'Content-Type': 'application/json',
-                'Cookie': 'incap_ses_961_2106196=XTAxBlulCkK9cK3dGylWDTm+8GIAAAAAIobtweYojLuJtnuDh/1x2g==; BIGipServerMobileITPool=2048859658.16415.0000'
-            },
-            body: JSON.stringify({
-                "AREACODE": areacode,
-                "TELEPHONE": telephone,
-                "CONSUMER": "CHATBOT",
-                "TOKEN": "YjQ5NzQyNWItNmE4NC00YzZlLThlM2UtYmU4OGNjZjc2YmQy"
-            })
+        const requestBody = JSON.stringify({
+            "AREACODE": areacode,
+            "TELEPHONE": telephone,
+            "CONSUMER": globalProp.NumberServiceability.API.Serviceable.Consumer,
+            "TOKEN": globalProp.NumberServiceability.API.Serviceable.Token
+        });
+        logger.debug(`Setting up the request body: ${requestBody}`);
 
-            };
+        var options = globalProp.NumberServiceability.API.Serviceable.PostOptions(requestBody);
+        logger.debug(`Setting up the post option: ${JSON.stringify(options)}`);
+
+        logger.info(`Starting to invoke the request.`)
+
             request(options, function (error, response) {
+                logger.info(`Invoking request successful.`)
             if (error)
-            {
-                var statCode = error.statusCode;
-                console.log("error: " + JSON.stringify(error));
-                console.log("error code: " + statCode);
-                const erroremailmsg = JSON.stringify(error);
-                const errorreplaced = erroremailmsg.replace('http://', '');
-                var accountNumber = "no data";
-
-                const transporter = nodemailer.createTransport({
-                    host: 'smtp.gmail.com',
-                    port: 587,
-                    auth: {
-                      user: 'ndphchatbot@gmail.com',
-                      pass: 'nwqiqdpeezxtdatx',
-                    }
-                  });
-            
-                if(error.statusCode != undefined){
-                    transporter.sendMail({
-                        from: 'ndphchatbot@gmail.com',
-                        to: 'AllCCareEnablingServices@smart.com.ph, t-tsdiaz@supplier.smart.com.ph, FCDavid@smart.com.ph, avcansanay@smart.com.ph, t-acalero@supplier.smart.com.ph, t-jpvalete@supplier.smart.com.ph',
-                        subject: '[API Error] NumberServiceability PROD - VIP checking',
-                        text: 'Status Code: ' + statCode +                
-                        ' Telephone Number: ' + serviceNumber +
-                        ' API: NumberServiceability ' +  
-                        ' Datetime: ' + moment.tz(Date.now(), 'Asia/Manila').format('MM-DD-YYYY hh:mm A') + 
-                        ' Error: ' + errorreplaced
-                    }).then((t) => { 
-                        console.log("then response " + t);
-                        insertbcploggingdata(statCode, erroremailmsg, accountNumber, serviceNumber, t); //save to db on then
-                    }).catch((e) => {
-                        console.log("then response " + e);
-                        insertbcploggingdata(statCode, erroremailmsg, accountNumber, serviceNumber, e); //save to db one catch
-                    });
-                    transporter.close();
-                }
-
-                if (statCode == 504 || statCode == 406 || statCode == 500 || statCode == 404 || statCode == 408 || statCode == 400){
-                    console.log("error code inside func error if: " + error.statusCode);
-                    conversation.variable('errorCode',statCode);
-                    conversation.transition('failure');
-                    console.log("done transition failure in if");
-                    done();
-                }else{
-                    console.log(" getTechnology, error inside func error else: " + error, "telnum : " + serviceNumber);
-                    conversation.transition('failure');
-                }
+            {   logError(error, error.code);
+                transition = 'failure';
             }
             else
             {
+                logger.info(`Request success with Response Code: [${response.statusCode}]`);
                 var responseBody = response.body;
                 var JSONRes  = JSON.parse(responseBody);
                 var pkgfttx = "FTTX";
@@ -123,81 +115,103 @@ module.exports = {
                 var pkgvdsl = "VDSL";
                 var pkgngn = "NGN";
                 var pkglegacy = "LEGACY";
-            
+                logger.debug(`Response Body:  ${JSON.stringify(JSONRes)}`);
 
                 var currentTech = JSONRes.CURRENTTECHNOLOGY.toUpperCase();
                 console.log(currentTech);
                 if (currentTech == pkgfttx){
                     conversation.variable('neType', pkgfttx);
-                    conversation.transition('fibrAcct');
-                    done();
+                    //conversation.transition('fibrAcct');
+                    transition = 'fibrAcct';
+                    //done();
                 }
 
                 else if (currentTech == pkgfiber)
                 {
                     conversation.variable('neType', pkgfiber);
-                    conversation.transition('fibrAcct');
-                    done();
+                    //conversation.transition('fibrAcct');
+                    transition = 'fibrAcct';
+                    //done();
                 }
 
                 else if (currentTech == pkgfibr)
                 {
                     conversation.variable('neType', pkgfibr);
-                    conversation.transition('fibrAcct');
-                    done();
+                    //conversation.transition('fibrAcct');
+                    transition = 'fibrAcct';
+                    //done();
                 }
 
                 else if (currentTech == pkgftth)
                 {
                     conversation.variable('neType', pkgftth);
-                    conversation.transition('fibrAcct');
-                    done();
+                    //conversation.transition('fibrAcct');
+                    transition = 'fibrAcct';
+                    //done();
                 }
 
                 else if (currentTech == pkgdsl)
                 {
                     conversation.variable('neType', pkgdsl);
-                    conversation.transition('dslAcct');
-                    done();
+                    //conversation.transition('dslAcct');
+                    transition = 'dslAcct';
+                    //done();
                 }
 
                 else if (currentTech == pkgvdsl)
                 {
                     conversation.variable('neType', pkgvdsl);
-                    conversation.transition('dslAcct');
-                    done();
+                    //conversation.transition('dslAcct');
+                    transition = 'dslAcct';
+                    //done();
                 }
 
                 else if (currentTech == pkgngn)
                 {
                     conversation.variable('neType', pkgngn);
-                    conversation.transition('dslAcct');
-                    done();
+                    //conversation.transition('dslAcct');
+                    transition = 'dslAcct';
+                    //done();
                 }
 
                 else if (currentTech == pkglegacy)
                 {
                     conversation.variable('neType', pkglegacy);    
-                    conversation.transition('dslAcct');
-                    done();
+                    //conversation.transition('dslAcct');
+                    transition = 'dslAcct';
+                    //done();
                 }
                 else if (JSONRes.EXCEPTIONMSG == "100|TELEPHONE NUMBER DOES NOT EXIST") {
                     console.log("getTechnology telephone number does not exist service number:" + serviceNumber, "currentTech : "+ currentTech);
-                    conversation.transition('blank');
-                    done();
+                    logger.debug("getTechnology telephone number does not exist service number:" + serviceNumber, "currentTech : "+ currentTech);
+                    //conversation.transition('blank');
+                    transition = 'blank';
+                    //done();
                 }
                 else if (JSONRes.EXCEPTIONMSG !== "100|TELEPHONE NUMBER DOES NOT EXIST") {
-                    conversation.transition('blank');
+                    //conversation.transition('blank');
+                    transition = 'blank';
                     console.log("getTechnology - number CLARITY ERROR. Server was unable to process request." + serviceNumber , "currentTech : "+ currentTech);
-                    done();
+                    logger.debug("getTechnology - number CLARITY ERROR. Server was unable to process request." + serviceNumber , "currentTech : "+ currentTech);
+                    //done();
                 }
                 else {
                     conversation.variable('neType', "NULL NE TYPE");  
-                    conversation.transition('blank');
+                    //conversation.transition('blank');
+                    transition = 'blank';
+                    logger.debug("getTechnology component ,blank argument service number:" + serviceNumber, "currentTech: "+ currentTech);
                     console.log("getTechnology component ,blank argument service number:" + serviceNumber, "currentTech: "+ currentTech);
-                    done();
+                    //done();
                 }
             }
+            logger.info(`[Transition]: ${transition}`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [END] Number Serviceability - [Technology]                                                                -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+    
+            _logger.shutdown();
+            _emailLog.shutdown();            
+            conversation.transition(transition);            
         });
     }
 };

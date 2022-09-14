@@ -7,6 +7,7 @@ const config = {
     TSEligibility: "tseligibility.DEV",
     NumberServiceabilityPARAM: "numberServiceabilityPARAM.DEV",
     NumberServiceabilityRegion: "numberServiceabilityRegion.DEV",
+    NumberServiceabilityTechnology: "numberServiceabilityTechnology.DEV",
     ValidateAccountNumberFormat: "validateaccountnumberformat.DEV",
     ValidateServiceNumberFormat: "validateServiceNumberFormat.DEV",
     TicketCreation: "ticketCreation.DEV",
@@ -23,11 +24,17 @@ const config = {
 // NOTE: Uncomment this for production deployment                                                                               //
 //******************************************************************************************************************************//
 // const config = {
-//     AccountValidation: "accountValidation.PROD",
-//     TSEligibility: "tseligibility.PROD",
-//     NumberServiceabilityPARAM: "numberServiceabilityPARAM.PROD",
-//     ValidateAccountNumberFormat: "validateaccountnumberformat.PROD",
-//     ValidateServiceNumberFormat: "validateServiceNumberFormat.PROD"
+    // AccountValidation: "accountValidation.PROD",
+    // TSEligibility: "tseligibility.PROD",
+    // NumberServiceabilityPARAM: "numberServiceabilityPARAM.PROD",
+    // NumberServiceabilityRegion: "numberServiceabilityRegion.PROD",
+    // NumberServiceabilityTechnology: "numberServiceabilityTechnology.PROD",
+    // ValidateAccountNumberFormat: "validateaccountnumberformat.PROD",
+    // ValidateServiceNumberFormat: "validateServiceNumberFormat.PROD",
+    // TicketCreation: "ticketCreation.PROD",
+    // TicketCreationFT: "ticketCreationFT.PROD",
+    // TicketCreationProm: "ticketProm.PROD"
+
 // }
 //******************************************************************************************************************************//
 // [END] PRODUCTION CONFIGURATION                                                                                               //
