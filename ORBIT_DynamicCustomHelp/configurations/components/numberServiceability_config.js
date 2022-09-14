@@ -15,7 +15,7 @@ module.exports = {
                     body: body
                 }
             },
-            Token: "YjQ5NzQyNWItNmE4NC00YzZlLThlM2UtYmU4OGNjZjc2YmQy",
+            Token: "MDg0OWY2YzAtYjcwZS00ZjQxLTlmMzgtODBjZWRmMjc2MTI2",
             Consumer: "CHATBOT",
         }
     },        

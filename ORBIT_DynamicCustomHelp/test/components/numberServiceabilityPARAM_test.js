@@ -9,7 +9,7 @@ let param_notexist = testing.MockRequest(
     {},
     //properties
     {
-        "serviceNumber": "00230872789"
+        "serviceNumber": "0344320027"
     }
 )
 let param_exist = testing.MockRequest(
@@ -23,8 +23,8 @@ let param_exist = testing.MockRequest(
 )
 
 async function Run() {
-    // await customComponent.invoke("numberServiceabilityRegion", param_notexist, component);
-    await customComponent.invoke("numberServiceabilityRegion", param_exist, component);
+     await customComponent.invoke("numberServiceabilityParam", param_notexist, component);
+    //await customComponent.invoke("numberServiceabilityParam", param_exist, component);
 };
 
 Run();
