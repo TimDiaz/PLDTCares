@@ -1,38 +1,5 @@
 "use strict";
-
-var log4js = require('log4js');
-var logger = log4js.getLogger();
-var nodemailer = require('nodemailer');
-var moment = require('moment-timezone');
-var check = true;
-var request = require('request');
-
-function insertbcploggingdata(apierrorcodeinit, apierrormsginit, aaccNumberinit, telNumberinit, emailrespinit){
-
-    var options = {
-        'method': 'POST',
-        'url': 'https://chatbot171.pldthome.com:7745/bcplogginginsert',
-        'headers': {
-            'Content-Type': 'application/json'
-            },
-        body: JSON.stringify({
-                "apiname": "numberserviceabilityprod-getTechnology",
-                "apierrorcode":  apierrorcodeinit,
-                "apierrormsg": apierrormsginit,
-                "usertel": telNumberinit,
-                "useracntnum": aaccNumberinit,
-                "emailresp": emailrespinit
-            })
-        };
-
-    request(options, function (error, response) {
-        if (error) {
-            console.log("error on bcp api: " + error);
-        }else{
-            console.log("successful on bcp api: " + response.body);
-        }   
-    });
-}
+const componentName = require('../../configurations/component_config');
 
 module.exports = {
 
