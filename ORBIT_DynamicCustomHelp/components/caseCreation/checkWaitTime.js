@@ -24,7 +24,7 @@ module.exports = {
         const request = require('request');
         const globalProp = require('../../helpers/globalProperties');
         const instance = require("../../helpers/logger");
-        const _logger = instance.logger(globalProp.Logger.Category.CheckWaitTime);
+        const _logger = instance.logger(globalProp.Logger.Category.CaseCreation.CheckWaitTime);
         const logger = _logger.getLogger();
         const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);        
         const emailLog = _emailLog.getLogger();
@@ -47,7 +47,7 @@ module.exports = {
         const orgId = "00D0T0000000ce2";
 
         logger.addContext("serviceNumber", serviceNumber);
-        emailLog.addContext("subject", globalProp.Email.Subjects.CheckWaitTime);
+        emailLog.addContext("subject", globalProp.Email.Subjects.CaseCreation.CheckWaitTime);
         emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
         emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.CaseCreation.CheckWaitTime);
         emailLog.addContext("usertelephonenumber", serviceNumber);

@@ -23,7 +23,7 @@ let param_exist = testing.MockRequest(
         "customerCity": "ILO - ILOILO CITY",
         "firstName": "Richelle",
         "lastName": "Raby",
-        "subMenu": "Upgrade Plan - FIBR PLUS - 23991",
+        "subMenu": "Upgrade Plan - FIBR PLUS - 2399",
         "skillName": "Account Services",
         "RecordTypeId": "0121s0000004kkJ",
         "Subject": "PLDT Order Taking - Account Services",

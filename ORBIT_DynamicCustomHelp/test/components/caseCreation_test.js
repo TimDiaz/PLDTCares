@@ -23,7 +23,7 @@ let param_exist = testing.MockRequest(
         "customerCity": "ILO - ILOILO CITY",
         "firstName": "Richelle",
         "lastName": "Raby",
-        "subMenu": "Request Copy of Bill1",
+        "subMenu": "Request Copy of Bill",
         "skillName": "Billing Services",
         "RecordTypeId": "0122u000000GqsY",
         "Subject": "PLDT Ordertaking - Billing Services"

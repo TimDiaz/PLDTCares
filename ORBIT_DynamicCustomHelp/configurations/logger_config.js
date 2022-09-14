@@ -94,11 +94,6 @@ module.exports = {
         ValidateAccountNumberFormat: 'ValidateAccountNumberFormat',
         ValidateServiceNumberFormat: 'ValidateServiceNumberFormat',
         NumberServiceabilityParam: 'NumberServiceabilityParam',
-        CaseCreation: 'CaseCreation',
-        ChatAdCaseCreate: 'ChatAdCaseCreate',
-        CheckWaitTime: 'CheckWaitTime',
-        FollowUpCase: 'FollowUpCase',
-        FollowUpDate: 'FollowUpDate',
-        PaymentDate: 'PaymentDate'
+        CaseCreation: {CaseCreation: 'CaseCreation', ChatAdCaseCreate: 'ChatAdCaseCreate', CheckWaitTime: 'CheckWaitTime', FollowUpCase: 'FollowUpCase', FollowUpDate: 'FollowUpDate', PaymentDate: 'PaymentDate'},
     }
 }
