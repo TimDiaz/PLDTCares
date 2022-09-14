@@ -22,6 +22,14 @@ const bcpLogging = {
         },
         AccountEligibility: { 
             TSEligibility: "orbit_dev-accounteligibility-TSEligibility"
+        },
+        CaseCreation:{
+            CaseCreation: "orbit_dev-casecreation-CaseCreation",
+            ChatAdCaseCreate: "orbit_dev-casecreation-ChatAdCaseCreate",
+            CheckWaitTime: "orbit_dev-casecreation-CheckWaitTime",
+            FollowupCase: "orbit_dev-casecreation-FollowupCase",
+            FollowupDate: "orbit_dev-casecreation-FollowupDate",
+            PaymentDate: "orbit_dev-casecreation-PaymentDate"
         }
     },
 }
@@ -51,6 +59,14 @@ const bcpLogging = {
 //         },
 //         AccountEligibility: { 
 //             TSEligibility: "orbit_dev-accounteligibility-TSEligibility"
+//         },
+//         CaseCreation:{
+//             CaseCreation: "orbit_dev-casecreation-CaseCreation",
+//             ChatAdCaseCreate: "orbit_dev-casecreation-ChatAdCaseCreate",
+//             CheckWaitTime: "orbit_dev-casecreation-CheckWaitTime",
+//             FollowupCase: "orbit_dev-casecreation-FollowupCase",
+//             FollowupDate: "orbit_dev-casecreation-FollowupDate",
+//             PaymentDate: "orbit_dev-casecreation-PaymentDate"
 //         }
 //     },
 // }
@@ -77,6 +93,12 @@ module.exports = {
         AccountEligibility: 'AccountEligibility',
         ValidateAccountNumberFormat: 'ValidateAccountNumberFormat',
         ValidateServiceNumberFormat: 'ValidateServiceNumberFormat',
-        NumberServiceabilityParam: 'NumberServiceabilityParam'
+        NumberServiceabilityParam: 'NumberServiceabilityParam',
+        CaseCreation: 'CaseCreation',
+        ChatAdCaseCreate: 'ChatAdCaseCreate',
+        CheckWaitTime: 'CheckWaitTime',
+        FollowUpCase: 'FollowUpCase',
+        FollowUpDate: 'FollowUpDate',
+        PaymentDate: 'PaymentDate'
     }
 }

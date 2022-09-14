@@ -7,7 +7,13 @@ const config = {
     TSEligibility: "tseligibility.DEV",
     NumberServiceabilityPARAM: "numberServiceabilityPARAM.DEV",
     ValidateAccountNumberFormat: "validateaccountnumberformat.DEV",
-    ValidateServiceNumberFormat: "validateServiceNumberFormat.DEV"
+    ValidateServiceNumberFormat: "validateServiceNumberFormat.DEV",
+    CaseCreation: "casecreation.DEV",
+    ChatAdCaseCreate: "chatadcasecreate.DEV",
+    CheckWaitTime: "checkwaittime.DEV",
+    FollowUpCase: "followupcase.DEV",
+    FollowUpDate: "followupdate.DEV",
+    PaymentDate: "paymentdate.DEV"
 }
 //******************************************************************************************************************************//
 // [END] DEVELOPMENT CONFIGURATION                                                                                              //
@@ -22,7 +28,13 @@ const config = {
 //     TSEligibility: "tseligibility.PROD",
 //     NumberServiceabilityPARAM: "numberServiceabilityPARAM.PROD",
 //     ValidateAccountNumberFormat: "validateaccountnumberformat.PROD",
-//     ValidateServiceNumberFormat: "validateServiceNumberFormat.PROD"
+//     ValidateServiceNumberFormat: "validateServiceNumberFormat.PROD",
+//     CaseCreation: "casecreation.PROD",
+//     ChatAdCaseCreate: "chatadcasecreate.PROD",
+//     CheckWaitTime: "checkwaittime.PROD",
+//     FollowUpCase: "followupcase.PROD",
+//     FollowUpDate: "followupdate.PROD",
+//     PaymentDate: "paymentdate.PROD"
 // }
 //******************************************************************************************************************************//
 // [END] PRODUCTION CONFIGURATION                                                                                               //
