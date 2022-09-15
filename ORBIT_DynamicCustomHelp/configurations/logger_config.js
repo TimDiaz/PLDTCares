@@ -25,6 +25,9 @@ const bcpLogging = {
         },
         Autobal:{
             Autobal: "orbit_dev-autobal-Autobal"
+        },
+        Autoesoa:{
+            Autoesoa: "orbit_dev-autoesoa-Autoesoa"
         }
     },
 }

@@ -8,7 +8,8 @@ const config = {
     NumberServiceabilityPARAM: "numberServiceabilityPARAM.DEV",
     ValidateAccountNumberFormat: "validateaccountnumberformat.DEV",
     ValidateServiceNumberFormat: "validateServiceNumberFormat.DEV",
-    Autobal: "autobal.DEV"
+    Autobal: "autobal.DEV",
+    Autoesoa: "autoesoa.DEV"
 }
 //******************************************************************************************************************************//
 // [END] DEVELOPMENT CONFIGURATION                                                                                              //

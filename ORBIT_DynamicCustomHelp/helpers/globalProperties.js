@@ -7,6 +7,7 @@ const numberServiceabilityConfig = require('../configurations/components/numberS
 const validateAccountNumberFormatConfig = require('../configurations/components/validateAccountNumberFormat_config');
 const validateServiceNumberFormatConfig = require('../configurations/components/validateServiceNumberFormat_config');
 const autobalConfig = require('../configurations/components/autobal_config');
+const autoesoaConfig = require('../configurations/components/autoesoa_config');
 
 module.exports = {    
     APIBaseOption: apiBaseConfig,
@@ -17,5 +18,6 @@ module.exports = {
     NumberServiceability: numberServiceabilityConfig,
     ValidateAccountNumberFormat: validateAccountNumberFormatConfig,
     ValidateServiceNumberFormat: validateServiceNumberFormatConfig,
-    Autobal: autobalConfig
+    Autobal: autobalConfig,
+    Autoesoa: autoesoaConfig
 };

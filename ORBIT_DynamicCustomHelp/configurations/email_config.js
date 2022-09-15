@@ -6,7 +6,8 @@ module.exports = {
         AccountValidation: '[API Error] Account Validation PROD - Subscriber Checking',
         AccountEligibility: '[API Error] Account Eligibility PROD - Existing Ticket Checking',
         NumberServiceabilityParam: '[API Error] NumberServiceability PROD - VIP checking',
-        Autobal: '[API Error] Check Auto Balance PROD - VIP checking'
+        Autobal: '[API Error] Check Auto Balance PROD - Balance Checking',
+        Autoesoa: '[API Error] Check Auto Esoa PROD - Bill Request Checking'
     },
     EmailFormat: (apiName, code, message, serviceNumber) => {
         const dateTimeNow = moment.tz(Date.now(), 'Asia/Manila').format('MM-DD-YYYY hh:mm A');

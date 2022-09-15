@@ -228,7 +228,7 @@ module.exports = {
           }
           logger.info(`[Transition]: ${transition}`);
           logger.info(`-------------------------------------------------------------------------------------------------------------`);
-          logger.info(`- [END] Case Creation                                                                                       -`);
+          logger.info(`- [END] Auto Check Balance                                                                                      -`);
           logger.info(`-------------------------------------------------------------------------------------------------------------`);   
                 
         });
@@ -240,7 +240,7 @@ module.exports = {
       _emailLog.shutdown();
   
       conversation.transition(transition);
-    //   done();
+      done();
          });
      }
             
