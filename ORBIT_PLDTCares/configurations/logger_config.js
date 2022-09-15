@@ -23,10 +23,8 @@ const bcpLogging = {
         AccountEligibility: { 
             TSEligibility: "orbit_dev-accounteligibility-TSEligibility"
         },
-        Autobal:{
-            Autobal: "orbit_dev-autobal-Autobal"
-        },
-        Autoesoa:{
+        BillingServices:{
+            Autobal: "orbit_dev-autobal-Autobal",
             Autoesoa: "orbit_dev-autoesoa-Autoesoa"
         }
     },
@@ -84,6 +82,9 @@ module.exports = {
         ValidateAccountNumberFormat: 'ValidateAccountNumberFormat',
         ValidateServiceNumberFormat: 'ValidateServiceNumberFormat',
         NumberServiceabilityParam: 'NumberServiceabilityParam',
-        Autobal: 'Autobal'
+        BillingServices: {
+            Autobal: "Autobalance",
+            Autoesoa: "AutoESOA"
+        }
     }
 }

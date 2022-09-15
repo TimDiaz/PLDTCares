@@ -18,6 +18,8 @@ module.exports = {
     NumberServiceability: numberServiceabilityConfig,
     ValidateAccountNumberFormat: validateAccountNumberFormatConfig,
     ValidateServiceNumberFormat: validateServiceNumberFormatConfig,
-    Autobal: autobalConfig,
-    Autoesoa: autoesoaConfig
+    BillingServices: {
+        Autobal: autobalConfig,
+        Autoesoa: autoesoaConfig
+    }
 };
