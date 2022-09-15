@@ -18,6 +18,8 @@ const bcpLogging = {
     URL: `https://${hostName}:7745/bcplogginginsert`,
     AppNames: {
         AccountValidation: "orbit_dev-accountvalidation",
+        EmailValidation: "orbit_dev-emailvalidation",
+        MobileValidation: "orbit_dev-mobilevalidation",
         NumberServiceability:{
             Param: "orbit_dev-numberserviceability-Param",
             Region: "orbit_dev-numberserviceability-Region",
@@ -30,8 +32,11 @@ const bcpLogging = {
            TicketCreation: "orbit_dev-ticketCreation",
            TicketCreationCreateFt: "orbit_dev-ticketcreationft",
            TicketProm: "orbit_dev-ticketProm" 
-        }
-
+        },
+        BSMP:{
+            BSMPWhitelistChecker: "orbit_dev-bsmpwhitelistchecker",
+            BSMPChecker: "orbit_dev-bsmpchecker"
+         }
     },
 }
 //******************************************************************************************************************************//
@@ -86,7 +91,10 @@ module.exports = {
         AccountEligibility: 'AccountEligibility',
         ValidateAccountNumberFormat: 'ValidateAccountNumberFormat',
         ValidateServiceNumberFormat: 'ValidateServiceNumberFormat',
+        ValidateEmailFormat: 'ValidateEmailFormat',
+        ValidateMobileFormat: 'ValidateMobileFormat',
         NumberServiceability: {NumberServiceabilityParam:'NumberServiceabilityParam',NumberServiceabilityRegion:'NumberServiceabilityRegion',NumberServiceabilityTechnology:'NumberServiceabilityTechnology'},
-        TicketCreation: {TicketCreation:'TicketCreation',ticketcreationcreateft:'ticketcreationcreateft',ticketProm:'ticketProm'}
+        TicketCreation: {TicketCreation:'TicketCreation',ticketcreationcreateft:'ticketcreationcreateft',ticketProm:'ticketProm'},
+        BSMP: {BSMPWhitelistChecker:'BSMPWhitelistChecker',BSMPChecker:'BSMPChecker'}
     }
 }

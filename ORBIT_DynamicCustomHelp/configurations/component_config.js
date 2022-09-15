@@ -10,9 +10,12 @@ const config = {
     NumberServiceabilityTechnology: "numberServiceabilityTechnology.DEV",
     ValidateAccountNumberFormat: "validateaccountnumberformat.DEV",
     ValidateServiceNumberFormat: "validateServiceNumberFormat.DEV",
+    ValidateEmailFormat: "validateEmailFormat.DEV",
+    ValidateMobileFormat: "validateMobileFormat.DEV",
     TicketCreation: "ticketCreation.DEV",
     TicketCreationFT: "ticketCreationFT.DEV",
-    TicketCreationProm: "ticketProm.DEV"
+    TicketCreationProm: "ticketProm.DEV",
+    BSMPWhiteList: "BSMPWhitelistChecker.DEV"
 
 }
 //******************************************************************************************************************************//
