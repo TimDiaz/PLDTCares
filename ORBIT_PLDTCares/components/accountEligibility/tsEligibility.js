@@ -55,7 +55,7 @@ module.exports = {
                 logger.info(`[Response Body] ${respBody}`);
                 if(response.statusCode > 200)
                 {
-                    transition = logic.LogError(response.body, response.statusCode, serviceNumber).Transition; 
+                    transition = logic.EmailLogError(response.body, response.statusCode, serviceNumber).Transition; 
                     logger.error(logic.ErrorResponse(response.statusCode).Message);
                 }
                 else{
@@ -85,7 +85,7 @@ module.exports = {
             _emailLog.shutdown();
 
             conversation.transition(transition);
-            // done();
+            done();
         });
     }
 };

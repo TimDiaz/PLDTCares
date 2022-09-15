@@ -22,6 +22,11 @@ const bcpLogging = {
         },
         AccountEligibility: { 
             TSEligibility: "orbit_dev-accounteligibility-TSEligibility"
+        },
+        FMgetFTDetails: {
+            CheckSType: 'orbit_dev-fmgetftdetails-CheckSType',
+            FMInternet: 'orbit_dev-fmgetftdetails-FMInternet',
+            FMLandline: 'orbit_dev-fmgetftdetails-FMLandline'
         }
     },
 }
@@ -77,6 +82,11 @@ module.exports = {
         AccountEligibility: 'AccountEligibility',
         ValidateAccountNumberFormat: 'ValidateAccountNumberFormat',
         ValidateServiceNumberFormat: 'ValidateServiceNumberFormat',
-        NumberServiceabilityParam: 'NumberServiceabilityParam'
+        NumberServiceabilityParam: 'NumberServiceabilityParam',
+        FMGetFTDetail: {
+            CheckStype: 'FMGetFTDetail_CheckStype',
+            FMInternet: 'FMGetFTDetail_FMInternet',
+            FMLandline: 'FMGetFTDetail_FMLandline',
+        }
     }
 }
