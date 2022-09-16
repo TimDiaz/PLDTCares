@@ -9,7 +9,8 @@ const validateServiceNumberFormatConfig = require('../configurations/components/
 const autobalConfig = require('../configurations/components/autobal_config');
 const autoesoaConfig = require('../configurations/components/autoesoa_config');
 const fmGetFTDetailsConfig = require('../configurations/components/fmGetFTDetails_config');
-
+const validateEmailFormatConfig = require('../configurations/components/validateEmailFormat_config');
+const ticketCreationConfig = require('../configurations/components/ticketCreation_config');
 module.exports = {    
     APIBaseOption: apiBaseConfig,
     Logger: loggerConfig,
@@ -19,6 +20,8 @@ module.exports = {
     NumberServiceability: numberServiceabilityConfig,
     ValidateAccountNumberFormat: validateAccountNumberFormatConfig,
     ValidateServiceNumberFormat: validateServiceNumberFormatConfig,
+    ValidateEmailFormat: validateEmailFormatConfig,
+    TicketCreation: ticketCreationConfig,
     BillingServices: {
         Autobal: autobalConfig,
         Autoesoa: autoesoaConfig

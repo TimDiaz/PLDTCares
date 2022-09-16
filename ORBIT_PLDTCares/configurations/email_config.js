@@ -14,7 +14,14 @@ module.exports = {
             CheckSType: '[API Error] FmGetFtDetails PROD - NE Type Checking',
             FMInternet: '[API Error] FmGetFtDetails PROD - NE Type Checking',
             FMLandline: '[API Error] FmGetFtDetails PROD - NE Type Checking',
-        }
+        },
+        TicketCreation: {
+            TicketCreation:'[API Error] PLDT Fault Ticket DEV - Ticket Creation',
+            CreateFT:'[API Error] PLDT Fault Ticket DEV - Ticket Creation Create FT',
+            TicketProm:'[API Error] PLDT Fault Ticket DEV - Ticket Prom'}, 
+        BSMP: { 
+            BSMPWhitelistChecker: '[Component Error] PLDT BSMP - Whitelist Checker', 
+            BSMPChecker: '[Component Error] PLDT BSMP - Checker'}
     },
     EmailFormat: (apiName, code, message, serviceNumber) => {
         const dateTimeNow = moment.tz(Date.now(), 'Asia/Manila').format('MM-DD-YYYY hh:mm A');

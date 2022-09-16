@@ -39,5 +39,17 @@
     "nodemailer",
     "request",
     "save-dev"
+  ],
+  "bundleDependencies": [
+    "@log4js-node/smtp",
+    "chai",
+    "log4js",
+    "mocha",
+    "moment",
+    "moment-timezone",
+    "nodejs-websocket",
+    "nodemailer",
+    "request",
+    "save-dev"
   ]
 }
