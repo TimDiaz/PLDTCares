@@ -21,7 +21,8 @@ const config = {
     TicketCreation: "ticketCreation.DEV",
     TicketCreationFT: "ticketCreationFT.DEV",
     TicketCreationProm: "ticketProm.DEV",
-    BSMPWhiteList: "BSMPWhitelistChecker.DEV"
+    BSMPWhiteList: "BSMPWhitelistChecker.DEV",
+    BSMPChecker: "BSMPChecker.DEV"
 ,
     BillingServices: {
         Autobal: "autobal.DEV",

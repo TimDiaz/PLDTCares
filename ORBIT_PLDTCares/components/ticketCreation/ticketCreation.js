@@ -56,6 +56,24 @@ module.exports = {
             emailLog.error(message);
         }
 
+        function UpdateCreateFT(aaccNumberinit, telNumberinit, smpStartTsinit, ticketnumber, reportedBy, responseBody){
+            var data1 = { 
+                            "AccountNumber" : aaccNumberinit, 
+                            "TelephoneNumber": telNumberinit, 
+                            "smpTS": smpStartTsinit, 
+                            "TicketNumberCreateFT": ticketnumber,
+                            "ReportedBY": reportedBy,
+                            "ResponseBody": responseBody
+                        };
+            var options = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data1),
+            };
+            
+            fetch('https://chatbot171.pldthome.com:7744/updateCreaeteFT', options );
+        }
+        
         let transition = 'failure';
 
         var description = conversation.properties().description;
