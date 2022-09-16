@@ -28,6 +28,14 @@ const bcpLogging = {
         AccountEligibility: { 
             TSEligibility: "orbit_dev-accounteligibility-TSEligibility"
         },
+        CaseCreation:{
+            CaseCreation: "orbit_dev-casecreation-CaseCreation",
+            ChatAdCaseCreate: "orbit_dev-casecreation-ChatAdCaseCreate",
+            CheckWaitTime: "orbit_dev-casecreation-CheckWaitTime",
+            FollowupCase: "orbit_dev-casecreation-FollowupCase",
+            FollowupDate: "orbit_dev-casecreation-FollowupDate",
+            PaymentDate: "orbit_dev-casecreation-PaymentDate"
+        },
         TicketCreation:{
            TicketCreation: "orbit_dev-ticketCreation",
            TicketCreationCreateFt: "orbit_dev-ticketcreationft",
@@ -74,6 +82,14 @@ const bcpLogging = {
 //         },
 //         AccountEligibility: { 
 //             TSEligibility: "orbit_dev-accounteligibility-TSEligibility"
+//         },
+//         CaseCreation:{
+//             CaseCreation: "orbit_dev-casecreation-CaseCreation",
+//             ChatAdCaseCreate: "orbit_dev-casecreation-ChatAdCaseCreate",
+//             CheckWaitTime: "orbit_dev-casecreation-CheckWaitTime",
+//             FollowupCase: "orbit_dev-casecreation-FollowupCase",
+//             FollowupDate: "orbit_dev-casecreation-FollowupDate",
+//             PaymentDate: "orbit_dev-casecreation-PaymentDate"
 //         }
 //     },
 // }
@@ -101,6 +117,7 @@ module.exports = {
         ValidateAccountNumberFormat: 'ValidateAccountNumberFormat',
         ValidateServiceNumberFormat: 'ValidateServiceNumberFormat',
 <<<<<<< HEAD
+<<<<<<< HEAD
         NumberServiceabilityParam: 'NumberServiceabilityParam',
 <<<<<<< HEAD
         FMGetFTDetail: {
@@ -120,5 +137,9 @@ module.exports = {
         TicketCreation: {TicketCreation:'TicketCreation',ticketcreationcreateft:'ticketcreationcreateft',ticketProm:'ticketProm'},
         BSMP: {BSMPWhitelistChecker:'BSMPWhitelistChecker',BSMPChecker:'BSMPChecker'}
 >>>>>>> ReportaProblemCares
+=======
+        NumberServiceabilityParam: 'NumberServiceabilityParam',
+        CaseCreation: {CaseCreation: 'CaseCreation', ChatAdCaseCreate: 'ChatAdCaseCreate', CheckWaitTime: 'CheckWaitTime', FollowUpCase: 'FollowUpCase', FollowUpDate: 'FollowUpDate', PaymentDate: 'PaymentDate'},
+>>>>>>> caseCreation
     }
 }

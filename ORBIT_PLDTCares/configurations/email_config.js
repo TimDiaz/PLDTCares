@@ -21,7 +21,14 @@ module.exports = {
             TicketProm:'[API Error] PLDT Fault Ticket DEV - Ticket Prom'}, 
         BSMP: { 
             BSMPWhitelistChecker: '[Component Error] PLDT BSMP - Whitelist Checker', 
-            BSMPChecker: '[Component Error] PLDT BSMP - Checker'}
+            BSMPChecker: '[Component Error] PLDT BSMP - Checker'},
+        CaseCreation: {
+            CaseCreation: '[API Error] CaseCreation PROD - Case Creation',
+            ChatAdCaseCreate: '[API Error] ChatAdCaseCreate PROD - Chat AD Case Creation',
+            CheckWaitTime: '[API Error] CheckWaitTime PROD - Live agent wait time checking',
+            FollowUpCase: '[API Error] FollowUpCase PROD - Case Creation for Tech',
+            FollowUpDate: '[API Error] FollowUpDate PROD - Date validation',
+            PaymentDate: '[API Error] PaymentDate PROD - Payment Date validation'},
     },
     EmailFormat: (apiName, code, message, serviceNumber) => {
         const dateTimeNow = moment.tz(Date.now(), 'Asia/Manila').format('MM-DD-YYYY hh:mm A');
