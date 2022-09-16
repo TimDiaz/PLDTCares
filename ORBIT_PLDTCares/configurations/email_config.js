@@ -9,7 +9,7 @@ module.exports = {
         BillingServices:{
             Autobal: '[API Error] Check Auto Balance PROD - Balance Checking',
             Autoesoa: '[API Error] Check Auto Esoa PROD - Bill Request Checking'
-        }
+        },
         FMgetFTDetails: {
             CheckSType: '[API Error] FmGetFtDetails PROD - NE Type Checking',
             FMInternet: '[API Error] FmGetFtDetails PROD - NE Type Checking',

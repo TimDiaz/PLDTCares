@@ -116,30 +116,35 @@ module.exports = {
         AccountEligibility: 'AccountEligibility',
         ValidateAccountNumberFormat: 'ValidateAccountNumberFormat',
         ValidateServiceNumberFormat: 'ValidateServiceNumberFormat',
-<<<<<<< HEAD
-<<<<<<< HEAD
-        NumberServiceabilityParam: 'NumberServiceabilityParam',
-<<<<<<< HEAD
         FMGetFTDetail: {
             CheckStype: 'FMGetFTDetail_CheckStype',
             FMInternet: 'FMGetFTDetail_FMInternet',
             FMLandline: 'FMGetFTDetail_FMLandline',
-=======
+        },
         BillingServices: {
             Autobal: "Autobalance",
             Autoesoa: "AutoESOA"
->>>>>>> Billing-Services
-        }
-=======
+        },
         ValidateEmailFormat: 'ValidateEmailFormat',
         ValidateMobileFormat: 'ValidateMobileFormat',
-        NumberServiceability: {NumberServiceabilityParam:'NumberServiceabilityParam',NumberServiceabilityRegion:'NumberServiceabilityRegion',NumberServiceabilityTechnology:'NumberServiceabilityTechnology'},
-        TicketCreation: {TicketCreation:'TicketCreation',ticketcreationcreateft:'ticketcreationcreateft',ticketProm:'ticketProm'},
-        BSMP: {BSMPWhitelistChecker:'BSMPWhitelistChecker',BSMPChecker:'BSMPChecker'}
->>>>>>> ReportaProblemCares
-=======
+        NumberServiceability: {
+            NumberServiceabilityParam:'NumberServiceabilityParam',
+            NumberServiceabilityRegion:'NumberServiceabilityRegion',
+            NumberServiceabilityTechnology:'NumberServiceabilityTechnology'},
+        TicketCreation: {
+            TicketCreation:'TicketCreation',
+            ticketcreationcreateft:'ticketcreationcreateft',
+            ticketProm:'ticketProm'},
+        BSMP: {
+            BSMPWhitelistChecker:'BSMPWhitelistChecker',
+            BSMPChecker:'BSMPChecker'},
         NumberServiceabilityParam: 'NumberServiceabilityParam',
-        CaseCreation: {CaseCreation: 'CaseCreation', ChatAdCaseCreate: 'ChatAdCaseCreate', CheckWaitTime: 'CheckWaitTime', FollowUpCase: 'FollowUpCase', FollowUpDate: 'FollowUpDate', PaymentDate: 'PaymentDate'},
->>>>>>> caseCreation
+        CaseCreation: {
+            CaseCreation: 'CaseCreation', 
+            ChatAdCaseCreate: 'ChatAdCaseCreate', 
+            CheckWaitTime: 'CheckWaitTime', 
+            FollowUpCase: 'FollowUpCase', 
+            FollowUpDate: 'FollowUpDate', 
+            PaymentDate: 'PaymentDate'},
     }
 }
