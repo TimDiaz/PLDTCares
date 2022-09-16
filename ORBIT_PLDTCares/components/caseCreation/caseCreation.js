@@ -125,53 +125,62 @@ module.exports = {
                 logError(error, error.code);
                 transition = 'failure';
             }else{
-                logger.info(`Request Token success with Response Code: [${result.statusCode}]`);
-                var parsedToken = JSON.parse(result.body)['access_token'];
-                var fullName = fName + " " + lName;
-                var rawToken = parsedToken.toString();
-                var token = rawToken.replace(/"([^"]+(?="))"/g, '$1');
-                logger.info(`Final Token: ${token}`);
-                const authBearer = "Authorization : Bearer " + token;
+                if(result.statusCode > 200){
+                    logError(result, result.statusCode);
+                }else{                
+                    logger.info(`Request Token success with Response Code: [${result.statusCode}]`);
+                    var parsedToken = JSON.parse(result.body)['access_token'];
+                    var fullName = fName + " " + lName;
+                    var rawToken = parsedToken.toString();
+                    var token = rawToken.replace(/"([^"]+(?="))"/g, '$1');
+                    logger.info(`Final Token: ${token}`);
+                    const authBearer = "Authorization : Bearer " + token;
 
-                const requestBody = JSON.stringify({
-                    'Description': trimmeddesc+',Fb Name: '+fullName +',fbid: '+fbId+',Channel Type: '+channelType,
-                    'Type':sName,
-                    'Status':'Open - Unassigned',
-                    'Origin':'Facebook',
-                    'RecordTypeId': recordTypeid,
-                    'Subject': subj,
-                    'PLDT_Case_Sub_Type__c': sMenu,
-                    'Customer_City__c': city
-                });
-                
-                var options = globalProp.CaseCreation.API.CaseCreate.PostOptions(authBearer, requestBody);
-                logger.debug(`Setting up the post option: ${JSON.stringify(options)}`);
-        
-                logger.info(`Starting to invoke the request.`);
-                request(options, function (errorMsg, response) {
-                    const instance = require("../../helpers/logger");
-                    const _logger = instance.logger(globalProp.Logger.Category.CaseCreation.CaseCreation);
-                    const logger = _logger.getLogger();
-                    logger.addContext("serviceNumber", svcNumber);
-                    if (errorMsg){
-                        logger.error(errorMsg);
-                    }else{
-                        logger.info(`Invoking request successful.`);
-                        logger.debug(`Request success with Status Code: [${response.statusCode}]`);
-                        if(response.statusCode == 201){
-                            logger.info(`Successful Case Creation: ${response.body}`);
-                            transition = 'valid';
-                        }else{ 
-                            logger.debug(`Case creation response Error: ${response.body}`);
-                            transition = 'failure';
-                        }
-                    }
-                    logger.info(`[Transition]: ${transition}`);
-                    logger.info(`-------------------------------------------------------------------------------------------------------------`);
-                    logger.info(`- [END] Case Creation                                                                                       -`);
-                    logger.info(`-------------------------------------------------------------------------------------------------------------`);
-                });
+                    const requestBody = JSON.stringify({
+                        'Description': trimmeddesc+',Fb Name: '+fullName +',fbid: '+fbId+',Channel Type: '+channelType,
+                        'Type':sName,
+                        'Status':'Open - Unassigned',
+                        'Origin':'Facebook',
+                        'RecordTypeId': recordTypeid,
+                        'Subject': subj,
+                        'PLDT_Case_Sub_Type__c': sMenu,
+                        'Customer_City__c': city
+                    });
+                    
+                    var options = globalProp.CaseCreation.API.CaseCreate.PostOptions(authBearer, requestBody);
+                    logger.debug(`Setting up the post option: ${JSON.stringify(options)}`);
+            
+                    logger.info(`Starting to invoke the request.`);
+                    request(options, function (errorMsg, response) {
+                        const instance = require("../../helpers/logger");
+                        const _logger = instance.logger(globalProp.Logger.Category.CaseCreation.CaseCreation);
+                        const logger = _logger.getLogger();
+                        logger.addContext("serviceNumber", svcNumber);
+                        if (errorMsg){
+                            logger.error(errorMsg);
+                        }else{
+                            if(response.statusCode > 200){
+                                logError(response, response.statusCode);
+                            }else {                                
+                                logger.info(`Invoking request successful.`);
+                                logger.debug(`Request success with Status Code: [${response.statusCode}]`);
+                                if(response.statusCode == 201){
+                                    logger.info(`Successful Case Creation: ${response.body}`);
+                                    transition = 'valid';
+                                }else{ 
+                                    logger.debug(`Case creation response Error: ${response.body}`);
+                                    transition = 'failure';
+                                }
+                            }
+                        }                        
+                    });
+                }
             }
+            logger.info(`[Transition]: ${transition}`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+            logger.info(`- [END] Case Creation                                                                                       -`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+
             _logger.shutdown();
             _emailLog.shutdown();
         

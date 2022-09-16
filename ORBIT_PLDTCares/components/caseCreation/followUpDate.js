@@ -25,26 +25,10 @@ module.exports = {
         const instance = require("../../helpers/logger");
         const _logger = instance.logger(globalProp.Logger.Category.CaseCreation.FollowUpDate);
         const logger = _logger.getLogger();
-        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);        
-        const emailLog = _emailLog.getLogger();
-
-        function logError(result, resultCode){
-            const strResult = JSON.stringify(result);
-            emailLog.addContext("apierrorcode", strResult);
-            emailLog.addContext("apierrormsg", resultCode);
-            const message = globalProp.Email.EmailFormat("No API", resultCode, strResult, svcNumber);
-
-            logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`);
-            emailLog.error(message);
-        }
 
         let transition = '';
 
         logger.addContext("serviceNumber", serviceNumber);
-        emailLog.addContext("subject", globalProp.Email.Subjects.CaseCreation.FollowUpDate);
-        emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
-        emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.CaseCreation.FollowupDate);
-        emailLog.addContext("usertelephonenumber", serviceNumber);
 
         logger.info(`-------------------------------------------------------------------------------------------------------------`);
         logger.info(`- [START] Follow Up Date                                                                                    -`);
@@ -102,7 +86,6 @@ module.exports = {
         logger.info(`-------------------------------------------------------------------------------------------------------------`);
 
         _logger.shutdown();
-        _emailLog.shutdown();
 
         conversation.transition(transition);
         done();
