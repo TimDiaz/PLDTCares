@@ -1,6 +1,6 @@
 "use strict";
 
-const component = require('../../components/caseCreation/caseCreation');
+const component = require('../../components/caseCreation/followupCase');
 const testing = require('@oracle/bots-node-sdk/testing');
 const customComponent = require('../helpers/invokeCustomComponent');
 

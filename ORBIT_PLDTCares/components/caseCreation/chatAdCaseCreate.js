@@ -195,7 +195,7 @@ module.exports = {
                         if (errorMsg){
                             logger.error(errorMsg);
                         }else{
-                            if(response.statusCode > 200){
+                            if(response.statusCode > 201){
                                 logError(response, response.statusCode);
                             } else{                            
                                 logger.info(`Invoking request successful.`);

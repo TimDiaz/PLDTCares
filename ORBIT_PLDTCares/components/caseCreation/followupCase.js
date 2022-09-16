@@ -144,7 +144,7 @@ module.exports = {
                         'Customer_City__c': city
                     });
                     
-                    var options = globalProp.FollowUpCase.API.FollowUpCase.PostOptions(authBearer, requestBody);
+                    var options = globalProp.FollowUpCase.API.CaseCreate.PostOptions(authBearer, requestBody);
                     logger.debug(`Setting up the post option: ${JSON.stringify(options)}`);
             
                     logger.info(`Starting to invoke the request.`);
@@ -157,7 +157,7 @@ module.exports = {
                             logger.error(errorMsg);
                             logError(errorMsg, errorMsg.code);
                         }else{
-                            if(response.statusCode > 200){
+                            if(response.statusCode > 201){
                                 logError(response, response.statusCode);
                             }else{                            
                                 logger.info(`Invoking request successful.`);
@@ -171,13 +171,14 @@ module.exports = {
                                 }
                             }
                         }
-                        logger.info(`[Transition]: ${transition}`);
-                        logger.info(`-------------------------------------------------------------------------------------------------------------`);
-                        logger.info(`- [END] Follow Up Case Creation                                                                                       -`);
-                        logger.info(`-------------------------------------------------------------------------------------------------------------`);
                     });
                 }
             }
+            logger.info(`[Transition]: ${transition}`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+            logger.info(`- [END] Case Creation                                                                                       -`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+
             _logger.shutdown();
             _emailLog.shutdown();
         

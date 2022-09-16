@@ -89,7 +89,7 @@ module.exports = {
         _logger.shutdown();
 
         conversation.transition(transition);
-        // done();
+        done();
     }
 };
 

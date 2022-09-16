@@ -1,6 +1,6 @@
 "use strict";
 
-const component = require('../../components/caseCreation/followUpDate');
+const component = require('../../components/caseCreation/paymentDate');
 const testing = require('@oracle/bots-node-sdk/testing');
 const customComponent = require('../helpers/invokeCustomComponent');
 
@@ -24,7 +24,7 @@ let param_exist = testing.MockRequest(
 
 async function Run() {
     // await customComponent.invoke("CheckWaitTime", param_notexist, component);
-    await customComponent.invoke("FollowUpDate", param_exist, component);
+    await customComponent.invoke("PaymentDate", param_exist, component);
 };
 
 Run();
