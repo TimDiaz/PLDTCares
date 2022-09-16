@@ -8,6 +8,10 @@ const config = {
     NumberServiceabilityPARAM: "numberServiceabilityPARAM.DEV",
     ValidateAccountNumberFormat: "validateaccountnumberformat.DEV",
     ValidateServiceNumberFormat: "validateServiceNumberFormat.DEV",
+    BillingServices: {
+        Autobal: "autobal.DEV",
+        Autoesoa: "autoesoa.DEV"
+    },
     FMgetFTDetails:  { 
         CheckSType: "checkStype.DEV",
         FMInternet: "fmInternet.DEV",

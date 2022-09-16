@@ -6,6 +6,8 @@ const accountEligibilityConfig = require('../configurations/components/tsEligibi
 const numberServiceabilityConfig = require('../configurations/components/numberServiceability_config');
 const validateAccountNumberFormatConfig = require('../configurations/components/validateAccountNumberFormat_config');
 const validateServiceNumberFormatConfig = require('../configurations/components/validateServiceNumberFormat_config');
+const autobalConfig = require('../configurations/components/autobal_config');
+const autoesoaConfig = require('../configurations/components/autoesoa_config');
 const fmGetFTDetailsConfig = require('../configurations/components/fmGetFTDetails_config');
 
 module.exports = {    
@@ -17,5 +19,9 @@ module.exports = {
     NumberServiceability: numberServiceabilityConfig,
     ValidateAccountNumberFormat: validateAccountNumberFormatConfig,
     ValidateServiceNumberFormat: validateServiceNumberFormatConfig,
+    BillingServices: {
+        Autobal: autobalConfig,
+        Autoesoa: autoesoaConfig
+    },
     FMGetFTDetails: fmGetFTDetailsConfig
 };

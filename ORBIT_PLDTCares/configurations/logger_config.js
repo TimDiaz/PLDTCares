@@ -23,6 +23,10 @@ const bcpLogging = {
         AccountEligibility: { 
             TSEligibility: "orbit_dev-accounteligibility-TSEligibility"
         },
+        BillingServices:{
+            Autobal: "orbit_dev-autobal-Autobal",
+            Autoesoa: "orbit_dev-autoesoa-Autoesoa"
+        },
         FMgetFTDetails: {
             CheckSType: 'orbit_dev-fmgetftdetails-CheckSType',
             FMInternet: 'orbit_dev-fmgetftdetails-FMInternet',
@@ -83,10 +87,16 @@ module.exports = {
         ValidateAccountNumberFormat: 'ValidateAccountNumberFormat',
         ValidateServiceNumberFormat: 'ValidateServiceNumberFormat',
         NumberServiceabilityParam: 'NumberServiceabilityParam',
+<<<<<<< HEAD
         FMGetFTDetail: {
             CheckStype: 'FMGetFTDetail_CheckStype',
             FMInternet: 'FMGetFTDetail_FMInternet',
             FMLandline: 'FMGetFTDetail_FMLandline',
+=======
+        BillingServices: {
+            Autobal: "Autobalance",
+            Autoesoa: "AutoESOA"
+>>>>>>> Billing-Services
         }
     }
 }
