@@ -133,26 +133,7 @@ module.exports = {
 
         request(options, function (error, response) {
             if (error) {                
-                const errorreplaced = JSON.stringify(error).replace('http://', '');
-
-                if (error.statusCode === 500 || error.statusCode === 404)
-                {
-                    console.log("response error raw 500 || 404",JSON.stringify(error));
-                    logger.debug("response error raw 500 || 404",JSON.stringify(error));
-                    //UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR500", reportedBy, errorreplaced);
-                    conversation.transition('500');
-                    done();        
-                }
-                else{
-                    //  conversation.reply({ text: 'OOPS, Error Happened! Contact Administrator.'});
-                    console.log("response error raw else on 500 || 404",JSON.stringify(error));
-                    logger.debug("response error raw else on 500 || 404",JSON.stringify(error));
-                    //UpdateCreateFT(accntNumber, serviceNumber, sysDate, "FAILURE", reportedBy, errorreplaced);
-                    conversation.transition('FAILURE');
-                    done();
-                }
-                
-                //sendEmail(errorreplaced, error.code, accntNumber, serviceNumber)
+                logError(error, error.code);
             }
             else{
                 var result = response;
@@ -214,7 +195,7 @@ module.exports = {
                         //done();
                         transition = 'FAILURE';
                     }
-                    
+                    logError(result, result.statusCode);
                    // sendEmail(responseStr, result.statusCode, accntNumber, serviceNumber)
                 }
                 else{

@@ -78,7 +78,6 @@ module.exports = {
 
         let transition = 'failure';
 
-		var mobileSdk = conversation.mobileSdk;
         var description = conversation.properties().description;
         var empeId = conversation.properties().empeId;
         var faultType = conversation.properties().faultType;
@@ -126,14 +125,7 @@ module.exports = {
         request(options, function (error, response) {
             if (error)
             {
-                if (error.statusCode === 500)
-                {
-                    transition = '500';
-                }
-                else {
-                    transition = 'FAILURE';
-                }
-               // sendEmail(errorreplaced, error.code, accntNumber, serviceNumber)
+                logError(error, error.code);
             }
             else
             {
@@ -159,14 +151,14 @@ module.exports = {
                             transition = 'FAILURE';
                         }           
                     }
-                    else if (error.statusCode === 500)
+                    else if (response.statusCode === 500)
                     {
                         transition = '500';
                     }
                     else {
                         transition = 'FAILURE';
                     }
-                    //sendEmail(errorreplaced, response.statusCode, accntNumber, serviceNumber)
+                    logError(response, response.statusCode);
                 }
                 else{
                     conversation.variable('spielMsg', JSONRes.spiel);
