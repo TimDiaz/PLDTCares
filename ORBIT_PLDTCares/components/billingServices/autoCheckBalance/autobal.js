@@ -104,9 +104,13 @@ module.exports = {
 
         //FUSE API
 
-        var options = globalProp.Autobal.API.CheckBalance.GetOptions(svcNum);
+        var options = globalProp.BillingServices.Autobal.API.CheckBalance.GetOptions(svcNum);
         logger.debug(`Setting up the post option for API Token: ${JSON.stringify(options)}`);
         request(options, function (errorFuse, responseFused) {
+          instance = require("../../../helpers/logger");
+          _logger = instance.logger(globalProp.Logger.Category.BillingServices.Autobal);
+          logger = _logger.getLogger();
+          logger.addContext("serviceNumber", svcNum);
 
           if (errorFuse) {
             transition = 'fuseDown'; //500 return
