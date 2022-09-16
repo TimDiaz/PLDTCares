@@ -1,9 +1,11 @@
 "use strict";
 const componentName = require('../../configurations/component_config');
+
 module.exports = {
 
-    metadata: () => ({
-            name: componentName.TicketCreation,
+    metadata: function metadata() {
+        return {
+            name: componentName.TicketCreationProm,
              properties: {
 				description: {
                     type: "string",
@@ -32,16 +34,34 @@ module.exports = {
   				serviceNumber: {
                     type: "string",
                     required: true
+                },
+                promSubType: {
+                    type: "string",
+                    required: false
+                },
+                promWorgName: {
+                    type: "string",
+                    required: false
+                },
+                promCategory: {
+                    type: "string",
+                    required: false
+                },
+                promSubCategory: {
+                    type: "string",
+                    required: false
                 }
             }, 
             supportedActions: ['SUCCESS','FAILURE','500']
-    }),
+        };
+    },
 
     invoke: (conversation, done) => {
+
         const request = require('request');
         const globalProp = require('../../helpers/globalProperties');
         const instance = require("../../helpers/logger");
-        const _logger = instance.logger(globalProp.Logger.Category.TicketCreation.TicketCreation);
+        const _logger = instance.logger(globalProp.Logger.Category.TicketCreation.ticketProm);
         const logger = _logger.getLogger();
         const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);        
         const emailLog = _emailLog.getLogger();
@@ -58,6 +78,7 @@ module.exports = {
 
         let transition = 'failure';
 
+		var mobileSdk = conversation.mobileSdk;
         var description = conversation.properties().description;
         var empeId = conversation.properties().empeId;
         var faultType = conversation.properties().faultType;
@@ -65,19 +86,22 @@ module.exports = {
         var promCause = conversation.properties().promCause;
         var reportedBy = conversation.properties().reportedBy;
         var serviceNumber = conversation.properties().serviceNumber;
-       // var accntNumber = conversation.properties().accntNum;
+        var promSubType = conversation.properties().promSubType;
+        var promWorgName = conversation.properties().promWorgName;
+        var promCategory = conversation.properties().promCategory;  
+        var promSubCategory = conversation.properties().promSubCategory;  
+        var accntNumber = conversation.properties().accntNum;
 
         logger.addContext("serviceNumber", serviceNumber);
-        emailLog.addContext("subject", globalProp.Email.Subjects.TicketCreation.TicketCreation);
+        emailLog.addContext("subject", globalProp.Email.Subjects.TicketCreation.TicketProm);
         emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
-        emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.TicketCreation.TicketCreation);
+        emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.TicketCreation.TicketProm);
         emailLog.addContext("usertelephonenumber", serviceNumber);
-        emailLog.addContext("useraccountnumber", '');
+        emailLog.addContext("useraccountnumber", accntNumber);
 
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
         logger.info(`- [START] Ticket Creation                                                                                   -`)
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
-
         const requestBody = JSON.stringify({
             "description": description,
             "empeId": empeId,
@@ -85,81 +109,69 @@ module.exports = {
             "priority": priority,
             "promCause": promCause,
             "reportedBy": reportedBy,
-            "telephoneNumber": serviceNumber
+            "telephoneNumber": serviceNumber,
+            "promSubType": promSubType,
+            "promWorgName": promWorgName,
+            "promCategory": promCategory,
+            "promSubCategory": promSubCategory
         });
 
-        logger.debug(`Setting up the request body: ${requestBody}`);
+    logger.debug(`Setting up the request body: ${requestBody}`);
 
-        const options = globalProp.TicketCreation.API.Validate.PostOptions(requestBody);
-        logger.debug(`Setting up the post option: ${JSON.stringify(options)}`);
+    const options = globalProp.TicketCreation.API.Validate.PostOptions(requestBody);
+    logger.debug(`Setting up the post option: ${JSON.stringify(options)}`);
 
-        logger.info(`Starting to invoke the request.`)
-
+    logger.info(`Starting to invoke the request.`)
+    
         request(options, function (error, response) {
-            if (error){                
+            if (error)
+            {
                 if (error.statusCode === 500)
                 {
-                    //conversation.transition('500');
                     transition = '500';
-                    //done();
                 }
                 else {
-                    //  conversation.reply({ text: 'OOPS, Error Happened! Contact Administrator.'});
-                    //conversation.transition('FAILURE');
                     transition = 'FAILURE';
-                    //done();
                 }
-                logError(error, error.code);
+               // sendEmail(errorreplaced, error.code, accntNumber, serviceNumber)
             }
-            else{
-                var result = response;
-                var createRes = result.body;
-                logger.debug(createRes);
-                //var JSONRes = JSON.parse(createRes);
-                var JSONRes = createRes;
-                if (result.statusCode > 200){      
-                    if (result.statusCode === 406)
+            else
+            {
+                var createRes = response.body;
+                var JSONRes = JSON.parse(createRes);
+
+                if (response.statusCode > 200){              
+                    if (response.statusCode === 406)
                     {
                         if (JSONRes.spiel)
                         {
                             console.log('Spiel is not null');
-                            logger.debug('Speil is not null');
+                            logger.debug('Spiel is not null');
                             conversation.variable('spielMsg', JSONRes.spiel);
-                            //conversation.transition('FAILURE'); 
-                            transition = 'FAILURE';  
-                            //done();                     
+                            logger.debug('Spiel is not null');
+                            transition = 'FAILURE';
                         }
                         else
                         {
                             console.log('Spiel is null');
-                            logger.debug('Speil is null');
+                            logger.debug('Spiel is null');
                             conversation.variable('spielMsg', JSONRes.message);
-                            //conversation.transition('FAILURE');
                             transition = 'FAILURE';
-                            //done();
-                        }
+                        }           
                     }
-                    else if (result.statusCode === 500)
+                    else if (error.statusCode === 500)
                     {
-                        //conversation.transition('500');
                         transition = '500';
-                        //done();
                     }
                     else {
-                        //  conversation.reply({ text: 'OOPS, Error Happened! Contact Administrator.'});
-                        //conversation.transition('FAILURE');
                         transition = 'FAILURE';
-                        //done();
                     }
-                    logError(response.body, response.statusCode);
+                    //sendEmail(errorreplaced, response.statusCode, accntNumber, serviceNumber)
                 }
                 else{
-                    console.log("spielMsg reply to Chat= " , JSONRes.spiel); //OMH logger of success spiel    
-                    conversation.variable('spielMsg', JSONRes.spiel);    
-                    conversation.variable('ticketNumber', JSONRes.ticketNumber);                    
-                    //conversation.transition('SUCCESS');
+                    conversation.variable('spielMsg', JSONRes.spiel);
+                    conversation.variable('ticketNumber', JSONRes.ticketNumber);          
                     transition = 'SUCCESS';
-                    //done();
                 }
             }
             logger.info(`[Transition]: ${transition}`);
@@ -169,8 +181,7 @@ module.exports = {
 
             _logger.shutdown();
             _emailLog.shutdown();            
-            conversation.transition(transition);
-            //done();
+            conversation.transition(transition);               
         });
     }
 };
