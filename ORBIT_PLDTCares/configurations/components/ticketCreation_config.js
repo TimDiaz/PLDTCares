@@ -1,4 +1,4 @@
-const apiBaseConfig = require('../apiBase_config');
+const baseConfig = require('../base_config');
 
 module.exports = {
     API:{
@@ -7,14 +7,24 @@ module.exports = {
             PostOptions: (body) => {
                 return {
                     'method': 'POST',
-                    'url': `${apiBaseConfig.BaseUrl}askpldt-api/customers/tickets`,
+                    'url': `${baseConfig.BaseUrl}askpldt-api/customers/tickets`,
                     'headers': {
                         'Content-Type': 'application/json',
-                        'Cookie': apiBaseConfig.Cookie
+                        'Cookie': baseConfig.Cookie
                     },                
                     body: body
                 }
             }            
+        },
+        UpdateCreateFt: {
+            URL: `${baseConfig.ChatBotBaseUrl}:7744/updateCreaeteFT`,
+            PostOptions: (body) => {
+                return {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                }
+            }
         }
     }
 }

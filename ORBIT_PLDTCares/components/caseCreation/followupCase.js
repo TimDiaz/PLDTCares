@@ -102,14 +102,8 @@ module.exports = {
         logger.info(`-------------------------------------------------------------------------------------------------------------`);
         logger.info(`- [START] Follow Up Case Creation                                                                           -`);
         logger.info(`-------------------------------------------------------------------------------------------------------------`);
-        const requestForm = {
-            'grant_type': 'password',
-            'client_id': '3MVG9Po2PmyYruunIZR7z32Xb6OjYmP20KzxAmsKiRsY5FzXdjH9ItJPz_B6FPlv960i9bYRWZv2_K3FWhYiI',
-            'client_secret': '75AEBC8492B1D346F45CD5D5E1E94248A2CD0FF8DA1B3B042F39DD901351241A',
-            'username': 'cemsa@pldt.com.ph.cembuat',
-            'password': 'C3M!mpL3m3nt@t!0nF0rTh3W!nWXYk1VdD1RJXlfbvxu1Z8vsW7'
-        }
-        var tokenOptions = globalProp.FollowUpCase.API.Token.PostOptions(requestForm);
+
+        var tokenOptions = globalProp.FollowUpCase.API.Token.PostOptions();
         logger.debug(`Setting up the post option for API Token: ${JSON.stringify(tokenOptions)}`);
         
         logger.info(`Starting to invoke the request for API Token.`);

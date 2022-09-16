@@ -1,4 +1,4 @@
-// const apiBaseConfig = require('../apiBase_config');
+const baseConfig = require('../base_config');
 
 module.exports = {
     API:{
@@ -7,12 +7,18 @@ module.exports = {
             PostOptions: (form) => {
                 return {
                     'method': 'POST',
-                    'url': 'https://cs113.salesforce.com/services/oauth2/token', // `${apiBaseConfig.BaseUrl}pldthome/api/serviceability/number/serviceable`
+                    'url': `${baseConfig.CaseCreation.ChatAdCaseCreate.TokenBase.Url}services/oauth2/token`,
                     'headers': {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'Cookie': 'BrowserId=jcVbrq-ZEeqouVkQxnpvMg' //apiBaseConfig.Cookie
+                        'Cookie': baseConfig.CaseCreation.ChatAdCaseCreate.TokenBase.Cookie
                     },
-                    form: form
+                    form: {
+                        'grant_type': baseConfig.CaseCreation.ChatAdCaseCreate.TokenBase.Auth.GrantType,
+                        'client_id': baseConfig.CaseCreation.ChatAdCaseCreate.TokenBase.Auth.ClientID,
+                        'client_secret': baseConfig.CaseCreation.ChatAdCaseCreate.TokenBase.Auth.ClientSecret,
+                        'username': baseConfig.CaseCreation.ChatAdCaseCreate.TokenBase.Auth.Username,
+                        'password': baseConfig.CaseCreation.ChatAdCaseCreate.TokenBase.Auth.Password
+                    }
                 }
             },
         },
@@ -21,11 +27,11 @@ module.exports = {
             PostOptions: (authBearer, body) => {
                 return {
                     'method': 'POST',
-                    'url': 'https://cs113.salesforce.com/services/data/v49.0/sobjects/Case', // `${apiBaseConfig.BaseUrl}pldthome/api/serviceability/number/serviceable`
+                    'url': `${baseConfig.CaseCreation.ChatAdCaseCreate.Base.Url}services/data/v49.0/sobjects/Case`,
                     'headers': {
                         'Authorization': authBearer,
                         'Content-Type': 'application/json',
-                        'Cookie': 'BrowserId=ZqvYw6VWEeqHszXxYFuXmA' //apiBaseConfig.Cookie
+                        'Cookie': baseConfig.CaseCreation.ChatAdCaseCreate.Base.Cookie
                     },
                     body: body
                 }

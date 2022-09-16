@@ -1,108 +1,63 @@
-"use strict";
+'use strict';
 
-const { NumberServiceability } = require("../helpers/globalProperties");
-const { TicketCreation } = require("./component_config");
+const baseConfig = require('./base_config');
 
-//******************************************************************************************************************************//
-// [START] DEVELOPMENT CONFIGURATION                                                                                            //
-// NOTE: Uncomment this for development deployment                                                                              //
-//******************************************************************************************************************************//
-const hostName = 'staging.chatbot171.pldthome.com';
+const environment = baseConfig.Environment.toLowerCase();
 const wssLogger = {
     Protocol: 'wss',
-    URL: hostName,
+    URL: baseConfig.ChatBotBaseUrl.replace(/(^\w+:|^)\/\//, ''),
     Port: 5000
 };
 
 const bcpLogging = {
-    URL: `https://${hostName}:7745/bcplogginginsert`,
+    URL: `${baseConfig.ChatBotBaseUrl}:7745/bcplogginginsert`,
     AppNames: {
-        AccountValidation: "orbit_dev-accountvalidation",
-        EmailValidation: "orbit_dev-emailvalidation",
-        MobileValidation: "orbit_dev-mobilevalidation",
+        AccountValidation: `orbit_${environment}-accountvalidation`,
+        EmailValidation: `orbit_${environment}-emailvalidation`,
+        MobileValidation: `orbit_${environment}-mobilevalidation`,
         NumberServiceability:{
-            Param: "orbit_dev-numberserviceability-Param",
-            Region: "orbit_dev-numberserviceability-Region",
-            Technology: "orbit_dev-numberserviceability-Techonology"
+            Param: `orbit_${environment}-numberserviceability-Param`,
+            Region: `orbit_${environment}-numberserviceability-Region`,
+            Technology: `orbit_${environment}-numberserviceability-Techonology`
         },
         AccountEligibility: { 
-            TSEligibility: "orbit_dev-accounteligibility-TSEligibility"
+            TSEligibility: `orbit_${environment}-accounteligibility-TSEligibility`
         },
         CaseCreation:{
-            CaseCreation: "orbit_dev-casecreation-CaseCreation",
-            ChatAdCaseCreate: "orbit_dev-casecreation-ChatAdCaseCreate",
-            CheckWaitTime: "orbit_dev-casecreation-CheckWaitTime",
-            FollowupCase: "orbit_dev-casecreation-FollowupCase",
-            FollowupDate: "orbit_dev-casecreation-FollowupDate",
-            PaymentDate: "orbit_dev-casecreation-PaymentDate"
+            CaseCreation: `orbit_${environment}-casecreation-CaseCreation`,
+            ChatAdCaseCreate: `orbit_${environment}-casecreation-ChatAdCaseCreate`,
+            CheckWaitTime: `orbit_${environment}-casecreation-CheckWaitTime`,
+            FollowupCase: `orbit_${environment}-casecreation-FollowupCase`,
+            FollowupDate: `orbit_${environment}-casecreation-FollowupDate`,
+            PaymentDate: `orbit_${environment}-casecreation-PaymentDate`
         },
         TicketCreation:{
-           TicketCreation: "orbit_dev-ticketCreation",
-           TicketCreationCreateFt: "orbit_dev-ticketcreationft",
-           TicketProm: "orbit_dev-ticketProm" 
+           TicketCreation: `orbit_${environment}-ticketCreation`,
+           TicketCreationCreateFt: `orbit_${environment}-ticketcreationft`,
+           TicketProm: `orbit_${environment}-ticketProm` 
         },
         BSMP:{
-            BSMPWhitelistChecker: "orbit_dev-bsmpwhitelistchecker",
-            BSMPChecker: "orbit_dev-bsmpchecker"
+            BSMPWhitelistChecker: `orbit_${environment}-bsmpwhitelistchecker`,
+            BSMPChecker: `orbit_${environment}-bsmpchecker`
          },
         BillingServices:{
-            Autobal: "orbit_dev-autobal-Autobal",
-            Autoesoa: "orbit_dev-autoesoa-Autoesoa"
+            Autobal: `orbit_${environment}-autobal-Autobal`,
+            Autoesoa: `orbit_${environment}-autoesoa-Autoesoa`
         },
         FMgetFTDetails: {
-            CheckSType: 'orbit_dev-fmgetftdetails-CheckSType',
-            FMInternet: 'orbit_dev-fmgetftdetails-FMInternet',
-            FMLandline: 'orbit_dev-fmgetftdetails-FMLandline'
+            CheckSType: `orbit_${environment}-fmgetftdetails-CheckSType`,
+            FMInternet: `orbit_${environment}-fmgetftdetails-FMInternet`,
+            FMLandline: `orbit_${environment}-fmgetftdetails-FMLandline`
         }
     },
 }
-//******************************************************************************************************************************//
-// [END] DEVELOPMENT CONFIGURATION                                                                                              //
-//******************************************************************************************************************************//
-
-//******************************************************************************************************************************//
-// [START] PRODUCTION CONFIGURATION                                                                                             //
-// NOTE: Uncomment this for production deployment                                                                               //
-//******************************************************************************************************************************//
-// const hostName = 'chatbot171.pldthome.com';
-// const wssLogger = {
-//     Protocol: 'wss',
-//     URL: hostName,
-//     Port: 5000
-// };
-
-// const bcpLogging = {
-//     URL: 'https://${hostName}:7745/bcplogginginsert',
-//     AppNames: {
-//         AccountValidation: "orbit_prod-accountvalidation",
-//         NumberServiceability:{
-//             Param: "orbit_prod-numberserviceability-Param",
-//             Region: "orbit_prod-numberserviceability-Region",
-//             Technology: "orbit_prod-numberserviceability-Techonology"
-//         },
-//         AccountEligibility: { 
-//             TSEligibility: "orbit_dev-accounteligibility-TSEligibility"
-//         },
-//         CaseCreation:{
-//             CaseCreation: "orbit_dev-casecreation-CaseCreation",
-//             ChatAdCaseCreate: "orbit_dev-casecreation-ChatAdCaseCreate",
-//             CheckWaitTime: "orbit_dev-casecreation-CheckWaitTime",
-//             FollowupCase: "orbit_dev-casecreation-FollowupCase",
-//             FollowupDate: "orbit_dev-casecreation-FollowupDate",
-//             PaymentDate: "orbit_dev-casecreation-PaymentDate"
-//         }
-//     },
-// }
-//******************************************************************************************************************************//
-// [END] PRODUCTION CONFIGURATION                                                                                               //
-//******************************************************************************************************************************//
 
 module.exports = {     
     WSSLogger: wssLogger,
     BCPLogging: bcpLogging,
     Layout: {
-        type: "pattern",
-        pattern: "[%x{dateTime}] [%p] [%c] %m",
+        type: 'pattern',
+        pattern: '[%x{dateTime}] [%p] [%c] %m',
         tokens: {
             dateTime: function(logEvent) {
                 return moment.tz(Date.now(), 'Asia/Manila').format('MM-DD-YYYY hh:mm:ss.SSS A');
@@ -122,8 +77,8 @@ module.exports = {
             FMLandline: 'FMGetFTDetail_FMLandline',
         },
         BillingServices: {
-            Autobal: "Autobalance",
-            Autoesoa: "AutoESOA"
+            Autobal: 'Autobalance',
+            Autoesoa: 'AutoESOA'
         },
         ValidateEmailFormat: 'ValidateEmailFormat',
         ValidateMobileFormat: 'ValidateMobileFormat',

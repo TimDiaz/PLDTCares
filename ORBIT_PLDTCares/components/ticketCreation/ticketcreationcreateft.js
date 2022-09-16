@@ -64,7 +64,7 @@ module.exports = {
     },
 
     invoke: (conversation, done) => {
-
+        const fetch = require('node-fetch');
         const request = require('request');
         const globalProp = require('../../helpers/globalProperties');
         const instance = require("../../helpers/logger");
@@ -81,6 +81,18 @@ module.exports = {
 
             logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`)
             emailLog.error(message);
+        }
+
+        function UpdateCreateFT(aaccNumberinit, telNumberinit, smpStartTsinit, ticketnumber, reportedBy, responseBody){
+            var options = globalProp.TicketCreation.API.UpdateCreateFt.PostOptions({ 
+                "AccountNumber" : aaccNumberinit, 
+                "TelephoneNumber": telNumberinit, 
+                "smpTS": smpStartTsinit, 
+                "TicketNumberCreateFT": ticketnumber,
+                "ReportedBY": reportedBy,
+                "ResponseBody": responseBody
+            });            
+            fetch(globalProp.TicketCreation.API.UpdateCreateFt.URL, options );
         }
 
         let transition = 'failure';
@@ -156,7 +168,7 @@ module.exports = {
                         if (createRes.spiel)
                         {
                             // var spiel406 = JSON.stringify(createRes.spiel).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,'');
-                            //UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR406", reportedBy, responseStr);
+                            UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR406", reportedBy, responseStr);
                             console.log('Spiel is not null: ' + spiel406);
                             logger.debug('Spiel is not null: ' + spiel406);
                             conversation.variable('spielMsg', spiel406);
@@ -167,7 +179,7 @@ module.exports = {
                         else
                         {
                             // var msg406 = JSON.stringify(createRes.message).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,'');
-                            //UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR406", reportedBy, responseStr);
+                            UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR406", reportedBy, responseStr);
                             console.log('Spiel is not null: ' + spiel406);
                             logger.debug('Spiel is not null: ' + spiel406);
                             conversation.variable('spielMsg', msg406);
@@ -181,7 +193,7 @@ module.exports = {
                     {
                         console.log("response error raw 500 || 404",JSON.stringify(result));
                         logger.debug("response error raw 500 || 404",JSON.stringify(result));
-                        //UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR500", reportedBy, responseStr);
+                        UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR500", reportedBy, responseStr);
                         //conversation.transition('500');
                         //done();        
                         transition = '500';
@@ -190,7 +202,7 @@ module.exports = {
                         //  conversation.reply({ text: 'OOPS, Error Happened! Contact Administrator.'});
                         console.log("response error raw else on 500 || 404",JSON.stringify(result));
                         logger.debug("response error raw else on 500 || 404",JSON.stringify(result));
-                        //UpdateCreateFT(accntNumber, serviceNumber, sysDate, "FAILURE", reportedBy, responseStr);
+                        UpdateCreateFT(accntNumber, serviceNumber, sysDate, "FAILURE", reportedBy, responseStr);
                         //conversation.transition('FAILURE');
                         //done();
                         transition = 'FAILURE';
@@ -208,10 +220,10 @@ module.exports = {
                     
                     if(tcktNum == null){
                         var tcktNumData = JSON.stringify(result);
-                        //UpdateCreateFT(accntNumber, serviceNumber, sysDate, tcktNumData, reportedBy, responseStr);
+                        UpdateCreateFT(accntNumber, serviceNumber, sysDate, tcktNumData, reportedBy, responseStr);
                     }else{
                         var tcktNumData = tcktNum;
-                        //UpdateCreateFT(accntNumber, serviceNumber, sysDate, tcktNumData, reportedBy, responseStr);
+                        UpdateCreateFT(accntNumber, serviceNumber, sysDate, tcktNumData, reportedBy, responseStr);
                     }
 
                     console.log("raw result FLY = " , result);

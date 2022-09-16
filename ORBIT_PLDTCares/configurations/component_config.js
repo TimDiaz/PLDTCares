@@ -1,67 +1,34 @@
-//******************************************************************************************************************************//
-// [START] DEVELOPMENT CONFIGURATION                                                                                            //
-// NOTE: Uncomment this for development deployment                                                                              //
-//******************************************************************************************************************************//
+const baseConfig = require('./base_config');
 const config = {
-    AccountValidation: "accountValidation.DEV",
-    TSEligibility: "tseligibility.DEV",
-    NumberServiceabilityPARAM: "numberServiceabilityPARAM.DEV",
-    NumberServiceabilityRegion: "numberServiceabilityRegion.DEV",
-    NumberServiceabilityTechnology: "numberServiceabilityTechnology.DEV",
-    ValidateAccountNumberFormat: "validateaccountnumberformat.DEV",
-    ValidateServiceNumberFormat: "validateServiceNumberFormat.DEV",
-    CaseCreation: "casecreation.DEV",
-    ChatAdCaseCreate: "chatadcasecreate.DEV",
-    CheckWaitTime: "checkwaittime.DEV",
-    FollowUpCase: "followupcase.DEV",
-    FollowUpDate: "followupdate.DEV",
-    PaymentDate: "paymentdate.DEV",
-    ValidateEmailFormat: "validateEmailFormat.DEV",
-    ValidateMobileFormat: "validateMobileFormat.DEV",
-    TicketCreation: "ticketCreation.DEV",
-    TicketCreationFT: "ticketCreationFT.DEV",
-    TicketCreationProm: "ticketProm.DEV",
-    BSMPWhiteList: "BSMPWhitelistChecker.DEV"
+    AccountValidation: `accountValidation.${baseConfig.Environment}`,
+    TSEligibility: `tseligibility.${baseConfig.Environment}`,
+    NumberServiceabilityPARAM: `numberServiceabilityPARAM.${baseConfig.Environment}`,
+    NumberServiceabilityRegion: `numberServiceabilityRegion.${baseConfig.Environment}`,
+    NumberServiceabilityTechnology: `numberServiceabilityTechnology.${baseConfig.Environment}`,
+    ValidateAccountNumberFormat: `validateaccountnumberformat.${baseConfig.Environment}`,
+    ValidateServiceNumberFormat: `validateServiceNumberFormat.${baseConfig.Environment}`,
+    CaseCreation: `casecreation.${baseConfig.Environment}`,
+    ChatAdCaseCreate: `chatadcasecreate.${baseConfig.Environment}`,
+    CheckWaitTime: `checkwaittime.${baseConfig.Environment}`,
+    FollowUpCase: `followupcase.${baseConfig.Environment}`,
+    FollowUpDate: `followupdate.${baseConfig.Environment}`,
+    PaymentDate: `paymentdate.${baseConfig.Environment}`,
+    ValidateEmailFormat: `validateEmailFormat.${baseConfig.Environment}`,
+    ValidateMobileFormat: `validateMobileFormat.${baseConfig.Environment}`,
+    TicketCreation: `ticketCreation.${baseConfig.Environment}`,
+    TicketCreationFT: `ticketCreationFT.${baseConfig.Environment}`,
+    TicketCreationProm: `ticketProm.${baseConfig.Environment}`,
+    BSMPWhiteList: `BSMPWhitelistChecker.${baseConfig.Environment}`
 ,
     BillingServices: {
-        Autobal: "autobal.DEV",
-        Autoesoa: "autoesoa.DEV"
+        Autobal: `autobal.${baseConfig.Environment}`,
+        Autoesoa: `autoesoa.${baseConfig.Environment}`
     },
     FMgetFTDetails:  { 
-        CheckSType: "checkStype.DEV",
-        FMInternet: "fmInternet.DEV",
-        FMLandline: "fmLandline.DEV"
+        CheckSType: `checkStype.${baseConfig.Environment}`,
+        FMInternet: `fmInternet.${baseConfig.Environment}`,
+        FMLandline: `fmLandline.${baseConfig.Environment}`
     }
 }
-//******************************************************************************************************************************//
-// [END] DEVELOPMENT CONFIGURATION                                                                                              //
-//******************************************************************************************************************************//
-
-//******************************************************************************************************************************//
-// [START] PRODUCTION CONFIGURATION                                                                                             //
-// NOTE: Uncomment this for production deployment                                                                               //
-//******************************************************************************************************************************//
-// const config = {
-    // AccountValidation: "accountValidation.PROD",
-    // TSEligibility: "tseligibility.PROD",
-    // NumberServiceabilityPARAM: "numberServiceabilityPARAM.PROD",
-    // NumberServiceabilityRegion: "numberServiceabilityRegion.PROD",
-    // NumberServiceabilityTechnology: "numberServiceabilityTechnology.PROD",
-    // ValidateAccountNumberFormat: "validateaccountnumberformat.PROD",
-    // ValidateServiceNumberFormat: "validateServiceNumberFormat.PROD",
-//     CaseCreation: "casecreation.PROD",
-//     ChatAdCaseCreate: "chatadcasecreate.PROD",
-//     CheckWaitTime: "checkwaittime.PROD",
-//     FollowUpCase: "followupcase.PROD",
-//     FollowUpDate: "followupdate.PROD",
-//     PaymentDate: "paymentdate.PROD",
-    // TicketCreation: "ticketCreation.PROD",
-    // TicketCreationFT: "ticketCreationFT.PROD",
-    // TicketCreationProm: "ticketProm.PROD"
-
-// }
-//******************************************************************************************************************************//
-// [END] PRODUCTION CONFIGURATION                                                                                               //
-//******************************************************************************************************************************//
 
 module.exports = config;

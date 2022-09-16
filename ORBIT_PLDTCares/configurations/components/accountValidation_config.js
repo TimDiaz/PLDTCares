@@ -1,4 +1,4 @@
-const apiBaseConfig = require('../apiBase_config');
+const baseConfig = require('../base_config');
 
 module.exports = {
     API:{
@@ -7,11 +7,11 @@ module.exports = {
             PostOptions: (body) => {
                 return {
                     'method': 'POST',
-                    'url': `${apiBaseConfig.BaseUrl}amdocs/api/account/validate`,
+                    'url': `${baseConfig.BaseUrl}amdocs/api/account/validate`,
                     'headers': {
                         'Content-Type': 'application/json',
-                        'X-Pldt-Auth-Token': apiBaseConfig.AuthToken,
-                        'Cookie': apiBaseConfig.Cookie
+                        'X-Pldt-Auth-Token': baseConfig.AuthToken,
+                        'Cookie': baseConfig.Cookie
                     },                
                     body: body
                 }

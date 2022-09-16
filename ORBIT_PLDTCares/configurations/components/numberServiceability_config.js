@@ -1,4 +1,4 @@
-const apiBaseConfig = require('../apiBase_config');
+const baseConfig = require('../base_config');
 
 module.exports = {
     API:{
@@ -7,10 +7,10 @@ module.exports = {
             PostOptions: (body) => {
                 return {
                     'method': 'POST',
-                    'url': `${apiBaseConfig.BaseUrl}pldthome/api/serviceability/number/serviceable`,
+                    'url': `${baseConfig.BaseUrl}pldthome/api/serviceability/number/serviceable`,
                     'headers': {
                         'Content-Type': 'application/json',
-                        'Cookie': apiBaseConfig.Cookie
+                        'Cookie': baseConfig.Cookie
                     },                
                     body: body
                 }

@@ -1,4 +1,4 @@
-const apiBaseConfig = require('../configurations/apiBase_config');
+const baseConfig = require('../configurations/base_config');
 const loggerConfig = require('../configurations/logger_config');
 const emailConfig = require('../configurations/email_config');
 const accountValidationConfig = require('../configurations/components/accountValidation_config');
@@ -16,7 +16,7 @@ const fmGetFTDetailsConfig = require('../configurations/components/fmGetFTDetail
 const validateEmailFormatConfig = require('../configurations/components/validateEmailFormat_config');
 const ticketCreationConfig = require('../configurations/components/ticketCreation_config');
 module.exports = {    
-    APIBaseOption: apiBaseConfig,
+    APIBaseOption: baseConfig,
     Logger: loggerConfig,
     Email:emailConfig,
     AccountValidation: accountValidationConfig,

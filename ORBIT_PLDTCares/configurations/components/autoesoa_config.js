@@ -1,4 +1,4 @@
-const apiBaseConfig = require('../apiBase_config');
+const baseConfig = require('../base_config');
 
 module.exports = {
     API:{
@@ -7,10 +7,10 @@ module.exports = {
             GetOptions: (svcNum, numMon) => {
                 return {
                     'method': 'GET',
-                    'url': `${apiBaseConfig.BaseUrl}amdocs/api/sendeSOA/${svcNum}/${numMon}`,
+                    'url': `${baseConfig.BaseUrl}amdocs/api/sendeSOA/${svcNum}/${numMon}`,
                     'headers': {
-                        'X-Pldt-Auth-Token': apiBaseConfig.AuthToken,
-                        'Cookie': apiBaseConfig.Cookie
+                        'X-Pldt-Auth-Token': baseConfig.AuthToken,
+                        'Cookie': baseConfig.Cookie
                     }
                 }
             },

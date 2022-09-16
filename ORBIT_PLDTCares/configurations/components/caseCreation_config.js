@@ -1,18 +1,24 @@
-// const apiBaseConfig = require('../apiBase_config');
+const baseConfig = require('../base_config');
 
 module.exports = {
     API:{
         Token: {
             Name: "CaseCreationToken", 
-            PostOptions: (form) => {
+            PostOptions: () => {
                 return {
                     'method': 'POST',
-                    'url': 'https://d7f000000zntyuaq--cembuat.sandbox.my.salesforce.com/services/oauth2/token', // `${apiBaseConfig.BaseUrl}pldthome/api/serviceability/number/serviceable`
+                    'url': `${baseConfig.CaseCreation.CaseCreation.TokenBase.Url}services/oauth2/token`, 
                     'headers': {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'Cookie': 'BrowserId=0j2qkLkkEeuCpWlqoQQsiQ; BrowserId_sec=0j2qkLkkEeuCpWlqoQQsiQ; CookieConsentPolicy=0:0' //apiBaseConfig.Cookie
+                        'Cookie': baseConfig.CaseCreation.CaseCreation.TokenBase.Cookie
                     },
-                    form: form
+                    form: {
+                        'grant_type': baseConfig.CaseCreation.CaseCreation.TokenBase.Auth.GrantType,
+                        'client_id': baseConfig.CaseCreation.CaseCreation.TokenBase.Auth.ClientID,
+                        'client_secret': baseConfig.CaseCreation.CaseCreation.TokenBase.Auth.ClientSecret,
+                        'username': baseConfig.CaseCreation.CaseCreation.TokenBase.Auth.Username,
+                        'password': baseConfig.CaseCreation.CaseCreation.TokenBase.Auth.Password
+                    }
                 }
             },
         },
@@ -21,11 +27,11 @@ module.exports = {
             PostOptions: (authBearer, body) => {
                 return {
                     'method': 'POST',
-                    'url': 'https://d7f000000zntyuaq--cembuat.sandbox.my.salesforce.com/services/data/v53.0/sobjects/Case', // `${apiBaseConfig.BaseUrl}pldthome/api/serviceability/number/serviceable`
+                    'url': `${baseConfig.CaseCreation.CaseCreation.Base.Url}/services/data/v53.0/sobjects/Case`,
                     'headers': {
                         'Authorization': authBearer,
                         'Content-Type': 'application/json',
-                        'Cookie': 'BrowserId=FvkqxQMYEe2P-E_vN5gJcw; CookieConsentPolicy=0:1; LSKey-c$CookieConsentPolicy=0:1' //apiBaseConfig.Cookie
+                        'Cookie': baseConfig.CaseCreation.CaseCreation.Base.Cookie
                     },
                     body: body
                 }

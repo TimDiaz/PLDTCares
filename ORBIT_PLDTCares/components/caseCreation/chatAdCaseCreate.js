@@ -143,14 +143,7 @@ module.exports = {
         const ChatADIDDetails = JSON.stringify(obj);
         logger.info(`data: ${ChatADIDDetails}`);
 
-        const requestForm = {
-            'grant_type': 'password',
-            'client_id': '3MVG9pcaEGrGRoTJDdjdj5oKEFWyh48yIre125qba0yzhMRPCowd1Tq5O_i1cFcIEgN0GOZ46iruHeWRsumi9',
-            'client_secret': 'C15FF3AC2B5E648A50402A9560F23C89EEE56258CDF8184C118F706A2DDEE183',
-            'username': 'timothy.diaz@nttdata.com.chatv2',
-            'password': 'P@THw0rd@123456'
-        }
-        var tokenOptions = globalProp.ChatAdCaseCreate.API.ChatAdToken.PostOptions(requestForm);
+        var tokenOptions = globalProp.ChatAdCaseCreate.API.ChatAdToken.PostOptions();
         logger.debug(`Setting up the post option for API Token: ${JSON.stringify(tokenOptions)}`);
         
         

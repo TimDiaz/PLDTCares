@@ -1,4 +1,4 @@
-const apiBaseConfig = require('../apiBase_config');
+const baseConfig = require('../base_config');
 
 module.exports = {
     API: {
@@ -7,11 +7,11 @@ module.exports = {
             GetOptions: (acctNum) => {
                 return {
                     'method': 'GET',
-                    'url': 'https://www.pldt.com.ph/mobility/pldthome/api/smartbridge/PLDTKenan/PLDTKenanService.svc/rest/GetAccountBalance/' + acctNum + '/0',
+                    'url': `${baseConfig.Kenan.BaseUrl}pldthome/api/smartbridge/PLDTKenan/PLDTKenanService.svc/rest/GetAccountBalance/${acctNum}/0`,
                     'headers': {
-                        'X-Pldt-Auth-Token': 'RiHdHENVs9wA9G10oNj04pz56lJOblywY2o0wCjRmJO3/J2OS4uBvhFQXYjqO/cKuJbbsZrAOvyxwBI8MNcRipdbt/bVKMVWnQnStE9SfD9uNiLrfthEAKy/t4SpaTe9Qqcy5PZPKJeE/5i4Kz7//paTHDOAe/kf1OPbQHupnL3WPDUBisNFSPQwunZf7+4vfuauUko1oBmJep0GOYA00A==',
-                        'X-Pldt-Client-Id': '12046',
-                        'Cookie': 'incap_ses_968_2106196=k+LkZ+luin6U5YkMHgdvDRCSfmAAAAAAKN0i1QCVImxn/VGiR25H+g==; ASP.NET_SessionId=u2q1wt0ohrtsjciqm3lpvi5t; BIGipServerFuse_api_pool_8080=3893700618.36895.0000; BIGipServerMobileITPool=2048859658.16415.0000; NSC_Q_WT_QMEUjVIXTC*8097=ffffffff09734f3545525d5f4f58455e445a4a422991'
+                        'X-Pldt-Auth-Token': baseConfig.Kenan.AuthToken,
+                        'X-Pldt-Client-Id': baseConfig.Kenan.ClientID,
+                        'Cookie': baseConfig.Kenan.Cookie
                     }
                 }
             },
@@ -21,12 +21,12 @@ module.exports = {
             GetOptions: (svcNum) => {
                 return {
                     'method': 'GET',
-                    'url': `${apiBaseConfig.BaseUrl}amdocs/api/autocheckbalance/${svcNum}`,
+                    'url': `${baseConfig.BaseUrl}amdocs/api/autocheckbalance/${svcNum}`,
                     'headers': {
-                        'X-Pldt-Auth-Token': apiBaseConfig.AuthToken,
+                        'X-Pldt-Auth-Token': baseConfig.AuthToken,
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
-                        'Cookie': apiBaseConfig.Cookie
+                        'Cookie': baseConfig.Cookie
                     }
                 }
             },
