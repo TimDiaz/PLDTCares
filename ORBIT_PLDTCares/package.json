@@ -1,6 +1,6 @@
 {
-  "name": "projectorbit",
-  "version": "1.0.1",
+  "name": "ORBIT_PLDTCares_DEV",
+  "version": "1.0.0",
   "description": "Oracle Digital Assistant Component Package",
   "main": "main.js",
   "scripts": {
@@ -19,6 +19,7 @@
     "mocha": "^10.0.0",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.34",
+    "node-fetch": "^3.2.10",
     "nodejs-websocket": "^1.7.2",
     "nodemailer": "^6.7.8",
     "request": "^2.88.2",
@@ -29,6 +30,19 @@
     "express": "^4.17.1"
   },
   "bundledDependencies": [
+    "@log4js-node/smtp",
+    "chai",
+    "log4js",
+    "mocha",
+    "moment",
+    "moment-timezone",
+    "node-fetch",
+    "nodejs-websocket",
+    "nodemailer",
+    "request",
+    "save-dev"
+  ],
+  "bundleDependencies": [
     "@log4js-node/smtp",
     "chai",
     "log4js",

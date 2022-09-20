@@ -17,9 +17,9 @@ module.exports = {
         const request = require('request');
         const globalProp = require('../../helpers/globalProperties');
         const instance = require("../../helpers/logger");
-        const _logger = instance.logger(globalProp.Logger.Category.NumberServiceabilityParam);
+        const _logger = instance.logger(globalProp.Logger.Category.NumberServiceability.NumberServiceabilityParam);
         const logger = _logger.getLogger();
-        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);        
+        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);
         const emailLog = _emailLog.getLogger();
 
         function logError(result, resultCode) {
@@ -39,7 +39,7 @@ module.exports = {
         var telephone = "";
         var accountNumber = "No Data";
         logger.addContext("serviceNumber", serviceNumber)
-        emailLog.addContext("subject", globalProp.Email.Subjects.NumberServiceabilityParam);
+        emailLog.addContext("subject", globalProp.Email.Subjects.NumberServiceability.NumServiceabilityParam);
         emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
         emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.NumberServiceability.Param);
         emailLog.addContext("usertelephonenumber", serviceNumber);
@@ -87,13 +87,12 @@ module.exports = {
             else {
                 logger.info(`Request success with Response Code: [${response.statusCode}]`);
                 var responseBody = response.body;
-                
+
                 if (response.statusCode > 200) {
                     var statCode = response.statusCode;
                     logError(responseBody, statCode);
                     transition = 'failure';
-                    switch(statCode)
-                    {
+                    switch (statCode) {
                         case 504: case 406: case 500: case 404: case 408: case 400:
                             conversation.variable('errorCode', statCode);
                             break;
@@ -111,7 +110,7 @@ module.exports = {
                     logger.debug(`City: [${paramcity}].`);
                     logger.debug(`Full City: [${fullcity}].`);
 
-                    if (JSONRes.EXCEPTIONMSG !== null || JSONRes.EXCEPTIONMSG !== undefined || JSONRes.EXCEPTIONMSG !== '') {
+                    if (JSONRes.EXCEPTIONMSG !== "") {
                         transition = 'blank';
                         switch (JSONRes.EXCEPTIONMSG) {
                             case "100|TELEPHONE NUMBER DOES NOT EXIST":
@@ -125,26 +124,36 @@ module.exports = {
                         }
                     }
                     else {
-                        if (paramcity === null || paramcity === undefined || paramcity === '') {
+                        if (paramcity === null) {
                             conversation.variable('PARAM3', fullcity);
                             transition = 'blank';
                         }
-                        else if (paramcity !== null || paramcity !== undefined || paramcity !== ''){
-                            switch(paramcity)
-                            {
-                                case "VALENZUELA CITY":
-                                    conversation.variable('PARAM3', fullcity);
-                                    transition = 'param3';
-                                    break;
-                                default:
-                                    conversation.variable('PARAM3', fullcity);
-                                    transition = 'VipZone';
-                                    break;
+                        else if (paramcity !== "") {
+                            if ((paramcity === "CALAMBA CITY" && param1 === "CLA") ||
+                                (paramcity === "DASMARINAS CITY" && param1 === "CVE") ||
+                                (paramcity === "QUEZON CITY" && param1 === "QCY") ||
+                                (paramcity === "ANGELES CITY" && param1 === "SFP") ||
+                                (paramcity === "MANDAUE CITY" && param1 === "MDE") ||
+                                (paramcity === "TALISAY CITY" && param1 === "JNE") ||
+                                (paramcity === "CEBU CITY" && param1 === "MDE")) {
+                                conversation.variable('PARAM3', fullcity);
+                                transition = 'VipZone';
+
+                            }
+                            else if  (paramcity === "VALENZUELA CITY"){
+                            conversation.variable('PARAM3', fullcity);
+                            transition = 'param3';
+                            }
+                            else {
+
+                                conversation.variable('PARAM3', fullcity);
+
+                                transition = 'blank';
                             }
                         }
-                        else{
+                        else {
                             conversation.variable('neType', "NULL NE TYPE");
-                            conversation.variable('PARAM3',fullcity);
+                            conversation.variable('PARAM3', fullcity);
                             transition = 'blank';
                             console.log(" GET PARAM Component , blank argument service number:" + serviceNumber, "PARAM3: ", fullcity);
                         }
@@ -159,7 +168,7 @@ module.exports = {
             _emailLog.shutdown();
 
             conversation.transition(transition);
-            done();
+            //done();
         });
     }
 };

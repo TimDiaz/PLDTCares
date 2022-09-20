@@ -6,7 +6,7 @@ class Eligibility_BussinessLogic {
         this.globalProp = prop
     }
 
-    LogError(result, resultCode, serviceNumber) {
+    EmailLogError(result, resultCode, serviceNumber) {
         const strResult = JSON.stringify(result);
         this.emailLog.addContext("apierrorcode", strResult);
         this.emailLog.addContext("apierrormsg", resultCode);

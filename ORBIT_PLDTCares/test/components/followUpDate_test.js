@@ -1,6 +1,6 @@
 "use strict";
 
-const component = require('../../components/numberServiceability/param');
+const component = require('../../components/caseCreation/followUpDate');
 const testing = require('@oracle/bots-node-sdk/testing');
 const customComponent = require('../helpers/invokeCustomComponent');
 
@@ -9,7 +9,7 @@ let param_notexist = testing.MockRequest(
     {},
     //properties
     {
-        "serviceNumber": "0344320027"
+        "serviceNumber": "0333205890"
     }
 )
 let param_exist = testing.MockRequest(
@@ -17,14 +17,14 @@ let param_exist = testing.MockRequest(
     {},
     //properties
     {
-        "accountNumber": "0023087278",
-        "serviceNumber": "0344320027"
+        "serviceNumber": "0333205890",
+        "requestDate": "09/13/2022"
     }
 )
 
 async function Run() {
-     await customComponent.invoke("numberServiceabilityParam", param_notexist, component);
-    //await customComponent.invoke("numberServiceabilityParam", param_exist, component);
+    // await customComponent.invoke("CheckWaitTime", param_notexist, component);
+    await customComponent.invoke("FollowUpDate", param_exist, component);
 };
 
 Run();

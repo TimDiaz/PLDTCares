@@ -1,6 +1,6 @@
 "use strict";
 
-const component = require('../../components/numberServiceability/param');
+const component = require('../../components/numberServiceability/getTechnology');
 const testing = require('@oracle/bots-node-sdk/testing');
 const customComponent = require('../helpers/invokeCustomComponent');
 
@@ -23,8 +23,8 @@ let param_exist = testing.MockRequest(
 )
 
 async function Run() {
-     await customComponent.invoke("numberServiceabilityParam", param_notexist, component);
-    //await customComponent.invoke("numberServiceabilityParam", param_exist, component);
+     await customComponent.invoke("numberServiceabilityTechnology", param_notexist, component);
+    //await customComponent.invoke("numberServiceabilityTechnology", param_exist, component);
 };
 
 Run();
