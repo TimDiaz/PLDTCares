@@ -1,6 +1,6 @@
 {
-  "name": "projectorbit",
-  "version": "1.0.1",
+  "name": "ORBIT_PLDTCares_DEV",
+  "version": "1.0.0",
   "description": "Oracle Digital Assistant Component Package",
   "main": "main.js",
   "scripts": {
@@ -36,6 +36,7 @@
     "mocha",
     "moment",
     "moment-timezone",
+    "node-fetch",
     "nodejs-websocket",
     "nodemailer",
     "request",
