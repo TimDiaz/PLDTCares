@@ -1,69 +1,63 @@
-"use strict";
+'use strict';
 
-//******************************************************************************************************************************//
-// [START] DEVELOPMENT CONFIGURATION                                                                                            //
-// NOTE: Uncomment this for development deployment                                                                              //
-//******************************************************************************************************************************//
-const hostName = 'staging.chatbot171.pldthome.com';
+const baseConfig = require('./base_config');
+
+const environment = baseConfig.Environment.toLowerCase();
 const wssLogger = {
     Protocol: 'wss',
-    URL: hostName,
+    URL: baseConfig.ChatBotBaseUrl.replace(/(^\w+:|^)\/\//, ''),
     Port: 5000
 };
 
 const bcpLogging = {
-    URL: `https://${hostName}:7745/bcplogginginsert`,
+    URL: `${baseConfig.ChatBotBaseUrl}:7745/bcplogginginsert`,
     AppNames: {
-        AccountValidation: "orbit_dev-accountvalidation",
+        AccountValidation: `orbit_${environment}-accountvalidation`,
+        EmailValidation: `orbit_${environment}-emailvalidation`,
+        MobileValidation: `orbit_${environment}-mobilevalidation`,
         NumberServiceability:{
-            Param: "orbit_dev-numberserviceability-Param",
-            Region: "orbit_dev-numberserviceability-Region",
-            Technology: "orbit_dev-numberserviceability-Techonology"
+            Param: `orbit_${environment}-numberserviceability-Param`,
+            Region: `orbit_${environment}-numberserviceability-Region`,
+            Technology: `orbit_${environment}-numberserviceability-Techonology`
         },
         AccountEligibility: { 
-            TSEligibility: "orbit_dev-accounteligibility-TSEligibility"
+            TSEligibility: `orbit_${environment}-accounteligibility-TSEligibility`
+        },
+        CaseCreation:{
+            CaseCreation: `orbit_${environment}-casecreation-CaseCreation`,
+            ChatAdCaseCreate: `orbit_${environment}-casecreation-ChatAdCaseCreate`,
+            CheckWaitTime: `orbit_${environment}-casecreation-CheckWaitTime`,
+            FollowupCase: `orbit_${environment}-casecreation-FollowupCase`,
+            FollowupDate: `orbit_${environment}-casecreation-FollowupDate`,
+            PaymentDate: `orbit_${environment}-casecreation-PaymentDate`
+        },
+        TicketCreation:{
+           TicketCreation: `orbit_${environment}-ticketCreation`,
+           TicketCreationCreateFt: `orbit_${environment}-ticketcreationft`,
+           TicketProm: `orbit_${environment}-ticketProm` 
+        },
+        BSMP:{
+            BSMPWhitelistChecker: `orbit_${environment}-bsmpwhitelistchecker`,
+            BSMPChecker: `orbit_${environment}-bsmpchecker`
+         },
+        BillingServices:{
+            Autobal: `orbit_${environment}-autobal-Autobal`,
+            Autoesoa: `orbit_${environment}-autoesoa-Autoesoa`
+        },
+        FMgetFTDetails: {
+            CheckSType: `orbit_${environment}-fmgetftdetails-CheckSType`,
+            FMInternet: `orbit_${environment}-fmgetftdetails-FMInternet`,
+            FMLandline: `orbit_${environment}-fmgetftdetails-FMLandline`
         }
     },
 }
-//******************************************************************************************************************************//
-// [END] DEVELOPMENT CONFIGURATION                                                                                              //
-//******************************************************************************************************************************//
-
-//******************************************************************************************************************************//
-// [START] PRODUCTION CONFIGURATION                                                                                             //
-// NOTE: Uncomment this for production deployment                                                                               //
-//******************************************************************************************************************************//
-// const hostName = 'chatbot171.pldthome.com';
-// const wssLogger = {
-//     Protocol: 'wss',
-//     URL: hostName,
-//     Port: 5000
-// };
-
-// const bcpLogging = {
-//     URL: 'https://${hostName}:7745/bcplogginginsert',
-//     AppNames: {
-//         AccountValidation: "orbit_prod-accountvalidation",
-//         NumberServiceability:{
-//             Param: "orbit_prod-numberserviceability-Param",
-//             Region: "orbit_prod-numberserviceability-Region",
-//             Technology: "orbit_prod-numberserviceability-Techonology"
-//         },
-//         AccountEligibility: { 
-//             TSEligibility: "orbit_dev-accounteligibility-TSEligibility"
-//         }
-//     },
-// }
-//******************************************************************************************************************************//
-// [END] PRODUCTION CONFIGURATION                                                                                               //
-//******************************************************************************************************************************//
 
 module.exports = {     
     WSSLogger: wssLogger,
     BCPLogging: bcpLogging,
     Layout: {
-        type: "pattern",
-        pattern: "[%x{dateTime}] [%p] [%c] %m",
+        type: 'pattern',
+        pattern: '[%x{dateTime}] [%p] [%c] %m',
         tokens: {
             dateTime: function(logEvent) {
                 return moment.tz(Date.now(), 'Asia/Manila').format('MM-DD-YYYY hh:mm:ss.SSS A');
@@ -77,6 +71,35 @@ module.exports = {
         AccountEligibility: 'AccountEligibility',
         ValidateAccountNumberFormat: 'ValidateAccountNumberFormat',
         ValidateServiceNumberFormat: 'ValidateServiceNumberFormat',
-        NumberServiceabilityParam: 'NumberServiceabilityParam'
+        FMGetFTDetail: {
+            CheckStype: 'FMGetFTDetail_CheckStype',
+            FMInternet: 'FMGetFTDetail_FMInternet',
+            FMLandline: 'FMGetFTDetail_FMLandline',
+        },
+        BillingServices: {
+            Autobal: 'Autobalance',
+            Autoesoa: 'AutoESOA'
+        },
+        ValidateEmailFormat: 'ValidateEmailFormat',
+        ValidateMobileFormat: 'ValidateMobileFormat',
+        NumberServiceability: {
+            NumberServiceabilityParam:'NumberServiceabilityParam',
+            NumberServiceabilityRegion:'NumberServiceabilityRegion',
+            NumberServiceabilityTechnology:'NumberServiceabilityTechnology'},
+        TicketCreation: {
+            TicketCreation:'TicketCreation',
+            ticketcreationcreateft:'ticketcreationcreateft',
+            ticketProm:'ticketProm'},
+        BSMP: {
+            BSMPWhitelistChecker:'BSMPWhitelistChecker',
+            BSMPChecker:'BSMPChecker'},
+        NumberServiceabilityParam: 'NumberServiceabilityParam',
+        CaseCreation: {
+            CaseCreation: 'CaseCreation', 
+            ChatAdCaseCreate: 'ChatAdCaseCreate', 
+            CheckWaitTime: 'CheckWaitTime', 
+            FollowUpCase: 'FollowUpCase', 
+            FollowUpDate: 'FollowUpDate', 
+            PaymentDate: 'PaymentDate'},
     }
 }

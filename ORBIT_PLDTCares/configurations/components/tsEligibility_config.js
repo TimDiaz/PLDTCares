@@ -1,4 +1,4 @@
-const apiBaseConfig = require('../apiBase_config');
+const baseConfig = require('../base_config');
 
 module.exports = {
     API: {
@@ -6,11 +6,11 @@ module.exports = {
         GetOptions: (serviceNumber) => {
             return {
                 'method': 'GET',
-                'url': `${apiBaseConfig.BaseUrl}amdocs/api/account/eligibility/${serviceNumber}`,
+                'url': `${baseConfig.BaseUrl}amdocs/api/account/eligibility/${serviceNumber}`,
                 'headers': {
                     'Content-Type': 'application/json',
-                    'X-Pldt-Auth-Token': apiBaseConfig.AuthToken,
-                    'Cookie': apiBaseConfig.Cookie,
+                    'X-Pldt-Auth-Token': baseConfig.AuthToken,
+                    'Cookie': baseConfig.Cookie,
                     'Accept': 'application/json',
                 }
             }

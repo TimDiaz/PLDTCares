@@ -3,9 +3,13 @@
 const componentName = require('../../../configurations/component_config');
 module.exports = {
     metadata: () => ({
-        name: componentName.ValidateServiceNumberFormat, //"checkservnumberformat",
+        name: componentName.ValidateServiceNumberFormat, //"checkserviceRequestNumberformat",
         properties: {
             serviceNumber: {
+                type: "string",
+                required: true
+            },
+            serviceRequestNumber: {
                 type: "string",
                 required: true
             }
@@ -22,18 +26,19 @@ module.exports = {
         let keepTurn = true;
         let transition = "invalidservformat";
 
-        var servNumber = conversation.properties().serviceNumber;
-        logger.addContext("serviceNumber", servNumber)
+        var serviceNumber = conversation.properties().serviceNumber;
+        var serviceRequestNumber = conversation.properties().serviceRequestNumber;
+        logger.addContext("serviceNumber", serviceNumber)
 
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
         logger.info(`- [START] Validate Service Number Format                                                                    -`)
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`Service Number: [${servNumber}]`);
+        logger.info(`Service Number: [${serviceRequestNumber}]`);
 
-        var resChkStr = servNumber.match(globalProp.ValidateServiceNumberFormat.Regex.ServiceNumberFormat);
+        var resChkStr = serviceRequestNumber.match(globalProp.ValidateServiceNumberFormat.Regex.ServiceNumberFormat);
         if (resChkStr === null) {
             logger.info(`[Valid] Service Number is numeric`);
-            if (servNumber.length == 10) {
+            if (serviceRequestNumber.length == 10) {
                 logger.info(`[Valid] Service Number lenght is 10.`);
                 transition = 'validservformat';
             }
