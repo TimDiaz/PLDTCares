@@ -19,7 +19,8 @@ const config = {
     TicketCreation: `ticketCreation.${baseConfig.Environment}`,
     TicketCreationFT: `ticketCreationFT.${baseConfig.Environment}`,
     TicketCreationProm: `ticketProm.${baseConfig.Environment}`,
-    BSMPWhiteList: `BSMPWhitelistChecker.${baseConfig.Environment}`
+    BSMPWhiteList: `BSMPWhitelistChecker.${baseConfig.Environment}`,
+    BSMPChecker: `BSMPChecker.${baseConfig.Environment}`
 ,
     BillingServices: {
         Autobal: `autobal.${baseConfig.Environment}`,
