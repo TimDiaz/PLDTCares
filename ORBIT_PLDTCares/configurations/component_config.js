@@ -7,6 +7,7 @@ const config = {
     NumberServiceabilityTechnology: `numberServiceabilityTechnology.${baseConfig.Environment}`,
     ValidateAccountNumberFormat: `validateaccountnumberformat.${baseConfig.Environment}`,
     ValidateServiceNumberFormat: `validateServiceNumberFormat.${baseConfig.Environment}`,
+    ValidateServiceRequestNumberFormat: `validateServiceRequestNumberFormat.${baseConfig.Environment}`,
     CaseCreation: `casecreation.${baseConfig.Environment}`,
     ChatAdCaseCreate: `chatadcasecreate.${baseConfig.Environment}`,
     CheckWaitTime: `checkwaittime.${baseConfig.Environment}`,

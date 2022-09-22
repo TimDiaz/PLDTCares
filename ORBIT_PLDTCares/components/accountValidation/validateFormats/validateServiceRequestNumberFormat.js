@@ -3,11 +3,15 @@
 const componentName = require('../../../configurations/component_config');
 module.exports = {
     metadata: () => ({
-        name: componentName.ValidateServiceNumberFormat, //"checkserviceNumberformat",
+        name: componentName.ValidateServiceRequestNumberFormat, //"checkserviceRequestNumberformat",
         properties: {
             serviceNumber: {
                 type: "string",
                 required: true
+            },
+            serviceRequestNumber: {
+                type: "string",
+                required: false
             }
         },
         supportedActions: ['validservformat', 'invalidservformat', 'failure']
@@ -23,17 +27,18 @@ module.exports = {
         let transition = "invalidservformat";
 
         var serviceNumber = conversation.properties().serviceNumber;
+        var serviceRequestNumber = conversation.properties().serviceRequestNumber;
         logger.addContext("serviceNumber", serviceNumber)
 
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`- [START] Validate Service Number Format                                                                    -`)
+        logger.info(`- [START] Validate Service Request Number Format                                                                    -`)
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`Service Number: [${serviceNumber}]`);
+        logger.info(`Service Number: [${serviceRequestNumber}]`);
 
-        var resChkStr = serviceNumber.match(globalProp.ValidateServiceNumberFormat.Regex.ServiceNumberFormat);
+        var resChkStr = serviceRequestNumber.match(globalProp.ValidateServiceNumberFormat.Regex.ServiceNumberFormat);
         if (resChkStr === null) {
             logger.info(`[Valid] Service Number is numeric`);
-            if (serviceNumber.length == 10) {
+            if (serviceRequestNumber.length == 10) {
                 logger.info(`[Valid] Service Number lenght is 10.`);
                 transition = 'validservformat';
             }
@@ -47,7 +52,7 @@ module.exports = {
             transition = 'invalidservformat';
         }
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`- [END] Validate Service Number Format                                                                      -`)
+        logger.info(`- [END] Validate Service Request Number Format                                                                      -`)
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
 
         _logger.shutdown();
