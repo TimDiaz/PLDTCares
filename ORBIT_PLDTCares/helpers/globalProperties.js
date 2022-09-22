@@ -15,6 +15,7 @@ const autoesoaConfig = require('../configurations/components/autoesoa_config');
 const fmGetFTDetailsConfig = require('../configurations/components/fmGetFTDetails_config');
 const validateEmailFormatConfig = require('../configurations/components/validateEmailFormat_config');
 const ticketCreationConfig = require('../configurations/components/ticketCreation_config');
+const bsmpCheckerConfig = require('../configurations/components/bsmpChecker_config');
 module.exports = {    
     APIBaseOption: baseConfig,
     Logger: loggerConfig,
@@ -34,5 +35,6 @@ module.exports = {
         Autobal: autobalConfig,
         Autoesoa: autoesoaConfig
     },
-    FMGetFTDetails: fmGetFTDetailsConfig
+    FMGetFTDetails: fmGetFTDetailsConfig,
+    BSMPChecker: bsmpCheckerConfig
 };

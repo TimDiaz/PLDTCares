@@ -1,27 +1,5 @@
 "use strict";
 const componentName = require('../../configurations/component_config');
-function UpdateRedirectType(aaccNumberinit, telNumberinit, smpStartTsinit, smpRedirectTypeinit){
-    var data1 = { "AccountNumber" : aaccNumberinit, "TelephoneNumber": telNumberinit, "smpTS": smpStartTsinit, "smpRedirectType": smpRedirectTypeinit};
-    var options = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data1),
-    };
-    
-    fetch('https://chatbot171.pldthome.com:7744/updateRedirectData', options ); //tim 05052022 changed to smart domain
-}
-
-function UpdateReturnSpiel(aaccNumberinit, telNumberinit, smpStartTsinit, smpSpielMarker){
-    var data1 = { "AccountNumber" : aaccNumberinit, "TelephoneNumber": telNumberinit, "smpTS": smpStartTsinit, "smpSpielMarker": smpSpielMarker};
-    var options = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data1),
-    };
-    
-    fetch('https://chatbot171.pldthome.com:7744/spielreturned54321', options ); //tim 05052022 changed to smart domain
-}
-
 module.exports = {
     metadata: function metadata() {
         return {
@@ -58,14 +36,30 @@ module.exports = {
          var  lscodevalid1 = /^(2)[0-9]{8}$/;
          var  lscodevalid2 = /^(404)[1-9][0-9]*$/;
 
+         function UpdateRedirectType(aaccNumberinit, telNumberinit, smpStartTsinit, smpRedirectTypeinit){
+            var data1 = { "AccountNumber" : aaccNumberinit, "TelephoneNumber": telNumberinit, "smpTS": smpStartTsinit, "smpRedirectType": smpRedirectTypeinit};
+            var options = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data1),
+            };
+            
+            fetch(globalProp.BSMPChecker.API.UpdateRedirectTypeUrl, options ); //tim 05052022 changed to smart domain
+        }
+        
+        function UpdateReturnSpiel(aaccNumberinit, telNumberinit, smpStartTsinit, smpSpielMarker){
+            var data1 = { "AccountNumber" : aaccNumberinit, "TelephoneNumber": telNumberinit, "smpTS": smpStartTsinit, "smpSpielMarker": smpSpielMarker};
+            var options = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data1),
+            };
+            
+            fetch(globalProp.BSMPChecker.API.UpdateReturnSpielUrl, options ); //tim 05052022 changed to smart domain
+        }
+
         var request = require('request');
-        var options = {
-          'method': 'GET',
-          'url': 'https://chatbot171.pldthome.com:7744/fetchSMPData/'+ telNumber + '/' + smpStartTs,
-          'headers': {
-                'Content-Type': 'text/plain'
-          }
-        };
+        var options =globalProp.BSMPChecker.API.GetOptions(telNumber, smpStartTs);
 
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
         logger.info(`- [START] SMP Whitelisting Checker                                                                          -`)
