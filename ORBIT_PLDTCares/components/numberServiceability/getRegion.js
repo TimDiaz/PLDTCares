@@ -46,7 +46,7 @@ module.exports = {
         var telephone = "";
         var accountNumber = "No Data";
         logger.addContext("serviceNumber", serviceNumber)
-        emailLog.addContext("subject", globalProp.Email.Subjects.NumberServiceability.NumServiceabilityRegion);
+        emailLog.addContext("subject", globalProp.Email.Subjects.NumberServiceability.Region);
         emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
         emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.NumberServiceability.Region);
         emailLog.addContext("usertelephonenumber", serviceNumber);
