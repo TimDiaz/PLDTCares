@@ -1,26 +1,24 @@
 "use strict";
 const componentName = require('../../configurations/component_config');
 module.exports = {
-    metadata: function metadata() {
-        return {
-            name: componentName.BSMPChecker,
-            properties: {
-                Mobile: {
-                    type: "string",
-                    required: false
-                },
-                accountNumber: {
-                    type: "string",
-                    required: false
-                },
-                sysDate: {
-                    type: "string",
-                    required: false
-                },
+    metadata: () => ({
+        name: componentName.BSMPChecker,
+        properties: {
+            Mobile: {
+                type: "string",
+                required: false
             },
-            supportedActions: ['createft', 'directtoagent', 'nodata3', 'serverdown']
-        };
-    },
+            accountNumber: {
+                type: "string",
+                required: false
+            },
+            sysDate: {
+                type: "string",
+                required: false
+            },
+        },
+        supportedActions: ['createft', 'directtoagent', 'nodata3', 'serverdown']
+    }),
     invoke: (conversation, done) => {
         const globalProp = require('../../helpers/globalProperties');
         const instance = require("../../helpers/logger");
@@ -62,7 +60,7 @@ module.exports = {
         var options =globalProp.BSMPChecker.API.GetOptions(telNumber, smpStartTs);
 
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`- [START] SMP Whitelisting Checker                                                                          -`)
+        logger.info(`- [START] SMP Checker                                                                          -`)
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
         logger.info(`Service Number: [${telNumber}]`);
         request(options, function (error, response) {
@@ -1734,6 +1732,13 @@ module.exports = {
                     }
                 }, 11000);
             }
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [END] SMP Checker                                                                                         -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            _logger.shutdown();
+            conversation.transition(transition);
+            logger.debug(transition);
+            done();   
         });
     }
 
