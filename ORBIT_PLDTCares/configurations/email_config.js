@@ -5,7 +5,6 @@ module.exports = {
     Subjects: {
         AccountValidation: `[API Error] Account Validation ${baseConfig.Environment} - Subscriber Checking`,
         AccountEligibility: `[API Error] Account Eligibility ${baseConfig.Environment} - Existing Ticket Checking`,
-        NumberServiceabilityParam: `[API Error] NumberServiceability ${baseConfig.Environment} - VIP checking`,
         BillingServices:{
             Autobal: `[API Error] Check Auto Balance ${baseConfig.Environment} - Balance Checking`,
             Autoesoa: `[API Error] Check Auto Esoa ${baseConfig.Environment} - Bill Request Checking`
@@ -29,6 +28,11 @@ module.exports = {
             FollowUpCase: `[API Error] FollowUpCase ${baseConfig.Environment} - Case Creation for Tech`,
             FollowUpDate: `[API Error] FollowUpDate ${baseConfig.Environment} - Date validation`,
             PaymentDate: `[API Error] PaymentDate ${baseConfig.Environment} - Payment Date validation`},
+        NumberServiceability: {
+            Region: `[API Error] NumberServiceability  ${baseConfig.Environment} - Region Checking`,
+            Param: `[API Error] NumberServiceability  ${baseConfig.Environment} - Param Checking`,
+            Technology: `[API Error] NumberServiceability  ${baseConfig.Environment} - Technology Checking`,
+        }    
     },
     EmailFormat: (apiName, code, message, serviceNumber) => {
         const dateTimeNow = moment.tz(Date.now(), `Asia/Manila`).format(`MM-DD-YYYY hh:mm A`);

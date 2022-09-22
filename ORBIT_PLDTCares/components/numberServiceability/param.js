@@ -39,7 +39,7 @@ module.exports = {
         var telephone = "";
         var accountNumber = "No Data";
         logger.addContext("serviceNumber", serviceNumber)
-        emailLog.addContext("subject", globalProp.Email.Subjects.NumberServiceability.NumServiceabilityParam);
+        emailLog.addContext("subject", globalProp.Email.Subjects.NumberServiceability.Param);
         emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
         emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.NumberServiceability.Param);
         emailLog.addContext("usertelephonenumber", serviceNumber);
