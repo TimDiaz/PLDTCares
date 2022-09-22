@@ -68,7 +68,7 @@ module.exports = {
         //conversation.keepTurn(keepTurn);
         conversation.transition(transition);
         logger.debug(transition);
-        //done();    
+        done();    
     }
 
 };

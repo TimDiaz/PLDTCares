@@ -112,7 +112,7 @@ invoke: (conversation, done) => {
             _logger.shutdown();
             //conversation.keepTurn(keepTurn);
             conversation.transition(transition);
-            //done();         
+            done();         
     }
    
 };

@@ -11,7 +11,7 @@ module.exports = {
             },
             serviceRequestNumber: {
                 type: "string",
-                required: true
+                required: false
             }
         },
         supportedActions: ['validservformat', 'invalidservformat', 'failure']

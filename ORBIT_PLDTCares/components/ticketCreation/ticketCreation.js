@@ -154,7 +154,7 @@ module.exports = {
             _logger.shutdown();
             _emailLog.shutdown();            
             conversation.transition(transition);
-            //done();
+            done();
         });
     }
 };
