@@ -3,18 +3,16 @@
 const componentName = require('../../configurations/component_config');
 
 module.exports = {
-    metadata: function metadata() {
-        return {
-            name: componentName.NumberServiceabilityRegion,
-            properties: {
-                serviceNumber: {
-                    type: "string",
-                    required: true
-                }
-            },
-            supportedActions: ['LUZON', 'VIZMIN', 'METRO', 'blank', 'failure']
-        };
-    },
+    metadata: () => ({
+        name: componentName.NumberServiceabilityRegion,
+        properties: {
+            serviceNumber: {
+                type: "string",
+                required: true
+            }
+        },
+        supportedActions: ['LUZON', 'VIZMIN', 'METRO', 'blank', 'failure']
+    }),
 
     invoke: (conversation, done) => {
 
