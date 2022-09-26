@@ -69,8 +69,9 @@ module.exports = {
             if (error)
             {
                 console.log("directtoagent autoroute due to API gateway down:  " + error);
-                conversation.transition('directtoagent');
-                done();
+                //conversation.transition('directtoagent');
+                transition = 'directtoagent';
+                //done();
             }
             else {
                 var returnedValue = JSON.parse(response.body);
@@ -80,8 +81,9 @@ module.exports = {
                 var smpSpielMarker = returnedValue['smpSpielMarker'].toString();
                 if(JSON.stringify(returnedValue) == null || JSON.stringify(returnedValue) == 'undefined'){
                     console.log("this is the error: " + error);
-                    conversation.transition('serverdown');
-                    done();
+                    //conversation.transition('serverdown');
+                    transition = 'serverdown';
+                    //done();
                 }
                 setTimeout(() => {
                     if(smpStatus === "NODATA"){
