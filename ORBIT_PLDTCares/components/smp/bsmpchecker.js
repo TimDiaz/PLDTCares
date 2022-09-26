@@ -19,11 +19,13 @@ module.exports = {
         },
         supportedActions: ['createft', 'directtoagent', 'nodata3', 'serverdown']
     }),
+    
     invoke: (conversation, done) => {
         const globalProp = require('../../helpers/globalProperties');
         const instance = require("../../helpers/logger");
         const _logger = instance.logger(globalProp.Logger.Category.BSMP.BSMPChecker);
         const logger = _logger.getLogger();
+        const fetch = require('node-fetch');
 
         let transition = "failure";
 
@@ -62,7 +64,8 @@ module.exports = {
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
         logger.info(`- [START] SMP Checker                                                                          -`)
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`Service Number: [${telNumber}]`);
+        logger.info(`Service Number: [${telNumber}]`)
+        logger.info("request: " + options);
         request(options, function (error, response) {
             // if (error) throw new Error(error);
             if (error)
@@ -81,11 +84,13 @@ module.exports = {
                 }
                 else 
                 {
+
                 var returnedValue = JSON.parse(response.body);
                 var smpStatus = returnedValue['smpStatus'].toString();
                 var smpCounter = parseInt(returnedValue['smpCounter']);
                 var smpReturnSpiel = returnedValue['smpReturnSpiel'].toString();
                 var smpSpielMarker = returnedValue['smpSpielMarker'].toString();
+                logger.debug(smpStatus);
                 if(JSON.stringify(returnedValue) == null || JSON.stringify(returnedValue) == 'undefined'){
                     console.log("this is the error: " + error);
                     //conversation.transition('serverdown');
@@ -95,6 +100,7 @@ module.exports = {
                 setTimeout(() => {
                     if(smpStatus === "NODATA"){
                         console.log(smpReturnSpiel + " | " + smpSpielMarker);
+                        logger.debug("NODATA");
                         if(smpReturnSpiel == "SPIEL3" && smpSpielMarker != 'SpielReturn3'){
                             UpdateReturnSpiel(accNumber, telNumber, smpStartTs, "SpielReturn3");
                             UpdateRedirectType(accNumber, telNumber, smpStartTs, "directtoagent");
@@ -115,6 +121,7 @@ module.exports = {
                         }
                     }else if(smpStatus != "NODATA"){ // add status completed for extra validation
                         console.log("show data");
+                        logger.debug("show data");
                         conversation.variable('lscode', smpStatus);
                         if (smpStatus == "232")
                         {
@@ -153,6 +160,27 @@ module.exports = {
                             //done();
                             transition = 'createft';
                         }
+                        // else if (smpStatus == "Could not find the physical address for lineId 0285849326")
+                        // {
+                        //     UpdateRedirectType(accNumber, telNumber, smpStartTs, "createft");
+                        //     conversation.variable('desc', "MISSING MICRO-FILTER_UNBALANCED WIRING-IN_BAD SPLICES [LSCODE: 2132]"); 
+                        //     conversation.variable('fault_type', "RBG-CRT");
+                        //     conversation.variable('prom_cause', "100");
+                        //     conversation.variable('reported_by', "CHATBOT_LM");
+                        //     conversation.variable('empe_id', "MOBILEIT");
+                        //     conversation.variable('prom_worg_name', "IVRS");
+                        //     conversation.variable('prom_sub_type', "VD-NO VOICE AND DATA");
+                        //     conversation.variable('prom_category', "LAST MILE");
+                        //     conversation.variable('prom_sub_category', "FAILED SNR/LA/LONG LOOP - COPPER");
+                        //     conversation.variable('LScode', smpStatus); 
+                        //     conversation.variable('telnumber', telNumber);
+                        //     //conversation.transition('createft');
+                        //     //done();
+                        //     logger.debug("LS_CODE:" + smpStatus);
+                        //     transition = 'createft';
+                        //     console.log("test1234" + smpStatus);
+                        //     //console.log(transition);
+                        // }
                         else if (smpStatus == "10151")
                         {
                             UpdateRedirectType(accNumber, telNumber, smpStartTs, "createft");
@@ -1738,17 +1766,19 @@ module.exports = {
                         //conversation.transition('nodata3');
                         //done();
                         transition = 'nodata3'
+                        logger.debug("nodata3");
                     }
-                }, 11000);}
+                    logger.info(`-------------------------------------------------------------------------------------------------------------`)
+                    logger.info(`- [END] SMP Checker                                                                                         -`)
+                    logger.info(`-------------------------------------------------------------------------------------------------------------`)
+                    conversation.transition(transition);
+                    logger.debug(transition);
+                    _logger.shutdown();
+        
+                    //done();   
+                }, 1000);
             }
-            logger.info(`-------------------------------------------------------------------------------------------------------------`)
-            logger.info(`- [END] SMP Checker                                                                                         -`)
-            logger.info(`-------------------------------------------------------------------------------------------------------------`)
-            conversation.transition(transition);
-            logger.debug(transition);
-            _logger.shutdown();
-
-            //done();   
+            }
         });
     }
 
