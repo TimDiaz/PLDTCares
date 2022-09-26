@@ -36,6 +36,8 @@ module.exports = {
         var lscodevalid1 = /^(2)[0-9]{8}$/;
         var lscodevalid2 = /^(404)[1-9][0-9]*$/;
 
+        logger.addContext("serviceNumber", telNumber);
+
         function UpdateRedirectType(aaccNumberinit, telNumberinit, smpStartTsinit, smpRedirectTypeinit) {
             var data1 = { "AccountNumber": aaccNumberinit, "TelephoneNumber": telNumberinit, "smpTS": smpStartTsinit, "smpRedirectType": smpRedirectTypeinit };
             var options = {
@@ -1684,7 +1686,7 @@ module.exports = {
                         logger.debug(transition);
                         _logger.shutdown();
 
-                        //done();   
+                        done();   
                     }, 11000);
                 }
             }
