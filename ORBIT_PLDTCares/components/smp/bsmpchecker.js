@@ -65,15 +65,22 @@ module.exports = {
         logger.info(`Service Number: [${telNumber}]`);
         request(options, function (error, response) {
             // if (error) throw new Error(error);
-
             if (error)
             {
                 console.log("directtoagent autoroute due to API gateway down:  " + error);
+                logger.debug("directtoagent autoroute due to API gateway down:  " + error);
                 //conversation.transition('directtoagent');
                 transition = 'directtoagent';
                 //done();
             }
             else {
+                if (response.statusCode > 200) {
+                    transition = 'directtoagent';
+                    logger.debug(response.statusCode);
+                    logger.debug(transition);
+                }
+                else 
+                {
                 var returnedValue = JSON.parse(response.body);
                 var smpStatus = returnedValue['smpStatus'].toString();
                 var smpCounter = parseInt(returnedValue['smpCounter']);
@@ -1732,15 +1739,16 @@ module.exports = {
                         //done();
                         transition = 'nodata3'
                     }
-                }, 11000);
+                }, 11000);}
             }
             logger.info(`-------------------------------------------------------------------------------------------------------------`)
             logger.info(`- [END] SMP Checker                                                                                         -`)
             logger.info(`-------------------------------------------------------------------------------------------------------------`)
-            _logger.shutdown();
             conversation.transition(transition);
             logger.debug(transition);
-            done();   
+            _logger.shutdown();
+
+            //done();   
         });
     }
 
