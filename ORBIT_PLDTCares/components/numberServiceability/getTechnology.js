@@ -7,12 +7,12 @@ module.exports = {
         return {
             name: componentName.NumberServiceabilityTechnology,
             properties: {
-    			serviceNumber: {
+                serviceNumber: {
                     type: "string",
                     required: true
                 }
             },
-            supportedActions: ['dslAcct','fibrAcct','failure','blank']
+            supportedActions: ['dslAcct', 'fibrAcct', 'failure', 'blank']
         };
     },
 
@@ -23,10 +23,10 @@ module.exports = {
         const instance = require("../../helpers/logger");
         const _logger = instance.logger(globalProp.Logger.Category.NumberServiceability.NumberServiceabilityTechnology);
         const logger = _logger.getLogger();
-        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);        
+        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);
         const emailLog = _emailLog.getLogger();
 
-		var serviceNumber = conversation.properties().serviceNumber;
+        var serviceNumber = conversation.properties().serviceNumber;
         var areacode = "";
         var telephone = "";
 
@@ -56,27 +56,27 @@ module.exports = {
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
         logger.info(`- [START] Number Serviceability - [Technology]                                                                   -`)
         logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        
+
         console.log("info from bot:" + serviceNumber)
 
-        if (serviceNumber.length == 9 ) {
-            var areacode = serviceNumber.substring(2,0);
+        if (serviceNumber.length == 9) {
+            var areacode = serviceNumber.substring(2, 0);
             var telephone = serviceNumber.substring(2);
         }
         else {
-            if (serviceNumber.substring(3,0) == '028') {
-                var areacode = serviceNumber.substring(2,0);
+            if (serviceNumber.substring(3, 0) == '028') {
+                var areacode = serviceNumber.substring(2, 0);
                 var telephone = serviceNumber.substring(2);
             }
-            
-           else if (serviceNumber.substring(3,0) == '034') { // start here  ---> capture 034
-            var areacode = serviceNumber.substring(3,0);
-            var telephone = serviceNumber.substring(3);
 
-            console.log("3rd argument areacode: ", areacode, "telephone number: ", telephone);
+            else if (serviceNumber.substring(3, 0) == '034') { // start here  ---> capture 034
+                var areacode = serviceNumber.substring(3, 0);
+                var telephone = serviceNumber.substring(3);
+
+                console.log("3rd argument areacode: ", areacode, "telephone number: ", telephone);
             }
             else {
-                var areacode = serviceNumber.substring(3,0);
+                var areacode = serviceNumber.substring(3, 0);
                 var telephone = serviceNumber.substring(3);
             }
         }
@@ -96,123 +96,121 @@ module.exports = {
 
         logger.info(`Starting to invoke the request.`)
 
-            request(options, function (error, response) {
-                logger.info(`Invoking request successful.`)
-            if (error)
-            {   logError(error, error.code);
+        request(options, function (error, response) {
+            logger.info(`Invoking request successful.`)
+            if (error) {
+                logError(error, error.code);
                 transition = 'failure';
             }
-            else
-            {
-                logger.info(`Request success with Response Code: [${response.statusCode}]`);
-                var responseBody = response.body;
-                var JSONRes  = JSON.parse(responseBody);
-                var pkgfttx = "FTTX";
-                var pkgftth = "FTTH";
-                var pkgfiber = "FIBER";
-                var pkgfibr = "FIBR";
-                var pkgdsl = "DSL";
-                var pkgvdsl = "VDSL";
-                var pkgngn = "NGN";
-                var pkglegacy = "LEGACY";
-                logger.debug(`Response Body:  ${JSON.stringify(JSONRes)}`);
-
-                var currentTech = JSONRes.CURRENTTECHNOLOGY.toUpperCase();
-                console.log(currentTech);
-                if (currentTech == pkgfttx){
-                    conversation.variable('neType', pkgfttx);
-                    //conversation.transition('fibrAcct');
-                    transition = 'fibrAcct';
-                    //done();
-                }
-
-                else if (currentTech == pkgfiber)
-                {
-                    conversation.variable('neType', pkgfiber);
-                    //conversation.transition('fibrAcct');
-                    transition = 'fibrAcct';
-                    //done();
-                }
-
-                else if (currentTech == pkgfibr)
-                {
-                    conversation.variable('neType', pkgfibr);
-                    //conversation.transition('fibrAcct');
-                    transition = 'fibrAcct';
-                    //done();
-                }
-
-                else if (currentTech == pkgftth)
-                {
-                    conversation.variable('neType', pkgftth);
-                    //conversation.transition('fibrAcct');
-                    transition = 'fibrAcct';
-                    //done();
-                }
-
-                else if (currentTech == pkgdsl)
-                {
-                    conversation.variable('neType', pkgdsl);
-                    //conversation.transition('dslAcct');
-                    transition = 'dslAcct';
-                    //done();
-                }
-
-                else if (currentTech == pkgvdsl)
-                {
-                    conversation.variable('neType', pkgvdsl);
-                    //conversation.transition('dslAcct');
-                    transition = 'dslAcct';
-                    //done();
-                }
-
-                else if (currentTech == pkgngn)
-                {
-                    conversation.variable('neType', pkgngn);
-                    //conversation.transition('dslAcct');
-                    transition = 'dslAcct';
-                    //done();
-                }
-
-                else if (currentTech == pkglegacy)
-                {
-                    conversation.variable('neType', pkglegacy);    
-                    //conversation.transition('dslAcct');
-                    transition = 'dslAcct';
-                    //done();
-                }
-                else if (JSONRes.EXCEPTIONMSG == "100|TELEPHONE NUMBER DOES NOT EXIST") {
-                    console.log("getTechnology telephone number does not exist service number:" + serviceNumber, "currentTech : "+ currentTech);
-                    logger.debug("getTechnology telephone number does not exist service number:" + serviceNumber, "currentTech : "+ currentTech);
-                    //conversation.transition('blank');
-                    transition = 'blank';
-                    //done();
-                }
-                else if (JSONRes.EXCEPTIONMSG !== "100|TELEPHONE NUMBER DOES NOT EXIST") {
-                    //conversation.transition('blank');
-                    transition = 'blank';
-                    console.log("getTechnology - number CLARITY ERROR. Server was unable to process request." + serviceNumber , "currentTech : "+ currentTech);
-                    logger.debug("getTechnology - number CLARITY ERROR. Server was unable to process request." + serviceNumber , "currentTech : "+ currentTech);
-                    //done();
+            else {
+                if (response.statusCode > 200) {
+                    logError(response, response.statusCode);
+                    transition = 'failure';
                 }
                 else {
-                    conversation.variable('neType', "NULL NE TYPE");  
-                    //conversation.transition('blank');
-                    transition = 'blank';
-                    logger.debug("getTechnology component ,blank argument service number:" + serviceNumber, "currentTech: "+ currentTech);
-                    console.log("getTechnology component ,blank argument service number:" + serviceNumber, "currentTech: "+ currentTech);
-                    //done();
+                    logger.info(`Request success with Response Code: [${response.statusCode}]`);
+                    var responseBody = response.body;
+                    var JSONRes = JSON.parse(responseBody);
+                    var pkgfttx = "FTTX";
+                    var pkgftth = "FTTH";
+                    var pkgfiber = "FIBER";
+                    var pkgfibr = "FIBR";
+                    var pkgdsl = "DSL";
+                    var pkgvdsl = "VDSL";
+                    var pkgngn = "NGN";
+                    var pkglegacy = "LEGACY";
+                    logger.debug(`Response Body:  ${JSON.stringify(JSONRes)}`);
+
+                    var currentTech = JSONRes.CURRENTTECHNOLOGY.toUpperCase();
+                    console.log(currentTech);
+                    if (currentTech == pkgfttx) {
+                        conversation.variable('neType', pkgfttx);
+                        //conversation.transition('fibrAcct');
+                        transition = 'fibrAcct';
+                        //done();
+                    }
+
+                    else if (currentTech == pkgfiber) {
+                        conversation.variable('neType', pkgfiber);
+                        //conversation.transition('fibrAcct');
+                        transition = 'fibrAcct';
+                        //done();
+                    }
+
+                    else if (currentTech == pkgfibr) {
+                        conversation.variable('neType', pkgfibr);
+                        //conversation.transition('fibrAcct');
+                        transition = 'fibrAcct';
+                        //done();
+                    }
+
+                    else if (currentTech == pkgftth) {
+                        conversation.variable('neType', pkgftth);
+                        //conversation.transition('fibrAcct');
+                        transition = 'fibrAcct';
+                        //done();
+                    }
+
+                    else if (currentTech == pkgdsl) {
+                        conversation.variable('neType', pkgdsl);
+                        //conversation.transition('dslAcct');
+                        transition = 'dslAcct';
+                        //done();
+                    }
+
+                    else if (currentTech == pkgvdsl) {
+                        conversation.variable('neType', pkgvdsl);
+                        //conversation.transition('dslAcct');
+                        transition = 'dslAcct';
+                        //done();
+                    }
+
+                    else if (currentTech == pkgngn) {
+                        conversation.variable('neType', pkgngn);
+                        //conversation.transition('dslAcct');
+                        transition = 'dslAcct';
+                        //done();
+                    }
+
+                    else if (currentTech == pkglegacy) {
+                        conversation.variable('neType', pkglegacy);
+                        //conversation.transition('dslAcct');
+                        transition = 'dslAcct';
+                        //done();
+                    }
+                    else if (JSONRes.EXCEPTIONMSG == "100|TELEPHONE NUMBER DOES NOT EXIST") {
+                        console.log("getTechnology telephone number does not exist service number:" + serviceNumber, "currentTech : " + currentTech);
+                        logger.debug("getTechnology telephone number does not exist service number:" + serviceNumber, "currentTech : " + currentTech);
+                        //conversation.transition('blank');
+                        transition = 'blank';
+                        //done();
+                    }
+                    else if (JSONRes.EXCEPTIONMSG !== "100|TELEPHONE NUMBER DOES NOT EXIST") {
+                        //conversation.transition('blank');
+                        transition = 'blank';
+                        console.log("getTechnology - number CLARITY ERROR. Server was unable to process request." + serviceNumber, "currentTech : " + currentTech);
+                        logger.debug("getTechnology - number CLARITY ERROR. Server was unable to process request." + serviceNumber, "currentTech : " + currentTech);
+                        //done();
+                    }
+                    else {
+                        conversation.variable('neType', "NULL NE TYPE");
+                        //conversation.transition('blank');
+                        transition = 'blank';
+                        logger.debug("getTechnology component ,blank argument service number:" + serviceNumber, "currentTech: " + currentTech);
+                        console.log("getTechnology component ,blank argument service number:" + serviceNumber, "currentTech: " + currentTech);
+                        //done();
+                    }
                 }
             }
             logger.info(`[Transition]: ${transition}`);
             logger.info(`-------------------------------------------------------------------------------------------------------------`)
             logger.info(`- [END] Number Serviceability - [Technology]                                                                -`)
             logger.info(`-------------------------------------------------------------------------------------------------------------`)
-    
+
             _logger.shutdown();
-            _emailLog.shutdown();            
-            conversation.transition(transition);        
-            done();    
+            _emailLog.shutdown();
+            conversation.transition(transition);
+            done();
         });
     }
 };
