@@ -80,7 +80,7 @@ module.exports = {
             else {
                 if (response.statusCode > 200) {
                     transition = 'directtoagent';
-                    logger.debug(response.statusCode);
+                    logger.debug("1234 " + response.statusCode);
                     logger.debug(transition);
                 }
                 else {
@@ -1684,6 +1684,7 @@ module.exports = {
                         logger.info(`-------------------------------------------------------------------------------------------------------------`)
                         conversation.transition(transition);
                         logger.debug(transition);
+                        logger.debug(smpStatus);
                         _logger.shutdown();
 
                         done();   
