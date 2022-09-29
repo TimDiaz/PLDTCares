@@ -20,11 +20,11 @@ module.exports = {
     const request = require('request');
     const moment = require('moment');
     const globalProp = require('../../../helpers/globalProperties');
-    const instance = require("../../../helpers/logger");
-    const _logger = instance.logger(globalProp.Logger.Category.BillingServices.Autobal);
-    const logger = _logger.getLogger();
-    const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);
-    const emailLog = _emailLog.getLogger();
+    var instance = require("../../../helpers/logger");
+    var _logger = instance.logger(globalProp.Logger.Category.BillingServices.Autobal);
+    var logger = _logger.getLogger();
+    var _emailLog = instance.logger(globalProp.Logger.Category.Mailer);
+    var emailLog = _emailLog.getLogger();
 
     function logError(result, resultCode) {
       const strResult = JSON.stringify(result);
@@ -72,14 +72,14 @@ module.exports = {
         }
         else {
           try {
-            logger.info("[Kenan Service] Get Account Balanace Body: ", response.body);
-            logger.info("[Kenan Service] Get Account Balanace Message: ", responseBody.Message);
-
             var responseBody;
             if (typeof (response.body) === "string")
               responseBody = JSON.parse(response.body);
             else
               responseBody = response.body;
+
+            logger.info("[Kenan Service] Get Account Balanace Body: ", responseBody);
+            logger.info("[Kenan Service] Get Account Balanace Message: ", responseBody.Message);
 
             if (responseBody.Code === "0" && responseBody.Message === "Successful") {
               var parsedPaymentAmount = responseBody.PaymentAmount;
@@ -133,10 +133,10 @@ module.exports = {
                 }
                 else {
                   var fuseResponseBody;
-                  if (typeof (response.body) === "string")
-                    fuseResponseBody = JSON.parse(responseFuse.body);
+                  if (typeof (responseFused.body) === "string")
+                    fuseResponseBody = JSON.parse(responseFused.body);
                   else
-                    fuseResponseBody = responseFuse.body;
+                    fuseResponseBody = responseFused.body;
 
                   if(fuseResponseBody.errorMessage !== null)
                     throw fuseResponseBody.errorMessage;
@@ -234,7 +234,7 @@ module.exports = {
       _emailLog.shutdown();
 
       conversation.transition(transition);
-      done();
+      // done();
     });
   }
 
