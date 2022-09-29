@@ -234,7 +234,7 @@ module.exports = {
       _emailLog.shutdown();
 
       conversation.transition(transition);
-      // done();
+      done();
     });
   }
 
