@@ -158,27 +158,27 @@ module.exports = {
                                 //done();
                                 transition = 'createft';
                             }
-                            // else if (smpStatus == "Could not find the physical address for lineId 0285849326")
-                            // {
-                            //     UpdateRedirectType(accNumber, telNumber, smpStartTs, "createft");
-                            //     conversation.variable('desc', "MISSING MICRO-FILTER_UNBALANCED WIRING-IN_BAD SPLICES [LSCODE: 2132]"); 
-                            //     conversation.variable('fault_type', "RBG-CRT");
-                            //     conversation.variable('prom_cause', "100");
-                            //     conversation.variable('reported_by', "CHATBOT_LM");
-                            //     conversation.variable('empe_id', "MOBILEIT");
-                            //     conversation.variable('prom_worg_name', "IVRS");
-                            //     conversation.variable('prom_sub_type', "VD-NO VOICE AND DATA");
-                            //     conversation.variable('prom_category', "LAST MILE");
-                            //     conversation.variable('prom_sub_category', "FAILED SNR/LA/LONG LOOP - COPPER");
-                            //     conversation.variable('LScode', smpStatus); 
-                            //     conversation.variable('telnumber', telNumber);
-                            //     //conversation.transition('createft');
-                            //     //done();
-                            //     logger.debug("LS_CODE:" + smpStatus);
-                            //     transition = 'createft';
-                            //     console.log("test1234" + smpStatus);
-                            //     //console.log(transition);
-                            // }
+                             else if (smpStatus == "Could not find the physical address for lineId 0538320051")
+                             {
+                                 UpdateRedirectType(accNumber, telNumber, smpStartTs, "createft");
+                                 conversation.variable('desc', "MISSING MICRO-FILTER_UNBALANCED WIRING-IN_BAD SPLICES [LSCODE: 2132]"); 
+                                 conversation.variable('fault_type', "RBG-CRT");
+                                 conversation.variable('prom_cause', "100");
+                                 conversation.variable('reported_by', "CHATBOT_LM");
+                                 conversation.variable('empe_id', "MOBILEIT");
+                                 conversation.variable('prom_worg_name', "IVRS");
+                                 conversation.variable('prom_sub_type', "VD-NO VOICE AND DATA");
+                                 conversation.variable('prom_category', "LAST MILE");
+                                 conversation.variable('prom_sub_category', "FAILED SNR/LA/LONG LOOP - COPPER");
+                                 conversation.variable('LScode', smpStatus); 
+                                 conversation.variable('telnumber', telNumber);
+                                 //conversation.transition('createft');
+                                 //done();
+                                 logger.debug("LS_CODE:" + smpStatus);
+                                 transition = 'createft';
+                                 console.log("test1234" + smpStatus);
+                                 //console.log(transition);
+                             }
                             else if (smpStatus == "10151") {
                                 UpdateRedirectType(accNumber, telNumber, smpStartTs, "createft");
                                 conversation.variable('desc', "BAD SPLICES_FAULT CLOSE TO THE DSLAM[LSCODE: 10151]");

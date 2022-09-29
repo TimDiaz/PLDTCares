@@ -37,7 +37,7 @@ module.exports = {
                         },
                         CR: {
                             Name: 'CR',
-                            Conversation: { Transition: 'withOpenParentVC'}                                
+                            Conversation: { Transition: 'withOpenParentCR'}                                
                         },
                         Default: {
                             Conversation: { Transition: 'withOpenParent'}                                
