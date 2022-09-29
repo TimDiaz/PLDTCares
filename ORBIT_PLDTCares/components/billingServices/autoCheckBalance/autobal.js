@@ -183,13 +183,13 @@ module.exports = {
                     conversation.variable('balEmailAdd', formattedEmail);
                     transition = 'valid';
 
-                    if (fuseResponseBody.includes('Suspended')) {
+                    if (fuseResponseBody.serviceProfiles.includes('Suspended')) {
                       //conversation.transition('failed');
                       conversation.variable('serviceStatus', 'Suspended');
                       transition = 'failure';
                       logger.info('serviceStatus condition: ', 'Suspended');
                     }
-                    else if (fuseResponseBody.includes('Barred')) {
+                    else if (fuseResponseBody.serviceProfiles.includes('Barred')) {
                       //conversation.transition('failed');
                       conversation.variable('serviceStatus', 'Barred');
                       transition = 'failure';
