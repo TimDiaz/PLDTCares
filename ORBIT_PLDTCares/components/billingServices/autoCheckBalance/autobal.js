@@ -3,7 +3,7 @@
 const componentName = require('../../../configurations/component_config');
 module.exports = {
   metadata: () => ({
-    name: componentName.BillingServices.Autobal,
+    name: componentName.BillingServices.AccounetBalance,
     properties: {
       accountNumber: {
         type: "string",
@@ -30,7 +30,7 @@ module.exports = {
       const strResult = JSON.stringify(result);
       emailLog.addContext("apierrorcode", strResult);
       emailLog.addContext("apierrormsg", resultCode);
-      const message = globalProp.Email.EmailFormat(globalProp.BillingServices.Autobal.API.GetAccountBalance, resultCode, strResult, svcNum);
+      const message = globalProp.Email.EmailFormat(globalProp.BillingServices.Autobal.API.GetAccountBalance.Name, resultCode, strResult, svcNum);
       
 
       logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`)

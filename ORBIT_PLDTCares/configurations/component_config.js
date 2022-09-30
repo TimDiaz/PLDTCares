@@ -24,7 +24,8 @@ const config = {
 ,
     BillingServices: {
         Autobal: `autobal.${baseConfig.Environment}`,
-        Autoesoa: `autoesoa.${baseConfig.Environment}`
+        Autoesoa: `autoesoa.${baseConfig.Environment}`,
+        AccounetBalance: `accountbalance.${baseConfig.Environment}`,
     },
     FMgetFTDetails:  { 
         CheckSType: `checkStype.${baseConfig.Environment}`,
