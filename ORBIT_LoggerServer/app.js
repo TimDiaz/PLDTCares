@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const logger = require("./helpers/logger");
+const initLogger = require("./helpers/serverlogger");
+const emailer = require("./routes/emailer");
 
 var app = express();
 
@@ -8,7 +9,9 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-logger.configure();
+initLogger.configure();
+
+emailer(app, initLogger);
 
 app.listen(7746, function () {
     console.log("App running on port.", 7746);
