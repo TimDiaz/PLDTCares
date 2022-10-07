@@ -18,46 +18,55 @@ module.exports = {
 
     invoke: (conversation, done) => {
 
+        // #region Setup Properties 
+        var serviceNumber = conversation.properties().serviceNumber;
+        // #endregion
+
+        // #region Imports
         const request = require('request');
         const globalProp = require('../../helpers/globalProperties');
         const instance = require("../../helpers/logger");
+        // #endregion
+
+        // #region Initialization
         const _logger = instance.logger(globalProp.Logger.Category.NumberServiceability.NumberServiceabilityTechnology);
         const logger = _logger.getLogger();
-        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);
-        const emailLog = _emailLog.getLogger();
 
-        var serviceNumber = conversation.properties().serviceNumber;
-        var areacode = "";
-        var telephone = "";
-
-        function logError(result, resultCode) {
+        logger.sendEmail = ((result, resultCode) => {
             const strResult = JSON.stringify(result);
-            emailLog.addContext("apierrorcode", strResult);
-            emailLog.addContext("apierrormsg", resultCode);
-            const message = globalProp.Email.EmailFormat(globalProp.NumberServiceability.API.Serviceable.Name, resultCode, strResult, serviceNumber);
+            const message = globalProp.Email.EmailFormat(globalProp.NumberServiceability.API.Serviceable.Name, resultCode, strResult, svcNumber);
+            logger.error(`[ERROR]: ${strResult}`);
+            emailSender(globalProp.Email.Subjects.NumberServiceability.Technology, message, globalProp.Logger.BCPLogging.AppNames.NumberServiceability.Technology, strResult, resultCode, accNumber, svcNumber)
+        })
 
-            logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`)
-            emailLog.error(message);
-        }
+        logger.start = (() => {
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [START] Number Serviceability - [Technology]                                                              -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        });
+
+        logger.end = (() => {
+            logger.info(`[Transition]: ${transition}`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [END] Number Serviceability - [Technology]                                                                -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+
+            _logger.shutdown();
+            conversation.transition(transition);
+            done();
+        });
+
 
         let transition = 'failure';
-
-        var serviceNumber = conversation.properties().serviceNumber;
         var areacode = "";
         var telephone = "";
         var accountNumber = "No Data";
         logger.addContext("serviceNumber", serviceNumber)
-        emailLog.addContext("subject", globalProp.Email.Subjects.NumberServiceability.NumServiceabilityTechnology);
-        emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
-        emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.NumberServiceability.Technology);
-        emailLog.addContext("usertelephonenumber", serviceNumber);
-        emailLog.addContext("useraccountnumber", accountNumber);
+        // #endregion
 
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`- [START] Number Serviceability - [Technology]                                                                   -`)
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        logger.start();
 
-        console.log("info from bot:" + serviceNumber)
+        logger.debug("info from bot:" + serviceNumber)
 
         if (serviceNumber.length == 9) {
             var areacode = serviceNumber.substring(2, 0);
@@ -73,7 +82,7 @@ module.exports = {
                 var areacode = serviceNumber.substring(3, 0);
                 var telephone = serviceNumber.substring(3);
 
-                console.log("3rd argument areacode: ", areacode, "telephone number: ", telephone);
+                logger.debug("3rd argument areacode: ", areacode, "telephone number: ", telephone);
             }
             else {
                 var areacode = serviceNumber.substring(3, 0);
@@ -99,12 +108,12 @@ module.exports = {
         request(options, function (error, response) {
             logger.info(`Invoking request successful.`)
             if (error) {
-                logError(error, error.code);
+                logger.sendEmail(error, error.code);
                 transition = 'failure';
             }
             else {
                 if (response.statusCode > 200) {
-                    logError(response, response.statusCode);
+                    logger.sendEmail(response.body, response.statusCode);
                     transition = 'failure';
                 }
                 else {
@@ -122,7 +131,7 @@ module.exports = {
                     logger.debug(`Response Body:  ${JSON.stringify(JSONRes)}`);
 
                     var currentTech = JSONRes.CURRENTTECHNOLOGY.toUpperCase();
-                    console.log(currentTech);
+                    logger.debug(currentTech);
                     if (currentTech == pkgfttx) {
                         conversation.variable('neType', pkgfttx);
                         //conversation.transition('fibrAcct');
@@ -179,7 +188,7 @@ module.exports = {
                         //done();
                     }
                     else if (JSONRes.EXCEPTIONMSG == "100|TELEPHONE NUMBER DOES NOT EXIST") {
-                        console.log("getTechnology telephone number does not exist service number:" + serviceNumber, "currentTech : " + currentTech);
+                        logger.debug("getTechnology telephone number does not exist service number:" + serviceNumber, "currentTech : " + currentTech);
                         logger.debug("getTechnology telephone number does not exist service number:" + serviceNumber, "currentTech : " + currentTech);
                         //conversation.transition('blank');
                         transition = 'blank';
@@ -188,7 +197,7 @@ module.exports = {
                     else if (JSONRes.EXCEPTIONMSG !== "100|TELEPHONE NUMBER DOES NOT EXIST") {
                         //conversation.transition('blank');
                         transition = 'blank';
-                        console.log("getTechnology - number CLARITY ERROR. Server was unable to process request." + serviceNumber, "currentTech : " + currentTech);
+                        logger.debug("getTechnology - number CLARITY ERROR. Server was unable to process request." + serviceNumber, "currentTech : " + currentTech);
                         logger.debug("getTechnology - number CLARITY ERROR. Server was unable to process request." + serviceNumber, "currentTech : " + currentTech);
                         //done();
                     }
@@ -197,20 +206,12 @@ module.exports = {
                         //conversation.transition('blank');
                         transition = 'blank';
                         logger.debug("getTechnology component ,blank argument service number:" + serviceNumber, "currentTech: " + currentTech);
-                        console.log("getTechnology component ,blank argument service number:" + serviceNumber, "currentTech: " + currentTech);
+                        logger.debug("getTechnology component ,blank argument service number:" + serviceNumber, "currentTech: " + currentTech);
                         //done();
                     }
                 }
             }
-            logger.info(`[Transition]: ${transition}`);
-            logger.info(`-------------------------------------------------------------------------------------------------------------`)
-            logger.info(`- [END] Number Serviceability - [Technology]                                                                -`)
-            logger.info(`-------------------------------------------------------------------------------------------------------------`)
-
-            _logger.shutdown();
-            _emailLog.shutdown();
-            conversation.transition(transition);
-            done();
+            logger.end();
         });
     }
 };
