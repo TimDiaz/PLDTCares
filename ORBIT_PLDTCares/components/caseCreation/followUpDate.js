@@ -17,22 +17,46 @@ module.exports = {
         supportedActions: ['validDate', 'invalidDate', 'invalidFutureDate', 'failure', 'InvalidDateFormat']
     }),
     invoke: (conversation, done) => {
-        const moment = require('moment');
+        
+        // #region Setup Properties
         const serviceNumber = conversation.properties().serviceNumber;
         const userDate = conversation.properties().requestDate;
+        // #endregion
 
+        // #region Imports
+        const moment = require('moment');
         const globalProp = require('../../helpers/globalProperties');
         const instance = require("../../helpers/logger");
+        // #endregion
+        
+        // #region Initialization
         const _logger = instance.logger(globalProp.Logger.Category.CaseCreation.FollowUpDate);
         const logger = _logger.getLogger();
+
+        logger.start = (() => {
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+            logger.info(`- [START] Follow Up Date                                                                                    -`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+        });
+
+        logger.end = (() => {
+            logger.info(`[Transition]: ${transition}`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+            logger.info(`- [END] Follow Up Date                                                                                      -`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+
+            _logger.shutdown();
+
+            conversation.transition(transition);
+            done();
+        });
 
         let transition = '';
 
         logger.addContext("serviceNumber", serviceNumber);
+        // #endregion
 
-        logger.info(`-------------------------------------------------------------------------------------------------------------`);
-        logger.info(`- [START] Follow Up Date                                                                                    -`);
-        logger.info(`-------------------------------------------------------------------------------------------------------------`);
+        logger.start();
 
         var validDate = moment(userDate, "mm/dd/yyyy").isValid();
         var date2 = new Date(userDate);
@@ -80,15 +104,7 @@ module.exports = {
             logger.debug(`Invalid Date more than 3 days of current date`);
             transition = 'invalidDate';
         }
-        logger.info(`[Transition]: ${transition}`);
-        logger.info(`-------------------------------------------------------------------------------------------------------------`);
-        logger.info(`- [END] Follow Up Date                                                                                      -`);
-        logger.info(`-------------------------------------------------------------------------------------------------------------`);
-
-        _logger.shutdown();
-
-        conversation.transition(transition);
-        done();
+        logger.end();
     }
 };
 

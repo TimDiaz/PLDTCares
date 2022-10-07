@@ -17,39 +17,53 @@ module.exports = {
     supportedActions: ['success', 'invalid', 'failed', 'invalidparam', 'invalidBillingDate', 'InvalidEmail']
   }),
   invoke: (conversation, done) => {
+    // #region Setup Properties  
+    var svcNum = conversation.properties().serviceNumber;
+    var month = conversation.properties().monthBill;
+    // #endregion
+
+    // #region Imports
     const request = require('request');
     const globalProp = require('../../../helpers/globalProperties');
+    const emailSender = require('../../../helpers/emailsender');
     const instance = require("../../../helpers/logger");
+    // #endregion
+
+    // #region Initialization
     const _logger = instance.logger(globalProp.Logger.Category.BillingServices.Autoesoa);
     const logger = _logger.getLogger();
-    const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);
-    const emailLog = _emailLog.getLogger();
 
-    function logError(result, resultCode) {
+    logger.sendEmail = ((result, resultCode) => {
       const strResult = JSON.stringify(result);
-      emailLog.addContext("apierrorcode", strResult);
-      emailLog.addContext("apierrormsg", resultCode);
-      const message = globalProp.Email.EmailFormat(globalProp.BillingServices.Autobal.API.GetAccountBalance, resultCode, strResult, svcNum);
+      const message = globalProp.Email.EmailFormat(globalProp.BillingServices.Autobal.API.CheckBalance.Name, resultCode, strResult, svcNumber);
+      logger.error(`[ERROR]: ${strResult}`);
+      emailSender(globalProp.Email.Subjects.BillingServices.Autoesoa, message, globalProp.Logger.BCPLogging.AppNames.BillingServices.Autoesoa, strResult, resultCode, accNumber, svcNumber)
+    })
 
-      logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`)
-      emailLog.error(message);
-    }
+    logger.start = (() => {
+      logger.info(`-------------------------------------------------------------------------------------------------------------`);
+      logger.info(`- [START] Check Auto ESOA                                                                                   -`);
+      logger.info(`-------------------------------------------------------------------------------------------------------------`);
+    });
+
+    logger.end = (() => {
+      logger.info(`[Transition]: ${transition}`);
+      logger.info(`-------------------------------------------------------------------------------------------------------------`);
+      logger.info(`- [END] Check Auto ESOA                                                                                       -`);
+      logger.info(`-------------------------------------------------------------------------------------------------------------`);
+
+      _logger.shutdown();
+
+      conversation.transition(transition);
+      done();
+    });
 
     let transition = '';
 
-    var svcNum = conversation.properties().serviceNumber;
-    var month = conversation.properties().monthBill;
-
     logger.addContext("serviceNumber", svcNum);
-    emailLog.addContext("subject", globalProp.Email.Subjects.BillingServices.Autoesoa);
-    emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
-    emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.BillingServices.Autoesoa);
-    emailLog.addContext("usertelephonenumber", svcNum);
-    // emailLog.addContext("useraccountnumber", acctNum);
+    // #endregion
 
-    logger.info(`-------------------------------------------------------------------------------------------------------------`);
-    logger.info(`- [START] Check Auto ESOA                                                                                    -`);
-    logger.info(`-------------------------------------------------------------------------------------------------------------`);
+    logger.start();
 
     if (month == 'Current Month') {
       //var a = new Date();
@@ -66,15 +80,14 @@ module.exports = {
     request(options, function (error, response) {
       logger.info(response.body);
       if (error) {
-        logError(error, error.code);
-
+        logger.sendEmail(error, error.code);
         transition = 'failed';
       }
       else {
         if (response.statusCode == 200) {
           transition = 'success';
         } //auto bal get email end
-        else{
+        else {
           if (response.statusCode == 400) {
             transition = 'failed';
           }
@@ -90,20 +103,10 @@ module.exports = {
           else {
             transition = 'failed'; //500 return
           }
+          logger.sendEmail(response.body, response.statusCode)
         }
       }
-      logger.info(`[Transition]: ${transition}`);
-      logger.info(`-------------------------------------------------------------------------------------------------------------`);
-      logger.info(`- [END] Check Auto ESOA                                                                                       -`);
-      logger.info(`-------------------------------------------------------------------------------------------------------------`);
-
-      _logger.shutdown();
-      _emailLog.shutdown();
-
-      conversation.transition(transition);
-      done();
-    }) // .catch here)
-
+      logger.end();
+    })
   }
-
 };

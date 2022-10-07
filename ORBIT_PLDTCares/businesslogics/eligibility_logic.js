@@ -76,7 +76,9 @@ class Eligibility_BussinessLogic {
 
                 const tier = types.WithOpenRepairTicket.Tier;
                 result.Variables.push({ name: tier.Conversation.Variables[0], value: ticketNum });
-                switch (ticketTier) {
+
+                const sTicketTier = ticketTier === null? 'default': ticketTier[0];
+                switch (sTicketTier) {
                     case tier.Parent.Name:
                         const parent = tier.Parent.TicketTypes;
                         result.Variables.push({ name: parent.Conversation.Variables[0], value: ticketType.toString() });
