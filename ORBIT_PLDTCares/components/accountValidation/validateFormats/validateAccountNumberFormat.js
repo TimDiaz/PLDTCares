@@ -18,21 +18,45 @@ module.exports = {
     }),
 
     invoke: (conversation, done) => {
+        // #region Setup Properties
+        var acctNumber = conversation.properties().accountNumber;
+        var servNumber = conversation.properties().serviceNumber;
+        // #endregion
+
+        // #region Imports
         const globalProp = require('../../../helpers/globalProperties');
         const instance = require("../../../helpers/logger");
+        // #endregion
+
+        // #region Initialization
         const _logger = instance.logger(globalProp.Logger.Category.ValidateAccountNumberFormat);
         const logger = _logger.getLogger();
+
+        logger.start = (() => {
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [START] Validate Account Number Format                                                                    -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        });
+
+        logger.end = (() => {
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [END] Validate Account Number Format                                                                      -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+
+            _logger.shutdown();
+            conversation.keepTurn(keepTurn);
+            conversation.transition(transition);
+            done();
+        });
 
         let keepTurn = true;
         let transition = "invalidacctformat";
 
-        var acctNumber = conversation.properties().accountNumber;
-        var servNumber = conversation.properties().serviceNumber;
         logger.addContext("serviceNumber", servNumber)
+        // #endregion
 
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`- [START] Validate Account Number Format                                                                    -`)
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        logger.start();
+
         logger.info(`Account Number: [${acctNumber}]`);
 
         var resChkStr = acctNumber.match(globalProp.ValidateAccountNumberFormat.Regex.AccountNumberFormat);
@@ -52,14 +76,6 @@ module.exports = {
             transition = 'invalidacctformat';
         }
 
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`- [END] Validate Account Number Format                                                                      -`)
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-
-        _logger.shutdown();
-        conversation.keepTurn(keepTurn);
-        conversation.transition(transition);
-        done();
+        logger.end();
     }
-
 };

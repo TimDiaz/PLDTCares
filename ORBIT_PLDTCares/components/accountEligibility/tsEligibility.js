@@ -14,30 +14,55 @@ module.exports = {
     }),
 
     invoke: (conversation, done) => {
+        // #region Setup Properties
+        var serviceNumber = conversation.properties().serviceNumber;
+        // #endregion
+
+        // #region Imports
         const request = require('request');
         const Logic = require('../../businesslogics/eligibility_logic').Logic;
         const globalProp = require('../../helpers/globalProperties');
+        const emailSender = require('../../helpers/emailsender');
         const instance = require("../../helpers/logger");
+        // #endregion
+
+        // #region Initialization
         const _logger = instance.logger(globalProp.Logger.Category.AccountEligibility);
         const logger = _logger.getLogger();
-        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);        
-        const emailLog = _emailLog.getLogger();
+        
+        logger.sendEmail = ((result, resultCode) => {
+            const strResult = JSON.stringify(result);
+            const message = globalProp.Email.EmailFormat(globalProp.AccountEligibility.API.Name, resultCode, strResult, svcNumber);
+            logger.error(`[ERROR]: ${strResult}`);              
+            emailSender(globalProp.Email.Subjects.AccountEligibility, message, globalProp.Logger.BCPLogging.AppNames.AccountEligibility, strResult, resultCode, accNumber, svcNumber)
+        }) 
+
+        logger.start = (() => {
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [START] Account Eligibility                                                                               -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        });
+
+        logger.end = (() => {
+            logger.info(`[Transition]: ${transition}`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [END] Account Eligibility                                                                                 -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+
+            _logger.shutdown();
+
+            conversation.transition(transition);
+            done();
+        });
 
         let transition = 'failure';
-
-		var serviceNumber = conversation.properties().serviceNumber;
+		
 	    logger.addContext("serviceNumber", serviceNumber);
-        emailLog.addContext("subject", globalProp.Email.Subjects.AccountEligibility);
-        emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
-        emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.AccountEligibility.TSEligibility);
-        emailLog.addContext("usertelephonenumber", serviceNumber);
-        emailLog.addContext("useraccountnumber", '');
 
         const logic = new Logic(logger, emailLog, globalProp);
+        // #endregion
 
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`- [START] Account Eligibility                                                                               -`)
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        logger.start();
 
         const options = globalProp.AccountEligibility.API.GetOptions(serviceNumber);
         logger.debug(`Setting up the get option: ${JSON.stringify(options)}`);
@@ -45,7 +70,8 @@ module.exports = {
         logger.info(`Starting to invoke the request.`)  
         request(options, function (error, response) {
             if (error) {
-                transition = logic.LogError(error, error.code, serviceNumber).Transition;  
+                logger.sendEmail(error, error.code)
+                transition = 'failure';  
             }
             else{
                 var respBody = response.body;
@@ -55,7 +81,8 @@ module.exports = {
                 logger.info(`[Response Body] ${respBody}`);
                 if(response.statusCode > 200)
                 {
-                    transition = logic.EmailLogError(response.body, response.statusCode, serviceNumber).Transition; 
+                    logger.sendEmail(response.body, response.statusCode)
+                    transition = 'failure';  
                     logger.error(logic.ErrorResponse(response.statusCode).Message);
                 }
                 else{
@@ -76,16 +103,7 @@ module.exports = {
                     }
                 }
             }
-            logger.info(`[Transition]: ${transition}`);
-            logger.info(`-------------------------------------------------------------------------------------------------------------`)
-            logger.info(`- [END] Account Eligibility                                                                                 -`)
-            logger.info(`-------------------------------------------------------------------------------------------------------------`)
-
-            _logger.shutdown();
-            _emailLog.shutdown();
-
-            conversation.transition(transition);
-            done();
+            logger.end();
         });
     }
 };

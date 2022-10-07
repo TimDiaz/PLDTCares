@@ -22,26 +22,50 @@ module.exports = {
         };
     },
     invoke: (conversation, done) => {
-        const globalProp = require('../../helpers/globalProperties');
-        const instance = require("../../helpers/logger");
-        const _logger = instance.logger(globalProp.Logger.Category.BSMP.BSMPWhitelistChecker);
-        const logger = _logger.getLogger();
-
-        let transition = "failure";
-
+        // #region Setup Properties 
         var telNumber = conversation.properties().Mobile;
         var accNumber = conversation.properties().accountNumber;
         var smpStartTs = conversation.properties().sysDate;
+        // #endregion
+
+        // #region Imports
+        const globalProp = require('../../helpers/globalProperties');
+        const instance = require("../../helpers/logger");
+        // #endregion
+
+        // #region Initialization
+        const _logger = instance.logger(globalProp.Logger.Category.BSMP.BSMPWhitelistChecker);
+        const logger = _logger.getLogger();
+
+        logger.start = (() => {
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [START] SMP Whitelisting Checker                                                                          -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        });
+
+        logger.end = (() => {
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [END] SMP Whitelisting Checker                                                                            -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+
+            _logger.shutdown();
+            //conversation.keepTurn(keepTurn);
+            conversation.transition(transition);
+            logger.debug(transition);
+            done();
+        });
+
+        let transition = "failure";
 
         const jsonData = require('../../data/serviceNumbersWhitelist.json');
         var whitelistedTelNumber = jsonData['whitelist'];
         // 0322383464 fibr
         // 0325206016 dsl
         logger.addContext("serviceNumber", telNumber);
+        // #endregion
 
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`- [START] SMP Whitelisting Checker                                                                          -`)
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        logger.start();
+
         logger.info(`Service Number: [${telNumber}]`);
 
         try {
@@ -59,18 +83,8 @@ module.exports = {
             logger.debug('Error caught: ', err);
             transition = 'failure';
         }
-
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`- [END] SMP Whitelisting Checker                                                                            -`)
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-
-        _logger.shutdown();
-        //conversation.keepTurn(keepTurn);
-        conversation.transition(transition);
-        logger.debug(transition);
-        done();    
+        logger.end();
     }
-
 };
 
 

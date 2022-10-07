@@ -16,45 +16,55 @@ module.exports = {
 
     invoke: (conversation, done) => {
 
+        // #region Setup Properties 
+        var serviceNumber = conversation.properties().serviceNumber;
+        // #endregion
+
+        // #region Imports
         const request = require('request');
         const globalProp = require('../../helpers/globalProperties');
+        const emailSender = require('../../helpers/emailsender');
         const instance = require("../../helpers/logger");
+        // #endregion
+
+        // #region Initialization
         const _logger = instance.logger(globalProp.Logger.Category.NumberServiceability.NumberServiceabilityRegion);
         const logger = _logger.getLogger();
-        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);
-        const emailLog = _emailLog.getLogger();
-        var serviceNumber = conversation.properties().serviceNumber;
-        var areacode = "";
-        var telephone = "";
-
-        function logError(result, resultCode) {
+        
+        logger.sendEmail = ((result, resultCode) => {
             const strResult = JSON.stringify(result);
-            emailLog.addContext("apierrorcode", strResult);
-            emailLog.addContext("apierrormsg", resultCode);
-            const message = globalProp.Email.EmailFormat(globalProp.NumberServiceability.API.Serviceable.Name, resultCode, strResult, serviceNumber);
+            const message = globalProp.Email.EmailFormat(globalProp.NumberServiceability.API.Serviceable.Name, resultCode, strResult, svcNumber);
+            logger.error(`[ERROR]: ${strResult}`);
+            emailSender(globalProp.Email.Subjects.NumberServiceability.Region, message, globalProp.Logger.BCPLogging.AppNames.NumberServiceability.Region, strResult, resultCode, accNumber, svcNumber)
+        })
 
-            logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`)
-            emailLog.error(message);
-        }
+        logger.start = (() => {
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [START] Number Serviceability - [Region]                                                                  -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        });
 
+        logger.end = (() => {
+            logger.info(`[Transition]: ${transition}`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [END] Number Serviceability - [Region]                                                                    -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+
+            _logger.shutdown();
+            conversation.transition(transition);
+            done();
+        });
+        
         let transition = 'failure';
-
-        var serviceNumber = conversation.properties().serviceNumber;
         var areacode = "";
         var telephone = "";
         var accountNumber = "No Data";
         logger.addContext("serviceNumber", serviceNumber)
-        emailLog.addContext("subject", globalProp.Email.Subjects.NumberServiceability.Region);
-        emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
-        emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.NumberServiceability.Region);
-        emailLog.addContext("usertelephonenumber", serviceNumber);
-        emailLog.addContext("useraccountnumber", accountNumber);
+        // #endregion
 
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`- [START] Number Serviceability - [Region]                                                                   -`)
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        logger.start();        
 
-        console.log("info from bot:" + serviceNumber)
+        logger.debug("info from bot:" + serviceNumber)
         if (serviceNumber.length == 9) {
             var areacode = serviceNumber.substring(2, 0);
             var telephone = serviceNumber.substring(2);
@@ -63,14 +73,14 @@ module.exports = {
             if (serviceNumber.substring(3, 0) == '028') {
                 var areacode = serviceNumber.substring(2, 0);
                 var telephone = serviceNumber.substring(2);
-                console.log("Area Code 02: ", areacode);
-                console.log("Telephone Number 02: ", telephone);
+                logger.debug("Area Code 02: ", areacode);
+                logger.debug("Telephone Number 02: ", telephone);
             }
             else {
                 var areacode = serviceNumber.substring(3, 0);
                 var telephone = serviceNumber.substring(3);
-                console.log("Area Code 028: ", areacode);
-                console.log("Telephone Number 028: ", telephone);
+                logger.debug("Area Code 028: ", areacode);
+                logger.debug("Telephone Number 028: ", telephone);
             }
         }
         logger.debug(`Area Code: [${areacode}].`)
@@ -92,12 +102,12 @@ module.exports = {
         request(options, function (error, response) {
             logger.info(`Invoking request successful.`)
             if (error) {
-                logError(error, error.code);
+                logger.sendEmail(error, error.code);
                 transition = 'failure';
             }
             else {
                 if (response.statusCode > 200) {
-                    logError(response, response.statusCode);
+                    logger.sendEmail(response.body, response.statusCode);
                     transition = 'failure';
                 }
                 else {
@@ -117,7 +127,7 @@ module.exports = {
                     // end line capability
 
                     var parameter_city = JSONRes.PARAM2.toUpperCase();
-                    console.log("PARAM2 :", parameter_city);
+                    logger.debug("PARAM2 :", parameter_city);
                     var PARAM2 = parameter_city;
                     function titleCase(str) {
                         var splitStr = str.toLowerCase().split(' ');
@@ -158,7 +168,7 @@ module.exports = {
                         //done();
                     }
                     else if (JSONRes.EXCEPTIONMSG == "100|TELEPHONE NUMBER DOES NOT EXIST") {
-                        console.log("getRegion telephone number does not exist service number:" + serviceNumber);
+                        logger.debug("getRegion telephone number does not exist service number:" + serviceNumber);
                         conversation.variable('PARAM2', PARAM2);
                         //conversation.transition('blank');
                         transition = 'blank';
@@ -168,7 +178,7 @@ module.exports = {
                         conversation.variable('PARAM2', PARAM2);
                         //conversation.transition('blank');
                         transition = 'blank';
-                        console.log("getRegion - CLARITY ERROR. Server was unable to process request.:" + serviceNumber, "parameter_city :" + parameter_city);
+                        logger.debug("getRegion - CLARITY ERROR. Server was unable to process request.:" + serviceNumber, "parameter_city :" + parameter_city);
                         //done();
                     }
                     else {
@@ -176,20 +186,12 @@ module.exports = {
                         conversation.variable('PARAM2', PARAM2);
                         conversation.transition('blank');
                         transition = 'blank';
-                        console.log("getRegion component ,blank argument service number:" + serviceNumber, "PARAM2: " + PARAM2);
+                        logger.debug("getRegion component ,blank argument service number:" + serviceNumber, "PARAM2: " + PARAM2);
                         //done();
                     }
                 }
             }
-            logger.info(`[Transition]: ${transition}`);
-            logger.info(`-------------------------------------------------------------------------------------------------------------`)
-            logger.info(`- [END] Number Serviceability - [Region]                                                                                     -`)
-            logger.info(`-------------------------------------------------------------------------------------------------------------`)
-
-            _logger.shutdown();
-            _emailLog.shutdown();
-            conversation.transition(transition);
-            done();
+            logger.end();
         });
     }
 };

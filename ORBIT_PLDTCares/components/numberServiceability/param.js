@@ -14,40 +14,53 @@ module.exports = {
     }),
 
     invoke: (conversation, done) => {
+        // #region Setup Properties 
+        var serviceNumber = conversation.properties().serviceNumber;
+        // #endregion
+
+        // #region Imports
         const request = require('request');
         const globalProp = require('../../helpers/globalProperties');
+        const emailSender = require('../../helpers/emailsender');
         const instance = require("../../helpers/logger");
+        // #endregion
+
+        // #region Initialization
         const _logger = instance.logger(globalProp.Logger.Category.NumberServiceability.NumberServiceabilityParam);
         const logger = _logger.getLogger();
-        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);
-        const emailLog = _emailLog.getLogger();
 
-        function logError(result, resultCode) {
+        logger.sendEmail = ((result, resultCode) => {
             const strResult = JSON.stringify(result);
-            emailLog.addContext("apierrorcode", strResult);
-            emailLog.addContext("apierrormsg", resultCode);
-            const message = globalProp.Email.EmailFormat(globalProp.NumberServiceability.API.Serviceable.Name, resultCode, strResult, serviceNumber);
+            const message = globalProp.Email.EmailFormat(globalProp.NumberServiceability.API.Serviceable.Name, resultCode, strResult, svcNumber);
+            logger.error(`[ERROR]: ${strResult}`);
+            emailSender(globalProp.Email.Subjects.NumberServiceability.Param, message, globalProp.Logger.BCPLogging.AppNames.NumberServiceability.Param, strResult, resultCode, accNumber, svcNumber)
+        })
 
-            logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`)
-            emailLog.error(message);
-        }
+        logger.start = (() => {
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [START] Number Serviceability - [PARAM]                                                                   -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        });
+
+        logger.end = (() => {
+            logger.info(`[Transition]: ${transition}`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [END] Number Serviceability - [PARAM]                                                                     -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            _logger.shutdown();
+
+            conversation.transition(transition);
+            done();
+        });
 
         let transition = 'failure';
-
-        var serviceNumber = conversation.properties().serviceNumber;
         var areacode = "";
         var telephone = "";
         var accountNumber = "No Data";
         logger.addContext("serviceNumber", serviceNumber)
-        emailLog.addContext("subject", globalProp.Email.Subjects.NumberServiceability.Param);
-        emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
-        emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.NumberServiceability.Param);
-        emailLog.addContext("usertelephonenumber", serviceNumber);
-        emailLog.addContext("useraccountnumber", accountNumber);
+        // #endregion
 
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`- [START] Number Serviceability - [PARAM]                                                                   -`)
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        logger.start();
 
         if (serviceNumber.length == 9) {
             areacode = serviceNumber.substring(2, 0);
@@ -81,7 +94,7 @@ module.exports = {
         request(options, function (error, response) {
             logger.info(`Invoking request successful.`)
             if (error) {
-                logError(error, error.code);
+                logger.sendEmail(error, error.code);
                 transition = 'failure';
             }
             else {
@@ -90,7 +103,7 @@ module.exports = {
 
                 if (response.statusCode > 200) {
                     var statCode = response.statusCode;
-                    logError(responseBody, statCode);
+                    logger.sendEmail(responseBody, statCode);
                     transition = 'failure';
                     switch (statCode) {
                         case 504: case 406: case 500: case 404: case 408: case 400:
@@ -140,9 +153,9 @@ module.exports = {
                                 transition = 'VipZone';
 
                             }
-                            else if  (paramcity === "VALENZUELA CITY"){
-                            conversation.variable('PARAM3', fullcity);
-                            transition = 'param3';
+                            else if (paramcity === "VALENZUELA CITY") {
+                                conversation.variable('PARAM3', fullcity);
+                                transition = 'param3';
                             }
                             else {
 
@@ -155,20 +168,12 @@ module.exports = {
                             conversation.variable('neType', "NULL NE TYPE");
                             conversation.variable('PARAM3', fullcity);
                             transition = 'blank';
-                            console.log(" GET PARAM Component , blank argument service number:" + serviceNumber, "PARAM3: ", fullcity);
+                            logger.debug(" GET PARAM Component , blank argument service number:" + serviceNumber, "PARAM3: ", fullcity);
                         }
                     }
                 }
             }
-            logger.info(`[Transition]: ${transition}`);
-            logger.info(`-------------------------------------------------------------------------------------------------------------`)
-            logger.info(`- [END] Number Serviceability - [PARAM]                                                                     -`)
-            logger.info(`-------------------------------------------------------------------------------------------------------------`)
-            _logger.shutdown();
-            _emailLog.shutdown();
-
-            conversation.transition(transition);
-            done();
+            logger.end();
         });
     }
 };

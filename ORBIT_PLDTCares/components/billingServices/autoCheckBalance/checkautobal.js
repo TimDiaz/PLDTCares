@@ -17,23 +17,46 @@ module.exports = {
     supportedActions: ['valid', 'invalid', 'failure', 'fuseDown']
   }),
   invoke: (conversation, done) => {
+    // #region Setup Properties  
+    const svcNum = conversation.properties().serviceNumber;
+    const acctNum = conversation.properties().accountNumber;
+    // #endregion
+
+    // #region Imports
     const request = require('request');
     const globalProp = require('../../../helpers/globalProperties');
+    const emailSender = require('../../../helpers/emailsender');
     var instance = require("../../../helpers/logger");
+    // #endregion
+
+    // #region Initialization
     var _logger = instance.logger(globalProp.Logger.Category.BillingServices.Autobal);
     var logger = _logger.getLogger();
-    var _emailLog = instance.logger(globalProp.Logger.Category.Mailer);
-    var emailLog = _emailLog.getLogger();
 
-    function logError(result, resultCode) {
+    logger.sendEmail = ((result, resultCode) => {
       const strResult = JSON.stringify(result);
-      emailLog.addContext("apierrorcode", strResult);
-      emailLog.addContext("apierrormsg", resultCode);
-      const message = globalProp.Email.EmailFormat(globalProp.BillingServices.Autobal.API.CheckBalance.Name, resultCode, strResult, svcNum);
+      const message = globalProp.Email.EmailFormat(globalProp.BillingServices.Autobal.API.GetAccountBalance.Name, resultCode, strResult, svcNumber);
+      logger.error(`[ERROR]: ${strResult}`);
+      emailSender(globalProp.Email.Subjects.BillingServices.Autobal, message, globalProp.Logger.BCPLogging.AppNames.BillingServices.Autobal, strResult, resultCode, accNumber, svcNumber)
+    })
 
-      logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`)
-      emailLog.error(message);
-    }
+    logger.start = (() => {
+      logger.info(`-------------------------------------------------------------------------------------------------------------`);
+      logger.info(`- [START] Check Auto Balance                                                                                -`);
+      logger.info(`-------------------------------------------------------------------------------------------------------------`);
+    });
+
+    logger.end = (() => {
+      logger.info(`[Transition]: ${transition}`);
+      logger.info(`-------------------------------------------------------------------------------------------------------------`);
+      logger.info(`- [END] Auto Check Balance                                                                                  -`);
+      logger.info(`-------------------------------------------------------------------------------------------------------------`);
+
+      _logger.shutdown();
+
+      conversation.transition(transition);
+      done();
+    });
 
     function HasInvalidServiceStatus(responseBody, servicestatus) {
       return (responseBody.serviceProfiles.find(e => e.serviceStatus === servicestatus) !== undefined)
@@ -41,26 +64,17 @@ module.exports = {
 
     let transition = '';
 
-    const svcNum = conversation.properties().serviceNumber;
-    const acctNum = conversation.properties().accountNumber;
-
     logger.addContext("serviceNumber", svcNum);
-    emailLog.addContext("subject", globalProp.Email.Subjects.BillingServices.Autobal);
-    emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
-    emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.BillingServices.Autobal);
-    emailLog.addContext("usertelephonenumber", svcNum);
-    emailLog.addContext("useraccountnumber", acctNum);
+    // #endregion
 
-    logger.info(`-------------------------------------------------------------------------------------------------------------`);
-    logger.info(`- [START] Check Auto Balance                                                                                -`);
-    logger.info(`-------------------------------------------------------------------------------------------------------------`);
+    logger.start();
 
     var options = globalProp.BillingServices.Autobal.API.CheckBalance.GetOptions(svcNum);
     logger.debug(`Setting up the post option for API Token: ${JSON.stringify(options)}`);
     request(options, function (errorFuse, responseFused) {
       if (errorFuse) {
         transition = 'fuseDown'; //500 return
-        logError(errorFuse, errorFuse.code);
+        logger.sendEmail(errorFuse, errorFuse.code);
         conversation.variable('statementDate', "-");
       }
       else {
@@ -77,7 +91,14 @@ module.exports = {
         logger.info("Fuse Response Body: ", JSON.stringify(fuseResponseBody));
         logger.info("Fuse API Error: ", fuseResponseBody.errorMessage);
 
-        if (responseFused.statusCode == 200) {
+        if (responseFused.statusCode > 200) {
+          if (fuseResponseBody.errorMessage != "2") {
+            transition = 'fuseDown';
+            logger.sendEmail(fuseResponseBody, response.statusCode);
+            logger.end();
+          }
+        }
+        else {
           var parsedBalanceProfile = fuseResponseBody.balanceProfile;
 
           logger.info("parsed balanceProfile: ", JSON.stringify(parsedBalanceProfile));
@@ -138,30 +159,8 @@ module.exports = {
 
           }
         }
-        else {
-          if (responseFused.statusCode == 404) {
-            transition = 'fuseDown';
-            conversation.variable('statementDate', "-");
-          }
-          else {
-            transition = 'fuseDown'; //500 return
-            conversation.variable('statementDate', "-");
-            logError(responseFused, responseFused.statusCode);
-          }
-        }
       }
-      logger.info(`[Transition]: ${transition}`);
-      logger.info(`-------------------------------------------------------------------------------------------------------------`);
-      logger.info(`- [END] Auto Check Balance                                                                                      -`);
-      logger.info(`-------------------------------------------------------------------------------------------------------------`);
-      _logger.shutdown();
-      _emailLog.shutdown();
-  
-      conversation.transition(transition);
+      logger.end();
     });
-
-    
-    // done();
   }
-
 };
