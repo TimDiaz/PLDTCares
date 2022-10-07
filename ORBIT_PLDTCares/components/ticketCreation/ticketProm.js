@@ -6,8 +6,8 @@ module.exports = {
     metadata: function metadata() {
         return {
             name: componentName.TicketCreationProm,
-             properties: {
-				description: {
+            properties: {
+                description: {
                     type: "string",
                     required: true
                 },
@@ -15,7 +15,7 @@ module.exports = {
                     type: "string",
                     required: true
                 },
-  				faultType: {
+                faultType: {
                     type: "string",
                     required: true
                 },
@@ -23,7 +23,7 @@ module.exports = {
                     type: "string",
                     required: true
                 },
-  				promCause: {
+                promCause: {
                     type: "string",
                     required: true
                 },
@@ -31,7 +31,7 @@ module.exports = {
                     type: "string",
                     required: true
                 },
-  				serviceNumber: {
+                serviceNumber: {
                     type: "string",
                     required: true
                 },
@@ -51,33 +51,14 @@ module.exports = {
                     type: "string",
                     required: false
                 }
-            }, 
-            supportedActions: ['SUCCESS','FAILURE','500']
+            },
+            supportedActions: ['SUCCESS', 'FAILURE', '500']
         };
     },
 
     invoke: (conversation, done) => {
 
-        const request = require('request');
-        const globalProp = require('../../helpers/globalProperties');
-        const instance = require("../../helpers/logger");
-        const _logger = instance.logger(globalProp.Logger.Category.TicketCreation.ticketProm);
-        const logger = _logger.getLogger();
-        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);        
-        const emailLog = _emailLog.getLogger();
-
-        function logError(result, resultCode){
-            const strResult = JSON.stringify(result);
-            emailLog.addContext("apierrorcode", strResult);
-            emailLog.addContext("apierrormsg", resultCode);
-            const message = globalProp.Email.EmailFormat(globalProp.TicketCreation.API.Validate.Name, resultCode, strResult, serviceNumber);
-
-            logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`)
-            emailLog.error(message);
-        }
-
-        let transition = 'failure';
-
+        // #region Setup Properties  
         var description = conversation.properties().description;
         var empeId = conversation.properties().empeId;
         var faultType = conversation.properties().faultType;
@@ -87,20 +68,52 @@ module.exports = {
         var serviceNumber = conversation.properties().serviceNumber;
         var promSubType = conversation.properties().promSubType;
         var promWorgName = conversation.properties().promWorgName;
-        var promCategory = conversation.properties().promCategory;  
-        var promSubCategory = conversation.properties().promSubCategory;  
+        var promCategory = conversation.properties().promCategory;
+        var promSubCategory = conversation.properties().promSubCategory;
         var accntNumber = conversation.properties().accntNum;
+        // #endregion
+
+        // #region Imports
+        const request = require('request');
+        const globalProp = require('../../helpers/globalProperties');
+        const instance = require("../../helpers/logger");
+        // #endregion
+
+        // #region Initialization
+        const _logger = instance.logger(globalProp.Logger.Category.TicketCreation.ticketProm);
+        const logger = _logger.getLogger();
+
+        logger.sendEmail = ((result, resultCode) => {
+            const strResult = JSON.stringify(result);
+            const message = globalProp.Email.EmailFormat(globalProp.TicketCreation.API.Validate.Name, resultCode, strResult, svcNumber);
+            logger.error(`[ERROR]: ${strResult}`);
+            emailSender(globalProp.Email.Subjects.TicketCreation.TicketProm, message, globalProp.Logger.BCPLogging.AppNames.TicketCreation.TicketProm, strResult, resultCode, accNumber, svcNumber)
+        })
+
+        logger.start = (() => {
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [START] Ticket Creation                                                                                   -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        });
+
+        logger.end = (() => {
+            logger.info(`[Transition]: ${transition}`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [END] Ticket Creation                                                                                     -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+
+            _logger.shutdown();
+            conversation.transition(transition);
+            done();
+        });
+
+        let transition = 'failure';
 
         logger.addContext("serviceNumber", serviceNumber);
-        emailLog.addContext("subject", globalProp.Email.Subjects.TicketCreation.TicketProm);
-        emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
-        emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.TicketCreation.TicketProm);
-        emailLog.addContext("usertelephonenumber", serviceNumber);
-        emailLog.addContext("useraccountnumber", accntNumber);
+        // #endregion
 
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`- [START] Ticket Creation                                                                                   -`)
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        logger.start();
+
         const requestBody = JSON.stringify({
             "description": description,
             "empeId": empeId,
@@ -115,65 +128,52 @@ module.exports = {
             "promSubCategory": promSubCategory
         });
 
-    logger.debug(`Setting up the request body: ${requestBody}`);
+        logger.debug(`Setting up the request body: ${requestBody}`);
 
-    const options = globalProp.TicketCreation.API.Validate.PostOptions(requestBody);
-    logger.debug(`Setting up the post option: ${JSON.stringify(options)}`);
+        const options = globalProp.TicketCreation.API.Validate.PostOptions(requestBody);
+        logger.debug(`Setting up the post option: ${JSON.stringify(options)}`);
 
-    logger.info(`Starting to invoke the request.`)
-    
+        logger.info(`Starting to invoke the request.`)
+
         request(options, function (error, response) {
-            if (error)
-            {
-                logError(error, error.code);
+            if (error) {
+                logger.sendEmail(error, error.code);
             }
-            else
-            {
+            else {
                 var createRes = response.body;
                 var JSONRes = JSON.parse(createRes);
 
-                if (response.statusCode > 200){              
-                    if (response.statusCode === 406)
-                    {
-                        if (JSONRes.spiel)
-                        {
+                if (response.statusCode > 200) {
+                    if (response.statusCode === 406) {
+                        if (JSONRes.spiel) {
                             console.log('Spiel is not null');
                             logger.debug('Spiel is not null');
                             conversation.variable('spielMsg', JSONRes.spiel);
                             logger.debug('Spiel is not null');
                             transition = 'FAILURE';
                         }
-                        else
-                        {
+                        else {
                             console.log('Spiel is null');
                             logger.debug('Spiel is null');
                             conversation.variable('spielMsg', JSONRes.message);
                             transition = 'FAILURE';
-                        }           
+                        }
                     }
-                    else if (response.statusCode === 500)
-                    {
+                    else if (response.statusCode === 500) {
                         transition = '500';
                     }
                     else {
                         transition = 'FAILURE';
                     }
-                    logError(response, response.statusCode);
+                    logger.sendEmail(response.body, response.statusCode);
                 }
-                else{
+                else {
                     conversation.variable('spielMsg', JSONRes.spiel);
-                    conversation.variable('ticketNumber', JSONRes.ticketNumber);          
+                    conversation.variable('ticketNumber', JSONRes.ticketNumber);
                     transition = 'SUCCESS';
                 }
             }
-            logger.info(`[Transition]: ${transition}`);
-            logger.info(`-------------------------------------------------------------------------------------------------------------`)
-            logger.info(`- [END] Ticket Creation                                                                                     -`)
-            logger.info(`-------------------------------------------------------------------------------------------------------------`)
-
-            _logger.shutdown();
-            _emailLog.shutdown();            
-            conversation.transition(transition);               
+            logger.end();
         });
     }
 };

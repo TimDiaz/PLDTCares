@@ -3,13 +3,9 @@
 const componentName = require('../../../configurations/component_config');
 module.exports = {
     metadata: () => ({
-        name: componentName.ValidateServiceNumberFormat, //"checkserviceRequestNumberformat",
+        name: componentName.ValidateServiceNumberFormat, //"checkserviceNumberformat",
         properties: {
             serviceNumber: {
-                type: "string",
-                required: true
-            },
-            serviceRequestNumber: {
                 type: "string",
                 required: true
             }
@@ -18,27 +14,49 @@ module.exports = {
     }),
 
     invoke: (conversation, done) => {
+        // #region Setup Properties
+        var serviceNumber = conversation.properties().serviceNumber;
+        // #endregion
+
+        // #region Imports
         const globalProp = require('../../../helpers/globalProperties');
         const instance = require("../../../helpers/logger");
+        // #endregion
+
+        // #region Initialization
         const _logger = instance.logger(globalProp.Logger.Category.ValidateServiceNumberFormat);
         const logger = _logger.getLogger();
+
+        logger.start = (() => {
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [START] Validate Service Number Format                                                                    -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        });
+
+        logger.end = (() => {
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [END] Validate Service Number Format                                                                      -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+
+            _logger.shutdown();
+            conversation.keepTurn(keepTurn);
+            conversation.transition(transition);
+            done();
+        });
 
         let keepTurn = true;
         let transition = "invalidservformat";
 
-        var serviceNumber = conversation.properties().serviceNumber;
-        var serviceRequestNumber = conversation.properties().serviceRequestNumber;
         logger.addContext("serviceNumber", serviceNumber)
+        // #endregion
 
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`- [START] Validate Service Number Format                                                                    -`)
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`Service Number: [${serviceRequestNumber}]`);
+        logger.start();
+        logger.info(`Service Number: [${serviceNumber}]`);
 
-        var resChkStr = serviceRequestNumber.match(globalProp.ValidateServiceNumberFormat.Regex.ServiceNumberFormat);
+        var resChkStr = serviceNumber.match(globalProp.ValidateServiceNumberFormat.Regex.ServiceNumberFormat);
         if (resChkStr === null) {
             logger.info(`[Valid] Service Number is numeric`);
-            if (serviceRequestNumber.length == 10) {
+            if (serviceNumber.length == 10) {
                 logger.info(`[Valid] Service Number lenght is 10.`);
                 transition = 'validservformat';
             }
@@ -51,13 +69,6 @@ module.exports = {
             logger.info(`[Invalid] Service Number is alphanumeric`);
             transition = 'invalidservformat';
         }
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`- [END] Validate Service Number Format                                                                      -`)
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-
-        _logger.shutdown();
-        conversation.keepTurn(keepTurn);
-        conversation.transition(transition);
-        done();
+        logger.end();
     }
 };

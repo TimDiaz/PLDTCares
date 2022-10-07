@@ -14,60 +14,86 @@ module.exports = {
                 required: true
             }
         },
-        supportedActions: ['withLandline','withoutLandline','failure']
+        supportedActions: ['withLandline', 'withoutLandline', 'failure']
     }),
 
     invoke: (conversation, done) => {
+        // #region Setup Properties  
+        var accountNumber = conversation.properties().accountNumber;
+        const serviceNumber = conversation.properties().serviceNumber;
+        // #endregion
+
+        // #region Imports
         const request = require('request');
         const Logic = require('../../businesslogics/fmGetFTDetails_logic').Logic;
         const globalProp = require('../../helpers/globalProperties');
+        const emailSender = require('../../helpers/emailsender');
         const instance = require("../../helpers/logger");
+        // #endregion
+
+        // #region Initialization
         const _logger = instance.logger(globalProp.Logger.Category.FMGetFTDetail.FMLandline);
         const logger = _logger.getLogger();
-        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);        
-        const emailLog = _emailLog.getLogger();
+
+        logger.sendEmail = ((result, resultCode) => {
+            const strResult = JSON.stringify(result);
+            const message = globalProp.Email.EmailFormat(globalProp.FMGetFTDetails.API.Name, resultCode, strResult, svcNumber);
+            logger.error(`[ERROR]: ${strResult}`);
+            emailSender(globalProp.Email.Subjects.FMgetFTDetails.FMLandline, message, globalProp.Logger.BCPLogging.AppNames.FMgetFTDetails.FMLandline, strResult, resultCode, accNumber, svcNumber)
+        })
+
+        logger.start = (() => {
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [START] FM Get FT Details - FM Landline                                                                   -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        });
+
+        logger.end = (() => {
+            logger.info(`[Transition] ${transition}`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+            logger.info(`- [END] FM Get FT Details - FM Landline                                                                     -`)
+            logger.info(`-------------------------------------------------------------------------------------------------------------`)
+
+            _logger.shutdown();
+
+            conversation.transition(transition);
+            done();
+        });
+
 
         let transition = 'failure';
-
-        var accountNumber = conversation.properties().accountNumber;
-        const serviceNumber = conversation.properties().serviceNumber;
         var optionType = "12"
 
         logger.addContext("serviceNumber", serviceNumber);
-        emailLog.addContext("subject", globalProp.Email.Subjects.FMgetFTDetails.FMLandline);
-        emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
-        emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.FMgetFTDetails.FMLandline);
-        emailLog.addContext("usertelephonenumber", serviceNumber);
-        emailLog.addContext("useraccountnumber", accountNumber);
 
         const logic = new Logic(logger, emailLog, globalProp);
+        // #endregion
 
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
-        logger.info(`- [START] FM Get FT Details - FM Landline                                                                   -`)
-        logger.info(`-------------------------------------------------------------------------------------------------------------`)
+        logger.start();
 
         const requestBody = JSON.stringify({
             "optionType": optionType,
             "serviceId": accountNumber
         });
         logger.debug(`Setting up the request body: ${requestBody}`);
-        
+
         const options = globalProp.FMGetFTDetails.API.PostOptions(requestBody);
         logger.debug(`Setting up the post option: ${JSON.stringify(options)}`);
 
-        logger.info(`Starting to invoke the request.`)  
+        logger.info(`Starting to invoke the request.`)
         request(options, function (error, response) {
-            if (error)
-            {
-                transition = logic.EmailLogError(error, error.code, serviceNumber).Transition;  
+            if (error) {
+                logger.sendEmail(error, error.code)
+                transition = 'failure';
             }
             else {
-                if(response.statusCode > 200){
-                    transition = logic.EmailLogError(response.body, response.statusCode, serviceNumber).Transition;  
+                if (response.statusCode > 200) {
+                    logger.sendEmail(error, error.code)
+                    transition = 'failure';
                 }
-                else{  
+                else {
                     var respBody = response.body;
-                    var JSONRes  = JSON.parse(respBody);
+                    var JSONRes = JSON.parse(respBody);
 
                     logger.debug(`[Response Body] ${respBody}`);
                     logger.debug(`[Service Type] ${JSONRes.result.SERVICE_TYPE}`)
@@ -82,17 +108,7 @@ module.exports = {
                     });
                 }
             }
-
-            logger.info(`[Transition] ${transition}`);
-            logger.info(`-------------------------------------------------------------------------------------------------------------`)
-            logger.info(`- [END] FM Get FT Details - FM Landline                                                                     -`)
-            logger.info(`-------------------------------------------------------------------------------------------------------------`)
-
-            _logger.shutdown();
-            _emailLog.shutdown();
-
-            conversation.transition(transition);
-            // done();
+            logger.end();
         });
-      }
-  };
+    }
+};

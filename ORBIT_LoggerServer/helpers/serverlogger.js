@@ -1,10 +1,10 @@
-const log4js = require('log4js');
+const server_log4js = require('log4js');
 var moment = require('moment-timezone');
-var log4jsmtp = require('./@log4js-node/smtp');
+var log4js_oci_notif = require('./@log4js-node/oci-notification/lib');
 
 module.exports = {
     configure: () => {
-        return log4js.configure({
+        return server_log4js.configure({
             appenders: {
                 multi: {
                     type: "multiFile",
@@ -25,18 +25,7 @@ module.exports = {
                     },
                 },
                 mail: {
-                    type: log4jsmtp,
-                    recipients: 't-tsdiaz@supplier.smart.com.ph, t-jpvalete@supplier.smart.com.ph',
-                    transport: 'SMTP',
-                    SMTP: {
-                        host: 'smtp.gmail.com',
-                        port: 587,
-                        auth: {
-                            user: 'ndphchatbot@gmail.com',
-                            pass: 'nwqiqdpeezxtdatx',
-                        },
-                        debug: true,
-                    },
+                    type: log4js_oci_notif,
                     layout: {
                         type: "pattern",
                         pattern: "[%x{dateTime}] [%p] %m",

@@ -7,6 +7,7 @@ const config = {
     NumberServiceabilityTechnology: `numberServiceabilityTechnology.${baseConfig.Environment}`,
     ValidateAccountNumberFormat: `validateaccountnumberformat.${baseConfig.Environment}`,
     ValidateServiceNumberFormat: `validateServiceNumberFormat.${baseConfig.Environment}`,
+    ValidateServiceRequestNumberFormat: `validateServiceRequestNumberFormat.${baseConfig.Environment}`,
     CaseCreation: `casecreation.${baseConfig.Environment}`,
     ChatAdCaseCreate: `chatadcasecreate.${baseConfig.Environment}`,
     CheckWaitTime: `checkwaittime.${baseConfig.Environment}`,
@@ -18,11 +19,13 @@ const config = {
     TicketCreation: `ticketCreation.${baseConfig.Environment}`,
     TicketCreationFT: `ticketCreationFT.${baseConfig.Environment}`,
     TicketCreationProm: `ticketProm.${baseConfig.Environment}`,
-    BSMPWhiteList: `BSMPWhitelistChecker.${baseConfig.Environment}`
+    BSMPWhiteList: `BSMPWhitelistChecker.${baseConfig.Environment}`,
+    BSMPChecker: `BSMPChecker.${baseConfig.Environment}`
 ,
     BillingServices: {
         Autobal: `autobal.${baseConfig.Environment}`,
-        Autoesoa: `autoesoa.${baseConfig.Environment}`
+        Autoesoa: `autoesoa.${baseConfig.Environment}`,
+        AccounetBalance: `accountbalance.${baseConfig.Environment}`,
     },
     FMgetFTDetails:  { 
         CheckSType: `checkStype.${baseConfig.Environment}`,

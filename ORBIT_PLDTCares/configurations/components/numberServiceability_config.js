@@ -15,8 +15,8 @@ module.exports = {
                     body: body
                 }
             },
-            Token: "MDg0OWY2YzAtYjcwZS00ZjQxLTlmMzgtODBjZWRmMjc2MTI2",
-            Consumer: "CHATBOT",
+            Token: baseConfig.NumberServiceability.Token,
+            Consumer: baseConfig.NumberServiceability.Consumer,
         }
     },        
 }

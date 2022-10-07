@@ -37,7 +37,7 @@ module.exports = {
                         },
                         CR: {
                             Name: 'CR',
-                            Conversation: { Transition: 'withOpenParentVC'}                                
+                            Conversation: { Transition: 'withOpenParentCR'}                                
                         },
                         Default: {
                             Conversation: { Transition: 'withOpenParent'}                                
@@ -79,7 +79,7 @@ module.exports = {
             }
         },
         InvalidServiceNumber: { Message: 'Invalid service number', Conversation: { Transition: 'undertreatment', Variables: ['ineligibleAcctmsg'] }},
-        WithOpenSO: { Message: 'With Open SO.', Conversation: { Transition: 'undertreatment', Variables: ['ineligibleAcctmsg', 'openSONumber'] }},
+        WithOpenSO: { Message: 'With Open SO.', Conversation: { Transition: 'openso', Variables: ['ineligibleAcctmsg', 'openSONumber'] }},
         WithOpenTransferSO: { Message: 'With Open Transfer SO.', Conversation: { Transition: 'undertreatment', Variables: ['ineligibleAcctmsg', 'openSONumber'] }},
         AccountIsNotRBG: { Message: 'Account is not RBG.', Conversation: { Transition: 'undertreatment', Variables: ['ineligibleAcctmsg'] }},
         OpenOrder: { Conversation: { Transition: 'openorder', Variables: ['ineligibleAcctmsg', 'openSONumber'] }},

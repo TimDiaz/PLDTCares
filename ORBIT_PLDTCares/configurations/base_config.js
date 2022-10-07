@@ -183,12 +183,28 @@ function GetCheckWaitTimeBaseCookies(){
 //[END] CHECK WAIT TIME
 //[END] CASE CREATION API Configuration
 
+function GetNumberServiceabilityToken(){
+    return environment === 'PROD' ? 
+            'YjQ5NzQyNWItNmE4NC00YzZlLThlM2UtYmU4OGNjZjc2YmQy' : 
+            'MDg0OWY2YzAtYjcwZS00ZjQxLTlmMzgtODBjZWRmMjc2MTI2';
+}
+
+function GetNumberServiceabilityConsumer(){
+    return environment === 'PROD' ? 
+            'CHATBOT' : 
+            'CHATBOT';
+}
+
 module.exports = {
     Environment: environment,
     ChatBotBaseUrl: GetChatbotBaseURL(),
     BaseUrl: GetBaseURL(),
     AuthToken: GetAuthToken(),
     Cookie: GetCookies(),
+    NumberServiceability: {
+        Token: GetNumberServiceabilityToken(),
+        Consumer: GetNumberServiceabilityConsumer(),
+    },
     Kenan: {
         BaseUrl: GetKenanBaseURL(),
         AuthToken: GetKenanAuthToken(),
