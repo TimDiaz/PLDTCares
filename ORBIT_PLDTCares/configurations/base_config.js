@@ -6,6 +6,7 @@
 // const environment = 'PROD'                                                                                                   //
 //******************************************************************************************************************************//
 const environment = 'DEV';
+const emailtenant = `PLDT Cares`;
 
 function GetChatbotBaseURL(){
     return environment === 'PROD' ? 
@@ -197,6 +198,7 @@ function GetNumberServiceabilityConsumer(){
 
 module.exports = {
     Environment: environment,
+    EmailTenant: emailtenant,
     ChatBotBaseUrl: GetChatbotBaseURL(),
     BaseUrl: GetBaseURL(),
     AuthToken: GetAuthToken(),
