@@ -85,9 +85,9 @@ module.exports = {
 
         logger.sendEmail = ((result, resultCode) => {
             const strResult = JSON.stringify(result);
-            const message = globalProp.Email.EmailFormat(globalProp.TicketCreation.API.Validate.Name, resultCode, strResult, svcNumber);
+            const message = globalProp.Email.EmailFormat(globalProp.TicketCreation.API.Validate.Name, resultCode, strResult, serviceNumber);
             logger.error(`[ERROR]: ${strResult}`);
-            emailSender(globalProp.Email.Subjects.TicketCreation.TicketProm, message, globalProp.Logger.BCPLogging.AppNames.TicketCreation.TicketProm, strResult, resultCode, accNumber, svcNumber)
+            emailSender(globalProp.Email.Subjects.TicketCreation.TicketProm, message, globalProp.Logger.BCPLogging.AppNames.TicketCreation.TicketProm, strResult, resultCode, accntNumber, serviceNumber)
         })
 
         logger.start = (() => {

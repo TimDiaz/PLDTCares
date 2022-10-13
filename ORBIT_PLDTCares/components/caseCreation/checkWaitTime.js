@@ -41,9 +41,9 @@ module.exports = {
         
         logger.sendEmail = ((result, resultCode) => {
             const strResult = JSON.stringify(result);
-            const message = globalProp.Email.EmailFormat(globalProp.ChatAdCaseCreate.API.ChatAdToken.Name, resultCode, strResult, svcNumber);
+            const message = globalProp.Email.EmailFormat(globalProp.ChatAdCaseCreate.API.ChatAdToken.Name, resultCode, strResult, serviceNumber);
             logger.error(`[ERROR]: ${strResult}`);            
-            emailSender(globalProp.Email.Subjects.CaseCreation.CheckWaitTime, message, globalProp.Logger.BCPLogging.AppNames.CaseCreation.CheckWaitTime, strResult, resultCode, accNumber, svcNumber)
+            emailSender(globalProp.Email.Subjects.CaseCreation.CheckWaitTime, message, globalProp.Logger.BCPLogging.AppNames.CaseCreation.CheckWaitTime, strResult, resultCode, "NO DATA", serviceNumber)
         }) 
 
         logger.start = (() => {
