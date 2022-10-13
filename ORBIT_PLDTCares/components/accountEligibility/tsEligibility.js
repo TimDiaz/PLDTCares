@@ -59,7 +59,7 @@ module.exports = {
 		
 	    logger.addContext("serviceNumber", serviceNumber);
 
-        const logic = new Logic(logger, emailLog, globalProp);
+        const logic = new Logic(logger, globalProp);
         // #endregion
 
         logger.start();

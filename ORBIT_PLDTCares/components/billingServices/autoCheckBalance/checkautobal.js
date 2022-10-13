@@ -35,9 +35,9 @@ module.exports = {
 
     logger.sendEmail = ((result, resultCode) => {
       const strResult = JSON.stringify(result);
-      const message = globalProp.Email.EmailFormat(globalProp.BillingServices.Autobal.API.GetAccountBalance.Name, resultCode, strResult, svcNumber);
+      const message = globalProp.Email.EmailFormat(globalProp.BillingServices.Autobal.API.GetAccountBalance.Name, resultCode, strResult, svcNum);
       logger.error(`[ERROR]: ${strResult}`);
-      emailSender(globalProp.Email.Subjects.BillingServices.Autobal, message, globalProp.Logger.BCPLogging.AppNames.BillingServices.Autobal, strResult, resultCode, accNumber, svcNumber)
+      emailSender(globalProp.Email.Subjects.BillingServices.Autobal, message, globalProp.Logger.BCPLogging.AppNames.BillingServices.Autobal, strResult, resultCode, acctNum, svcNum)
     })
 
     logger.start = (() => {

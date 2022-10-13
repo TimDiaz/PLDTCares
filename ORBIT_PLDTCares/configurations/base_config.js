@@ -5,7 +5,8 @@
 // [PRODUCTION CONFIGURATION]                                                                                                   //
 // const environment = 'PROD'                                                                                                   //
 //******************************************************************************************************************************//
-const environment = 'DEV';
+const environment = 'PROD';
+const environmentSwitch = 'DEV';
 const emailtenant = `PLDT Cares`;
 
 function GetChatbotBaseURL(){
@@ -198,6 +199,7 @@ function GetNumberServiceabilityConsumer(){
 
 module.exports = {
     Environment: environment,
+    EnvironmentSwitch: environmentSwitch,
     EmailTenant: emailtenant,
     ChatBotBaseUrl: GetChatbotBaseURL(),
     BaseUrl: GetBaseURL(),
