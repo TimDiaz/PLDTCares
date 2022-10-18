@@ -3,7 +3,7 @@
 const componentName = require('../../../configurations/component_config');
 module.exports = {
   metadata: () => ({
-    name: componentName.BillingServices.Autobal,
+    name: componentName.BillingServices.AccounetBalance,
     properties: {
       accountNumber: {
         type: "string",
