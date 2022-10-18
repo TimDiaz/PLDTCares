@@ -72,7 +72,7 @@ module.exports = {
     logger.start();
 
     var options = globalProp.BillingServices.Autobal.API.CheckBalance.GetOptions(svcNum);
-    logger.debug(`Setting up the post option for API Token: ${JSON.stringify(AcctNumOptions)}`);
+    logger.debug(`Setting up the post option for API Token: ${JSON.stringify(options)}`);
     logger.info(`Starting to invoke the request for API Token.`);
     request(options, function (error, response) {
       if (error) {
