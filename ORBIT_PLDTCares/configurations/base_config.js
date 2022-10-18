@@ -5,7 +5,7 @@
 // [PRODUCTION CONFIGURATION]                                                                                                   //
 // const environment = 'PROD'                                                                                                   //
 //******************************************************************************************************************************//
-const environment = 'PROD';
+const environment = 'DEV';
 const environmentSwitch = 'DEV';
 const emailtenant = `PLDT Cares`;
 
