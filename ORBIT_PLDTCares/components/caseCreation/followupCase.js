@@ -105,7 +105,6 @@ module.exports = {
             logger.info(`-------------------------------------------------------------------------------------------------------------`);
 
             _logger.shutdown();
-            _emailLog.shutdown();
         
             conversation.transition(transition);
             done();
