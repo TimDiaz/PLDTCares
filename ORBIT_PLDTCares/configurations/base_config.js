@@ -11,7 +11,7 @@
 // PROD: Environment = PROD; EnvironmentSwitch = PROD;
 
 const environment = 'DEV';
-const environmentSwitch = 'DEV';
+const environmentSwitch = 'dev';
 const emailtenant = `PLDT Cares`;
 
 function GetChatbotBaseURL(){
@@ -227,6 +227,16 @@ function GetNumberServiceabilityToken(){
             'MDg0OWY2YzAtYjcwZS00ZjQxLTlmMzgtODBjZWRmMjc2MTI2';
 }
 
+function GetUATNumberServiceabilityToken(){
+    return 'YjQ5NzQyNWItNmE4NC00YzZlLThlM2UtYmU4OGNjZjc2YmQy';
+}
+
+function GetSwitchNumberServiceabilityToken(){
+    return environmentSwitch === 'UAT' ? 
+            GetUATNumberServiceabilityToken() : 
+            GetNumberServiceabilityToken();
+}
+
 function GetNumberServiceabilityConsumer(){
     return environment === 'PROD' ? 
             'CHATBOT' : 
@@ -245,7 +255,7 @@ module.exports = {
     AuthToken: GetAuthToken(),
     Cookie: GetCookies(),
     NumberServiceability: {
-        Token: GetNumberServiceabilityToken(),
+        Token: GetSwitchNumberServiceabilityToken(),
         Consumer: GetNumberServiceabilityConsumer(),
     },
     Kenan: {
