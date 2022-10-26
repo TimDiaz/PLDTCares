@@ -5,13 +5,18 @@
 // [PRODUCTION CONFIGURATION]                                                                                                   //
 // const environment = 'PROD'                                                                                                   //
 //******************************************************************************************************************************//
+//NOTE: 
+// DEV: Environment = DEV; EnvironmentSwitch = DEV;
+// UAT: Environment = DEV; EnvironmentSwitch = UAT;
+// PROD: Environment = PROD; EnvironmentSwitch = PROD;
+
 const environment = 'DEV';
 const environmentSwitch = 'DEV';
 const emailtenant = `PLDT Cares`;
 
 function GetChatbotBaseURL(){
     return environment === 'PROD' ? 
-            'https://chatbot171.pldthome.com' : 
+            'https://chatbot171.pldthome.com':
             'https://staging.chatbot171.pldthome.com';
 }
 
@@ -32,6 +37,37 @@ function GetCookies(){
             'incap_ses_500_2106196=kF0oTqqW43EE1Al/+lvwBm7uz2IAAAAA7AGUvqEevIqdw/4v96c4sg==; BIGipServerFuse_api_pool_8080=3893700618.36895.0000; BIGipServerMobileITPool=2048859658.16415.0000' : 
             'incap_ses_1234_2106196=Inf6SvgccUmeyqAspwwgEVXpBmMAAAAAGYiFFsilhU6T1OIS5sUvjQ==; BIGipServerMobileITPool=2048859658.16415.0000';
 }
+
+function GetBaseUATURL(){
+    return 'https://www.pldt.com.ph/mobility/';
+}
+
+function GetSwitchURL(){
+    return environmentSwitch === "UAT"? 
+            GetBaseUATURL(): 
+            GetBaseURL();
+}
+
+function GetUATAuthToken(){
+    return 'AH5PMt52GhW33gv1zdwuum2X591vTyD637WmFwVZupTpXR4ZG8uF6Q4EbFpbhLXDfEq5U4budhNXEZbAfTdRGzs';
+}
+
+function GetSwitchAuthToken(){
+    return environmentSwitch === "UAT"? 
+            GetUATAuthToken(): 
+            GetAuthToken();
+}
+
+function GetUATCookies(){
+    return 'incap_ses_500_2106196=kF0oTqqW43EE1Al/+lvwBm7uz2IAAAAA7AGUvqEevIqdw/4v96c4sg==; BIGipServerFuse_api_pool_8080=3893700618.36895.0000; BIGipServerMobileITPool=2048859658.16415.0000';
+}
+
+function GetSwitchCookies(){
+    return environmentSwitch === "UAT"? 
+            GetUATCookies(): 
+            GetCookies();
+}
+
 
 
 function GetKenanBaseURL(){
@@ -203,6 +239,9 @@ module.exports = {
     EmailTenant: emailtenant,
     ChatBotBaseUrl: GetChatbotBaseURL(),
     BaseUrl: GetBaseURL(),
+    SwitchURL: GetSwitchURL(),
+    SwitchToken: GetSwitchAuthToken(),
+    SwitchCookies: GetSwitchCookies(),
     AuthToken: GetAuthToken(),
     Cookie: GetCookies(),
     NumberServiceability: {

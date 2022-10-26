@@ -6,11 +6,11 @@ module.exports = {
         GetOptions: (serviceNumber) => {
             return {
                 'method': 'GET',
-                'url': `${baseConfig.BaseUrl}amdocs/api/account/eligibility/${serviceNumber}`,
+                'url': `${baseConfig.SwitchURL}amdocs/api/account/eligibility/${serviceNumber}`,
                 'headers': {
                     'Content-Type': 'application/json',
-                    'X-Pldt-Auth-Token': baseConfig.AuthToken,
-                    'Cookie': baseConfig.Cookie,
+                    'X-Pldt-Auth-Token': baseConfig.SwitchToken,
+                    'Cookie': baseConfig.SwitchCookies,
                     'Accept': 'application/json',
                 }
             }

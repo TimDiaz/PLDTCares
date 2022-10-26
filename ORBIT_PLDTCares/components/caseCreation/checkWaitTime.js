@@ -94,7 +94,7 @@ module.exports = {
                     var waitTime = JSON.stringify(res.messages[0].message.results[0].estimatedWaitTime);
 
                     // var waitTime = 5; // seconds
-                     var waitTime = 120; // for testing with queue
+                    //var waitTime = 120; // for testing with queue
                     // var waitTime = 1500; // for testing with queue
                     // var waitTime = 1860; // for testing more than 30mins
                     // var waitTime = 2400; // for testing more than 40mins
