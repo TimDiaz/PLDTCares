@@ -149,11 +149,13 @@ module.exports = {
                         'Description': trimmeddesc+',Fb Name: '+fullName +',fbid: '+fbId+',Channel Type: '+channelType,
                         'Type':sName,
                         'Status':'Open - Unassigned',
-                        'Origin':'Facebook',
+                        'Origin':'Social Chat',
                         'RecordTypeId': recordTypeid,
                         'Subject': subj,
                         'PLDT_Case_Sub_Type__c': sMenu,
-                        'Customer_City__c': city
+                        'Customer_City__c': city,
+                        "Media_Provider__c": "Chatbot Ordertake",
+                        "Topic_Profile_Name__c": "PLDT Home"
                     });
                     
                     var options = globalProp.FollowUpCase.API.CaseCreate.PostOptions(authBearer, requestBody);

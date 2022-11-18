@@ -11,7 +11,7 @@
 // PROD: Environment = PROD; EnvironmentSwitch = PROD;
 
 const environment = 'DEV';
-const environmentSwitch = 'dev';
+const environmentSwitch = 'DEV';
 const emailtenant = `PLDT Cares`;
 
 function GetChatbotBaseURL(){
@@ -218,6 +218,12 @@ function GetCheckWaitTimeBaseCookies(){
             'X-Salesforce-CHAT=!QwHUs1IUHxroNDUroAdUQlA9+CQ4uSAZIBbxE1I786q5cqBSuq+3IR1UxvxROJZ/fGmDB4Wvh4wUQF0=' : 
             'X-Salesforce-CHAT=!eF3gfwR5AOhWbYhvXaWnnx/Wbhtpsw5ceBKbCOrsRzjnWxyYBCox61p0fxSoIhyAWKDRgQ6K84GEphc=';
 }
+
+function GetOrgId(){
+    return environment === 'PROD' ? 
+            '00D7F000000zntY' : 
+            '00D0T0000000ce2';
+}
 //[END] CHECK WAIT TIME
 //[END] CASE CREATION API Configuration
 
@@ -319,7 +325,8 @@ module.exports = {
         CheckWaitTime: {
             Base: {
                 Url: GetCheckWaitTimeBaseUrl(),
-                Cookie: GetCheckWaitTimeBaseCookies()
+                Cookie: GetCheckWaitTimeBaseCookies(),
+                OrgId: GetOrgId()
             }
         }
     }

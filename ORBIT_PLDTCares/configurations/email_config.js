@@ -2,7 +2,7 @@ const moment = require('moment-timezone');
 const baseConfig = require('./base_config');
 
 module.exports = {
-    URL: `${baseConfig.ChatBotBaseUrl}:7747/sendEmail`,
+    URL: 'https://staging.chatbot171.pldthome.com:7747/sendEmail', //`${baseConfig.ChatBotBaseUrl}:7747/sendEmail`,
     Subjects: {
         AccountValidation: `[API Error] ${baseConfig.EmailTenant} Account Validation ${baseConfig.Environment} - Subscriber Checking`,
         AccountEligibility: `[API Error] ${baseConfig.EmailTenant} Account Eligibility ${baseConfig.Environment} - Existing Ticket Checking`,
