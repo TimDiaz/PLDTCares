@@ -9,7 +9,7 @@ let param_notexist = testing.MockRequest(
     {},
     //properties
     {
-        "serviceNumber": "00230872789"
+        "serviceNumber": "0744247159"
     }
 )
 let param_exist = testing.MockRequest(

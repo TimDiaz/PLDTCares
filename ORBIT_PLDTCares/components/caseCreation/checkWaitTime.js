@@ -21,42 +21,56 @@ module.exports = {
     }),
     invoke: (conversation, done) => 
     {
-        const request = require('request');
-        const globalProp = require('../../helpers/globalProperties');
-        const instance = require("../../helpers/logger");
-        const _logger = instance.logger(globalProp.Logger.Category.CaseCreation.CheckWaitTime);
-        const logger = _logger.getLogger();
-        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);        
-        const emailLog = _emailLog.getLogger();
-
-        function logError(result, resultCode){
-            const strResult = JSON.stringify(result);
-            emailLog.addContext("apierrorcode", strResult);
-            emailLog.addContext("apierrormsg", resultCode);
-            const message = globalProp.Email.EmailFormat(globalProp.CheckWaitTime.API.WaitTime.Name, resultCode, strResult, svcNumber);
-
-            logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`);
-            emailLog.error(message);
-        }
-
-        let transition = '';
-
+        // #region Setup Properties
         const serviceNumber = conversation.properties().serviceNumber;
         const deploymentid = conversation.properties().deploymentid;
         const buttonid = conversation.properties().buttonid;
-        const orgId = "00D0T0000000ce2";
+        // const orgId = "00D0T0000000ce2";
+        // #endregion
+
+        // #region Imports
+        const request = require('request');
+        const globalProp = require('../../helpers/globalProperties');
+        const emailSender = require('../../helpers/emailsender');
+        const instance = require("../../helpers/logger");
+        // #endregion
+
+        // #region Initialization
+        const _logger = instance.logger(globalProp.Logger.Category.CaseCreation.CheckWaitTime);
+        const logger = _logger.getLogger();
+        
+        logger.sendEmail = ((result, resultCode) => {
+            const strResult = JSON.stringify(result);
+            const message = globalProp.Email.EmailFormat(globalProp.ChatAdCaseCreate.API.ChatAdToken.Name, resultCode, strResult, serviceNumber);
+            logger.error(`[ERROR]: ${strResult}`);            
+            emailSender(globalProp.Email.Subjects.CaseCreation.CheckWaitTime, message, globalProp.Logger.BCPLogging.AppNames.CaseCreation.CheckWaitTime, strResult, resultCode, "NO DATA", serviceNumber)
+        }) 
+
+        logger.start = (() => {
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+            logger.info(`- [START] Check Wait Time                                                                                   -`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+        });
+
+        logger.end = (() => {
+            logger.info(`[Transition]: ${transition}`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+            logger.info(`- [END] Check Wait Time                                                                                     -`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+
+            _logger.shutdown();
+            conversation.transition(transition);
+            done();
+        });
+
+        let transition = '';        
 
         logger.addContext("serviceNumber", serviceNumber);
-        emailLog.addContext("subject", globalProp.Email.Subjects.CaseCreation.CheckWaitTime);
-        emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
-        emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.CaseCreation.CheckWaitTime);
-        emailLog.addContext("usertelephonenumber", serviceNumber);
+        // #endregion
 
-        logger.info(`-------------------------------------------------------------------------------------------------------------`);
-        logger.info(`- [START] Check Wait Time                                                                                   -`);
-        logger.info(`-------------------------------------------------------------------------------------------------------------`);
+        logger.start();
         
-        var options = globalProp.CheckWaitTime.API.WaitTime.PostOptions(orgId, deploymentid, buttonid);
+        var options = globalProp.CheckWaitTime.API.WaitTime.PostOptions(deploymentid, buttonid);
         logger.debug(`Setting up the post option: ${JSON.stringify(options)}`);
         
         logger.info(`Starting to invoke the request for API Token.`);
@@ -65,12 +79,14 @@ module.exports = {
                 conversation.variable('waitTime', "undefined");
                 conversation.variable('waitTimeSec', 0);
                 conversation.variable('LiveAgent_queue', queueName);
-                logError(error, error.code);
+                logger.sendEmail(error, error.code);
                 transition = 'failure';
+                logger.end();
             }
             else {
                 if(response.statusCode > 200){
-                    logError(response, response.statusCode);
+                    logger.sendEmail(response.body, response.statusCode);
+                    transition = 'failure';
                 }else{                
                     //SAMPLE PARSE replace with mapped return Payload {}{}
                     var res = JSON.parse(response.body);
@@ -134,17 +150,8 @@ module.exports = {
                         }
                     }
                 }
-            }
-            logger.info(`[Transition]: ${transition}`);
-            logger.info(`-------------------------------------------------------------------------------------------------------------`);
-            logger.info(`- [END] Check Wait Time                                                                                     -`);
-            logger.info(`-------------------------------------------------------------------------------------------------------------`);
-
-            _logger.shutdown();
-            _emailLog.shutdown();
-
-            conversation.transition(transition);
-            done();
+                logger.end();
+            }            
         });
     }
 };

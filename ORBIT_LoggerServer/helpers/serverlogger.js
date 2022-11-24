@@ -1,14 +1,14 @@
-const log4js = require('log4js');
+const server_log4js = require('log4js');
 var moment = require('moment-timezone');
-var log4jsmtp = require('./@log4js-node/smtp');
+var log4js_oci_notif = require('./@log4js-node/oci-notification/lib');
 
 module.exports = {
     configure: () => {
-        return log4js.configure({
+        return server_log4js.configure({
             appenders: {
                 multi: {
                     type: "multiFile",
-                    base: "/home/opc/orbit_logger_server/logs/", //home/opc/orbit_logger_server/logs/
+                    base: "/home/opc/orbit_logger_cares_server/logs/", //home/opc/orbit_logger_server/logs/
                     property: "serviceNumber",
                     extension: ".log",
                     maxLogSize: 10485760,
@@ -25,18 +25,7 @@ module.exports = {
                     },
                 },
                 mail: {
-                    type: log4jsmtp,
-                    recipients: 't-tsdiaz@supplier.smart.com.ph, t-jpvalete@supplier.smart.com.ph',
-                    transport: 'SMTP',
-                    SMTP: {
-                        host: 'smtp.gmail.com',
-                        port: 587,
-                        auth: {
-                            user: 'ndphchatbot@gmail.com',
-                            pass: 'nwqiqdpeezxtdatx',
-                        },
-                        debug: true,
-                    },
+                    type: log4js_oci_notif,
                     layout: {
                         type: "pattern",
                         pattern: "[%x{dateTime}] [%p] %m",
@@ -48,7 +37,7 @@ module.exports = {
                     }
                 },
                 console: { type: 'console' },
-                server: { type: 'wss-server', port: 5000 },
+                server: { type: 'wss-server', port: 5001 },
             },
             categories: {
                 default: { appenders: ['multi', 'console'], level: 'all' },

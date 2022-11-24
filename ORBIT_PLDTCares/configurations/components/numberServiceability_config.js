@@ -7,16 +7,16 @@ module.exports = {
             PostOptions: (body) => {
                 return {
                     'method': 'POST',
-                    'url': `${baseConfig.BaseUrl}pldthome/api/serviceability/number/serviceable`,
+                    'url': `${baseConfig.SwitchURL}pldthome/api/serviceability/number/serviceable`,
                     'headers': {
                         'Content-Type': 'application/json',
-                        'Cookie': baseConfig.Cookie
+                        'Cookie': baseConfig.SwitchCookies
                     },                
                     body: body
                 }
             },
-            Token: "MDg0OWY2YzAtYjcwZS00ZjQxLTlmMzgtODBjZWRmMjc2MTI2",
-            Consumer: "CHATBOT",
+            Token: baseConfig.NumberServiceability.Token,
+            Consumer: baseConfig.NumberServiceability.Consumer,
         }
     },        
 }

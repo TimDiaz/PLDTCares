@@ -5,11 +5,38 @@
 // [PRODUCTION CONFIGURATION]                                                                                                   //
 // const environment = 'PROD'                                                                                                   //
 //******************************************************************************************************************************//
-const environment = 'DEV';
+//NOTE: 
+// DEV: Environment = DEV; EnvironmentSwitch = DEV;
+// UAT: Environment = DEV; EnvironmentSwitch = UAT;
+// PROD: Environment = PROD; EnvironmentSwitch = PROD;
+
+const environment = 'PROD';
+const environmentSwitch = 'PROD';
+const emailtenant = `PLDT Cares`;
+
+function GetESWUPBaseURL(){
+    return environment === 'PROD' ? 
+            'https://cces.pldtccaas.com/ePLDTCCSPSBSTG/':
+            'https://cces.pldtccaas.com/ePLDTCCSPSBSTG/';
+}
+
+function GetESWUPTokenPayload(){
+    return environment === 'PROD' ? 
+        { 
+            Username: "ePLDTCCSPSB_STG",
+            Password: "WvmH+'~~EWLj8YF%",
+            Grant_Type: "password"
+        } : 
+        { 
+            Username: "ePLDTCCSPSB_STG",
+            Password: "WvmH+'~~EWLj8YF%",
+            Grant_Type: "password"
+        };
+}
 
 function GetChatbotBaseURL(){
     return environment === 'PROD' ? 
-            'https://chatbot171.pldthome.com' : 
+            'https://chatbot171.pldthome.com':
             'https://staging.chatbot171.pldthome.com';
 }
 
@@ -30,6 +57,37 @@ function GetCookies(){
             'incap_ses_500_2106196=kF0oTqqW43EE1Al/+lvwBm7uz2IAAAAA7AGUvqEevIqdw/4v96c4sg==; BIGipServerFuse_api_pool_8080=3893700618.36895.0000; BIGipServerMobileITPool=2048859658.16415.0000' : 
             'incap_ses_1234_2106196=Inf6SvgccUmeyqAspwwgEVXpBmMAAAAAGYiFFsilhU6T1OIS5sUvjQ==; BIGipServerMobileITPool=2048859658.16415.0000';
 }
+
+function GetBaseUATURL(){
+    return 'https://www.pldt.com.ph/mobility/';
+}
+
+function GetSwitchURL(){
+    return environmentSwitch === "UAT"? 
+            GetBaseUATURL(): 
+            GetBaseURL();
+}
+
+function GetUATAuthToken(){
+    return 'AH5PMt52GhW33gv1zdwuum2X591vTyD637WmFwVZupTpXR4ZG8uF6Q4EbFpbhLXDfEq5U4budhNXEZbAfTdRGzs';
+}
+
+function GetSwitchAuthToken(){
+    return environmentSwitch === "UAT"? 
+            GetUATAuthToken(): 
+            GetAuthToken();
+}
+
+function GetUATCookies(){
+    return 'incap_ses_500_2106196=kF0oTqqW43EE1Al/+lvwBm7uz2IAAAAA7AGUvqEevIqdw/4v96c4sg==; BIGipServerFuse_api_pool_8080=3893700618.36895.0000; BIGipServerMobileITPool=2048859658.16415.0000';
+}
+
+function GetSwitchCookies(){
+    return environmentSwitch === "UAT"? 
+            GetUATCookies(): 
+            GetCookies();
+}
+
 
 
 function GetKenanBaseURL(){
@@ -180,15 +238,56 @@ function GetCheckWaitTimeBaseCookies(){
             'X-Salesforce-CHAT=!QwHUs1IUHxroNDUroAdUQlA9+CQ4uSAZIBbxE1I786q5cqBSuq+3IR1UxvxROJZ/fGmDB4Wvh4wUQF0=' : 
             'X-Salesforce-CHAT=!eF3gfwR5AOhWbYhvXaWnnx/Wbhtpsw5ceBKbCOrsRzjnWxyYBCox61p0fxSoIhyAWKDRgQ6K84GEphc=';
 }
+
+function GetOrgId(){
+    return environment === 'PROD' ? 
+            '00D7F000000zntY' : 
+            '00D0T0000000ce2';
+}
 //[END] CHECK WAIT TIME
 //[END] CASE CREATION API Configuration
 
+function GetNumberServiceabilityToken(){
+    return environment === 'PROD' ? 
+            'YjQ5NzQyNWItNmE4NC00YzZlLThlM2UtYmU4OGNjZjc2YmQy' : 
+            'MDg0OWY2YzAtYjcwZS00ZjQxLTlmMzgtODBjZWRmMjc2MTI2';
+}
+
+function GetUATNumberServiceabilityToken(){
+    return 'YjQ5NzQyNWItNmE4NC00YzZlLThlM2UtYmU4OGNjZjc2YmQy';
+}
+
+function GetSwitchNumberServiceabilityToken(){
+    return environmentSwitch === 'UAT' ? 
+            GetUATNumberServiceabilityToken() : 
+            GetNumberServiceabilityToken();
+}
+
+function GetNumberServiceabilityConsumer(){
+    return environment === 'PROD' ? 
+            'CHATBOT' : 
+            'CHATBOT';
+}
+
 module.exports = {
     Environment: environment,
+    EnvironmentSwitch: environmentSwitch,
+    EmailTenant: emailtenant,
     ChatBotBaseUrl: GetChatbotBaseURL(),
     BaseUrl: GetBaseURL(),
+    SwitchURL: GetSwitchURL(),
+    SwitchToken: GetSwitchAuthToken(),
+    SwitchCookies: GetSwitchCookies(),
     AuthToken: GetAuthToken(),
     Cookie: GetCookies(),
+    ESWUP: {
+        BaseUrl: GetESWUPBaseURL(),
+        TokenPayload: GetESWUPTokenPayload()
+    },
+    NumberServiceability: {
+        Token: GetSwitchNumberServiceabilityToken(),
+        Consumer: GetNumberServiceabilityConsumer(),
+    },
     Kenan: {
         BaseUrl: GetKenanBaseURL(),
         AuthToken: GetKenanAuthToken(),
@@ -250,7 +349,8 @@ module.exports = {
         CheckWaitTime: {
             Base: {
                 Url: GetCheckWaitTimeBaseUrl(),
-                Cookie: GetCheckWaitTimeBaseCookies()
+                Cookie: GetCheckWaitTimeBaseCookies(),
+                OrgId: GetOrgId()
             }
         }
     }

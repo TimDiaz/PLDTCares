@@ -61,6 +61,7 @@ module.exports = {
     }),
     invoke: (conversation, done) => 
     {
+        // #region Setup Properties
         const accNumber = conversation.properties().accountNumber;
         const svcNumber = conversation.properties().serviceNumber;
         const desc = conversation.properties().message;
@@ -74,37 +75,49 @@ module.exports = {
         const subj = conversation.properties().Subject;
         const channelType = conversation.request().message.channelConversation.channelType;
         const trimmeddesc = desc.replace("By providing us your information, you are allowing us to access your records and process your request.", " ");
+        // #endregion
 
+        // #region Imports
         const request = require('request');
         const globalProp = require('../../helpers/globalProperties');
+        const emailSender = require('../../helpers/emailsender');
         const instance = require("../../helpers/logger");
+        // #endregion
+
+        // #region Initialization
         const _logger = instance.logger(globalProp.Logger.Category.CaseCreation.CaseCreation);
         const logger = _logger.getLogger();
-        const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);        
-        const emailLog = _emailLog.getLogger();
 
-        function logError(result, resultCode){
+        logger.sendEmail = ((result, resultCode) => {
             const strResult = JSON.stringify(result);
-            emailLog.addContext("apierrorcode", strResult);
-            emailLog.addContext("apierrormsg", resultCode);
             const message = globalProp.Email.EmailFormat(globalProp.CaseCreation.API.Token.Name, resultCode, strResult, svcNumber);
+            logger.error(`[ERROR]: ${strResult}`);              
+            emailSender(globalProp.Email.Subjects.CaseCreation.CaseCreation, message, globalProp.Logger.BCPLogging.AppNames.CaseCreation.CaseCreation, strResult, resultCode, accNumber, svcNumber)
+        }) 
 
-            logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`);
-            emailLog.error(message);
-        }
+        logger.start = (() => {
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+            logger.info(`- [START] Case Creation                                                                                     -`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+        });
+
+        logger.end = (() => {
+            logger.info(`[Transition]: ${transition}`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+            logger.info(`- [END] Case Creation                                                                                       -`);
+            logger.info(`-------------------------------------------------------------------------------------------------------------`);
+            _logger.shutdown();
+        
+            conversation.transition(transition);
+            done();
+        });
 
         let transition = '';
 
         logger.addContext("serviceNumber", svcNumber);
-        emailLog.addContext("subject", globalProp.Email.Subjects.CaseCreation.CaseCreation);
-        emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
-        emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.CaseCreation.CaseCreation);
-        emailLog.addContext("usertelephonenumber", svcNumber);
-        emailLog.addContext("useraccountnumber", accNumber);
+        // #endregion
 
-        logger.info(`-------------------------------------------------------------------------------------------------------------`);
-        logger.info(`- [START] Case Creation                                                                                     -`);
-        logger.info(`-------------------------------------------------------------------------------------------------------------`);
+        logger.start();
                 
         var tokenOptions = globalProp.CaseCreation.API.Token.PostOptions();
         logger.debug(`Setting up the post option for API Token: ${JSON.stringify(tokenOptions)}`);
@@ -114,11 +127,14 @@ module.exports = {
         request(tokenOptions, function (error, result) {
             logger.info(`Invoking request successful.`);
             if (error) {
-                logError(error, error.code);
+                logger.sendEmail(error, error.code);
                 transition = 'failure';
+                logger.end();
             }else{
                 if(result.statusCode > 200){
-                    logError(result, result.statusCode);
+                    logger.sendEmail(result.body, result.statusCode);
+                    transition = 'failure';
+                    logger.end();
                 }else{                
                     logger.info(`Request Token success with Response Code: [${result.statusCode}]`);
                     var parsedToken = JSON.parse(result.body)['access_token'];
@@ -129,14 +145,16 @@ module.exports = {
                     const authBearer = "Authorization : Bearer " + token;
 
                     const requestBody = JSON.stringify({
-                        'Description': trimmeddesc+',Fb Name: '+fullName +',fbid: '+fbId+',Channel Type: '+channelType,
+                        'Description': trimmeddesc+',Fb Name: '+fullName +',fbid: '+fbId+',Channel Type: '+channelType + ',Source: PLDT Cares',
                         'Type':sName,
                         'Status':'Open - Unassigned',
-                        'Origin':'Facebook',
+                        'Origin':'Social Chat',
                         'RecordTypeId': recordTypeid,
                         'Subject': subj,
                         'PLDT_Case_Sub_Type__c': sMenu,
-                        'Customer_City__c': city
+                        'Customer_City__c': city,
+                        "Media_Provider__c": "Chatbot Ordertake",
+                        "Topic_Profile_Name__c": "PLDT Cares"
                     });
                     
                     var options = globalProp.CaseCreation.API.CaseCreate.PostOptions(authBearer, requestBody);
@@ -144,15 +162,13 @@ module.exports = {
             
                     logger.info(`Starting to invoke the request.`);
                     request(options, function (errorMsg, response) {
-                        const instance = require("../../helpers/logger");
-                        const _logger = instance.logger(globalProp.Logger.Category.CaseCreation.CaseCreation);
-                        const logger = _logger.getLogger();
-                        logger.addContext("serviceNumber", svcNumber);
                         if (errorMsg){
-                            logger.error(errorMsg);
+                            logger.sendEmail(errorMsg, errorMsg.code);
+                            transition = 'failure';
                         }else{
                             if(response.statusCode > 201){
-                                logError(response, response.statusCode);
+                                logger.sendEmail(response.body, response.statusCode);
+                                transition = 'failure';
                             }else {                                
                                 logger.info(`Invoking request successful.`);
                                 logger.debug(`Request success with Status Code: [${response.statusCode}]`);
@@ -164,22 +180,12 @@ module.exports = {
                                     transition = 'failure';
                                 }
                             }
-                        }                        
+                        } 
+                        logger.end();                       
                     });
                 }
             }
-            logger.info(`[Transition]: ${transition}`);
-            logger.info(`-------------------------------------------------------------------------------------------------------------`);
-            logger.info(`- [END] Case Creation                                                                                       -`);
-            logger.info(`-------------------------------------------------------------------------------------------------------------`);
-
-            _logger.shutdown();
-            _emailLog.shutdown();
-        
-            conversation.transition(transition);
-            done();
         });
-     }
-            
+     }            
 };
     

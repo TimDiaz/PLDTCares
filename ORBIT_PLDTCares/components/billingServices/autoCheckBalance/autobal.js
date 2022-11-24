@@ -17,137 +17,113 @@ module.exports = {
     supportedActions: ['valid', 'invalid', 'failure', 'fuseDown']
   }),
   invoke: (conversation, done) => {
+
+    // #region Setup Properties  
+    const svcNum = conversation.properties().serviceNumber;
+    const acctNum = conversation.properties().accountNumber;
+    // #endregion
+
+    // #region Imports
     const request = require('request');
     const moment = require('moment');
     const globalProp = require('../../../helpers/globalProperties');
-    const instance = require("../../../helpers/logger");
-    const _logger = instance.logger(globalProp.Logger.Category.BillingServices.Autobal);
-    const logger = _logger.getLogger();
-    const _emailLog = instance.logger(globalProp.Logger.Category.Mailer);
-    const emailLog = _emailLog.getLogger();
+    const emailSender = require('../../../helpers/emailsender');
+    var instance = require("../../../helpers/logger");
+    // #endregion
 
-    function logError(result, resultCode) {
+    // #region Initialization
+    var _logger = instance.logger(globalProp.Logger.Category.BillingServices.Autobal);
+    var logger = _logger.getLogger();
+
+    logger.sendEmail = ((result, resultCode) => {
       const strResult = JSON.stringify(result);
-      emailLog.addContext("apierrorcode", strResult);
-      emailLog.addContext("apierrormsg", resultCode);
-      const message = globalProp.Email.EmailFormat(globalProp.BillingServices.Autobal.API.GetAccountBalance, resultCode, strResult, svcNum);
+      const message = globalProp.Email.EmailFormat(globalProp.BillingServices.Autobal.API.CheckBalance.Name, resultCode, strResult, svcNum);
+      logger.error(`[ERROR]: ${strResult}`);
+      emailSender(globalProp.Email.Subjects.BillingServices.Autobal, message, globalProp.Logger.BCPLogging.AppNames.BillingServices.Autobal, strResult, resultCode, acctNum, svcNum)
+    })
 
-      logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`)
-      emailLog.error(message);
+    logger.start = (() => {
+      logger.info(`-------------------------------------------------------------------------------------------------------------`);
+      logger.info(`- [START] Check Auto Balance                                                                                -`);
+      logger.info(`-------------------------------------------------------------------------------------------------------------`);
+    });
+
+    logger.end = (() => {
+      logger.info(`[Transition]: ${transition}`);
+      logger.info(`-------------------------------------------------------------------------------------------------------------`);
+      logger.info(`- [END] Auto Check Balance                                                                                  -`);
+      logger.info(`-------------------------------------------------------------------------------------------------------------`);
+
+      _logger.shutdown();
+
+      conversation.transition(transition);
+      done();
+    });
+
+    function HasInvalidServiceStatus(responseBody, servicestatus) {
+      return (responseBody.serviceProfiles.find(e => e.serviceStatus === servicestatus) !== undefined)
     }
 
     let transition = '';
 
-    const svcNum = conversation.properties().serviceNumber;
-    const acctNum = conversation.properties().accountNumber;
-
     logger.addContext("serviceNumber", svcNum);
-    emailLog.addContext("subject", globalProp.Email.Subjects.BillingServices.Autobal);
-    emailLog.addContext("apiUrl", globalProp.Logger.BCPLogging.URL);
-    emailLog.addContext("apiname", globalProp.Logger.BCPLogging.AppNames.BillingServices.Autobal);
-    emailLog.addContext("usertelephonenumber", svcNum);
-    emailLog.addContext("useraccountnumber", acctNum);
+    // #endregion
 
-    logger.info(`-------------------------------------------------------------------------------------------------------------`);
-    logger.info(`- [START] Check Auto Balance                                                                                    -`);
-    logger.info(`-------------------------------------------------------------------------------------------------------------`);
+    logger.start();
 
-
-    var AcctNumOptions = globalProp.BillingServices.Autobal.API.GetAccountBalance.GetOptions(acctNum);
-    logger.debug(`Setting up the post option for API Token: ${JSON.stringify(AcctNumOptions)}`);
-
-
+    var options = globalProp.BillingServices.Autobal.API.CheckBalance.GetOptions(svcNum);
+    logger.debug(`Setting up the post option for API Token: ${JSON.stringify(options)}`);
     logger.info(`Starting to invoke the request for API Token.`);
-    request(AcctNumOptions, function (error, response) {
+    request(options, function (error, response) {
+      if (error) {
+        transition = 'fuseDown';
+        logger.sendEmail(error, error.code);
+        logger.end();
+      }
+      else {
+        var responseBody;
+        if (typeof (response.body) === "string")
+          responseBody = JSON.parse(response.body);
+        else
+          responseBody = response.body;
 
-      logger.info("parsed mobility body :", response.body);
-      logger.info("Mobility Error: ", error);
-      if (response.statusCode == 200) {
-
-        var parsedPaymentAmount = JSON.parse(response.body)['PaymentAmount'];
-        var floatPaymentAmount = parseFloat(parsedPaymentAmount);
-        conversation.variable('totalPayment', floatPaymentAmount.toFixed(2));
-
-        var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-        var parsedPaymentDate = JSON.parse(response.body)['PaymentDate'];
-        var payDateFormatted = new Date(parsedPaymentDate);
-        var payDateMonth = months[payDateFormatted.getMonth()];
-        var payDateDay = payDateFormatted.getDate();
-        var payDateYear = payDateFormatted.getFullYear();
-        conversation.variable('paymentdate', payDateMonth + " " + payDateDay + ", " + payDateYear);
-
-        var parsedPreviousBalance = JSON.parse(response.body)['PreviousBalance'];
-        var floatPreviousBalance = parseFloat(parsedPreviousBalance);
-        conversation.variable('prevBalanceDueAmt', floatPreviousBalance.toFixed(2));
-
-        var parsedCurrentCharges = JSON.parse(response.body)['CurrentCharges'];
-        var floatCurrentCharges = parseFloat(parsedCurrentCharges);
-        conversation.variable('currentcharges', floatCurrentCharges.toFixed(2));
-
-        var parsedCurrentBalance = JSON.parse(response.body)['CurrentBalance'];
-        var floatCurrentBalance = parseFloat(parsedCurrentBalance);
-        conversation.variable('currentBalance', floatCurrentBalance.toFixed(2));
-
-        var parsedDueDate = JSON.parse(response.body)['DueDate'];
-        var dueDateFormatted = new Date(parsedDueDate);
-        var dueDateMonth = String(dueDateFormatted.getMonth() + 1).padStart(2, '0');
-        var dueDateDay = dueDateFormatted.getDate();
-        var dueDateYear = dueDateFormatted.getFullYear();
-        conversation.variable('dueDate', dueDateMonth + "/" + dueDateDay + "/" + dueDateYear);;
-        conversation.variable('dueDate', dueDateMonth + "/" + dueDateDay + "/" + dueDateYear);
-        var parseDueDate2 = Date.parse(parsedDueDate);
-        var duedate2 = moment(parseDueDate2);
-        logger.info(duedate2.format("MMMM DD, YYYY"));
-        //conversation.variable(duedate2.format("MMMM DD, YYYY"))
-        //console.log(duedate.format("MMMM DD, YYYY"));
-
-        //FUSE API
-
-        var options = globalProp.BillingServices.Autobal.API.CheckBalance.GetOptions(svcNum);
-        logger.debug(`Setting up the post option for API Token: ${JSON.stringify(options)}`);
-        request(options, function (errorFuse, responseFused) {
-          instance = require("../../../helpers/logger");
-          _logger = instance.logger(globalProp.Logger.Category.BillingServices.Autobal);
-          logger = _logger.getLogger();
-          logger.addContext("serviceNumber", svcNum);
-
-          if (errorFuse) {
-            transition = 'fuseDown'; //500 return
-            logError(errorFuse, errorFuse.code);
-            conversation.variable('statementDate', "-");
+        logger.info("parsed mobility body :", response.body);
+        logger.info("Mobility Error: ", error);
+        if (response.statusCode > 200) {
+          if (responseBody.errorMessage != "2") {
+            transition = 'fuseDown';
+            logger.sendEmail(responseBody, response.statusCode);
+            logger.end();
           }
+        }
+        else {
+          try {
+            logger.info("[Fuse Service] Get Account Balanace Body: ", responseBody);
 
-          else {
-            logger.info(responseFused.body);
-            var parsedresult = JSON.parse(JSON.stringify(responseFused.body));
-            logger.info("parsed body: ", parsedresult.body);
-            logger.info("Fuse API Error: ", errorFuse);
-            // console.log("show error from request ", error);
-            if (responseFused.statusCode == 200) {
-              logger.info("Successful auto bal", responseFused.body, options.body);
-              var parsedBalanceProfile = JSON.parse(responseFused.body)['balanceProfile'];
-
-              logger.info("parsed balanceProfile: ", parsedBalanceProfile);
+            if (responseBody.errorMessage === null) {
               var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-              var concatStatementDate = new Date(parsedBalanceProfile.statementDate.substr(0, 9));
-              var statementDateMonth = months[concatStatementDate.getMonth()];
-              var statementDateDay = concatStatementDate.getDate();
-              var statementDateYear = concatStatementDate.getFullYear();
-              logger.info("Statement Date: ", statementDateMonth + " " + statementDateDay + ", " + statementDateYear);
+              var parsedCurrentBalance = responseBody.balanceProfile.currentBalance;
+              if(parsedCurrentBalance === null || parsedCurrentBalance === undefined)
+                throw 'Invalid Current Balance';
 
-              var parsedcustomerProfile = JSON.parse(responseFused.body)['customerProfile'];
-              var emailAdd = parsedcustomerProfile[0].emailAddress;
-              var duedate1 = parsedcustomerProfile[0].dueDate;
-              logger.info("Parsed Due Date", duedate1);
-              var concatDueDate = new Date(duedate1);
-              var dueDateMonth = months[concatDueDate.getMonth()];
-              var dueDateDay = concatDueDate.getDate();
-              var dueDateYear = concatDueDate.getFullYear();
-              logger.info("Due Date: ", dueDateMonth + " " + dueDateDay + ", " + dueDateYear);
+              var floatCurrentBalance = parseFloat(parsedCurrentBalance);
+              conversation.variable('currentBalance', floatCurrentBalance.toFixed(2));
 
-              if (emailAdd != null) {
+              var parsedDueDate = responseBody.customerProfile[0].balanceDueDate;
+              var dueDateFormatted = new Date(parsedDueDate);
+              if (dueDateFormatted == 'Invalid Date') 
+                throw "Invalid Date";
+              
+              var dueDateMonth = months[dueDateFormatted.getMonth()];
+              var dueDateDay = dueDateFormatted.getDate();
+              var dueDateYear = dueDateFormatted.getFullYear();
+              conversation.variable('DueDates', dueDateMonth + " " + dueDateDay + ", " + dueDateYear);
+              logger.debug("[DUE DATES]: " + dueDateMonth + " " + dueDateDay + ", " + dueDateYear);
+
+              var formattedEmail = "null";
+              var emailAdd = responseBody.customerProfile[0].emailAddress;
+              if (emailAdd != null  && emailAdd !== "NONE") {
                 var firstLet = emailAdd.substr(0, 1);
                 var atPos = emailAdd.search("@");
                 var toMask = emailAdd.substr(1, atPos - 1);
@@ -155,69 +131,37 @@ module.exports = {
                 var afterAt = emailAdd.substr(atPos);
                 var mask = "*";
                 var formattedEmail = firstLet + mask.repeat(maskLength) + afterAt;
-              } else {
-                var formattedEmail = "null";
               }
-
-              conversation.variable('DueDates', dueDateMonth + " " + dueDateDay + ", " + dueDateYear);
-              conversation.variable('statementDate', statementDateMonth + " " + statementDateDay + ", " + statementDateYear);
               conversation.variable('balEmailAdd', formattedEmail);
-              //UNDER TREATMENT
-              var parsedServiceProfile = JSON.parse(responseFused.body)['serviceProfiles'];
-              logger.info("pasrsedServiceProfile: ", parsedServiceProfile);
-              var parsedServiceStatus = parsedServiceProfile.serviceStatus;
-              logger.info("serviceStatus Value: ", parsedServiceStatus);
-              var parsedServiceStatus1 = JSON.parse(JSON.stringify(responseFused.body))['serviceStatus'];
-              logger.info("serviceStatus1 Value: ", parsedServiceStatus1);
-              conversation.transition('valid');
+              logger.debug("[EMAIL ADDRESS]: " + formattedEmail);
 
-              if (responseFused.body.includes('Suspended')) {
-                //conversation.transition('failed');
+
+              if (HasInvalidServiceStatus(responseBody,'Suspended')) {
                 conversation.variable('serviceStatus', 'Suspended');
                 transition = 'failure';
-                logger.info('serviceStatus condition: ', 'Suspended');
+
               }
-              else if (responseFused.body.includes('Barred')) {
-                //conversation.transition('failed');
+              else if (HasInvalidServiceStatus(responseBody,'Barred')) {
                 conversation.variable('serviceStatus', 'Barred');
                 transition = 'failure';
-                logger.info('serviceStatus condition: ', 'Barred');
               }
               else {
-                // conversation.transition('passed');
                 conversation.variable('serviceStatus', 'passed');
                 transition = 'valid';
-                logger.info('serviceStatus condition: ', 'Active');
               }
+              logger.end();
             }
             else{
-              if (responseFused.statusCode == 404) {
-                transition = 'fuseDown';
-                conversation.variable('statementDate', "-");
-              }
-              else {
-                transition = 'fuseDown'; //500 return
-                conversation.variable('statementDate', "-");
-                logError(responseFused, responseFused.statusCode);
-              }
+              throw responseBody.errorMessage;
             }
           }
-          logger.info(`[Transition]: ${transition}`);
-          logger.info(`-------------------------------------------------------------------------------------------------------------`);
-          logger.info(`- [END] Auto Check Balance                                                                                      -`);
-          logger.info(`-------------------------------------------------------------------------------------------------------------`);
-
-        });
+          catch (e) {
+            transition = 'fuseDown';
+            logger.sendEmail(response.body, response.statusCode);
+            logger.end();
+          }
+        }
       }
-      else {
-        transition = 'fuseDown';
-      }
-      _logger.shutdown();
-      _emailLog.shutdown();
-
-      conversation.transition(transition);
-      done();
     });
   }
-
 };

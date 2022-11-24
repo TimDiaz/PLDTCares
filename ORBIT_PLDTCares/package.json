@@ -1,5 +1,5 @@
 {
-  "name": "ORBIT_PLDTCares_DEV",
+  "name": "orbit_pldtcares_prod",
   "version": "1.0.0",
   "description": "Oracle Digital Assistant Component Package",
   "main": "main.js",
@@ -19,11 +19,13 @@
     "mocha": "^10.0.0",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.34",
-    "node-fetch": "^3.2.10",
+    "node": "^18.9.1",
+    "node-fetch": "^2.6.6",
     "nodejs-websocket": "^1.7.2",
     "nodemailer": "^6.7.8",
     "request": "^2.88.2",
-    "save-dev": "0.0.1-security"
+    "save-dev": "0.0.1-security",
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "@oracle/bots-node-sdk": "^2.6.3",
@@ -36,22 +38,12 @@
     "mocha",
     "moment",
     "moment-timezone",
+    "node",
     "node-fetch",
     "nodejs-websocket",
     "nodemailer",
     "request",
-    "save-dev"
-  ],
-  "bundleDependencies": [
-    "@log4js-node/smtp",
-    "chai",
-    "log4js",
-    "mocha",
-    "moment",
-    "moment-timezone",
-    "nodejs-websocket",
-    "nodemailer",
-    "request",
-    "save-dev"
+    "save-dev",
+    "xml2js"
   ]
 }
