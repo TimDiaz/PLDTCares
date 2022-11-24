@@ -14,6 +14,26 @@ const environment = 'DEV';
 const environmentSwitch = 'DEV';
 const emailtenant = `PLDT Cares`;
 
+function GetESWUPBaseURL(){
+    return environment === 'PROD' ? 
+            'https://cces.pldtccaas.com/ePLDTCCSPSBSTG/':
+            'https://cces.pldtccaas.com/ePLDTCCSPSBSTG/';
+}
+
+function GetESWUPTokenPayload(){
+    return environment === 'PROD' ? 
+        { 
+            Username: "ePLDTCCSPSB_STG",
+            Password: "WvmH+'~~EWLj8YF%",
+            Grant_Type: "password"
+        } : 
+        { 
+            Username: "ePLDTCCSPSB_STG",
+            Password: "WvmH+'~~EWLj8YF%",
+            Grant_Type: "password"
+        };
+}
+
 function GetChatbotBaseURL(){
     return environment === 'PROD' ? 
             'https://chatbot171.pldthome.com':
@@ -260,6 +280,10 @@ module.exports = {
     SwitchCookies: GetSwitchCookies(),
     AuthToken: GetAuthToken(),
     Cookie: GetCookies(),
+    ESWUP: {
+        BaseUrl: GetESWUPBaseURL(),
+        TokenPayload: GetESWUPTokenPayload()
+    },
     NumberServiceability: {
         Token: GetSwitchNumberServiceabilityToken(),
         Consumer: GetNumberServiceabilityConsumer(),
