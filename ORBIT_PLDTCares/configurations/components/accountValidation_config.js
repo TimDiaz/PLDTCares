@@ -7,11 +7,11 @@ module.exports = {
             PostOptions: (body) => {
                 return {
                     'method': 'POST',
-                    'url': `${baseConfig.BaseUrl}amdocs/api/account/validate`,
+                    'url': `${baseConfig.SwitchURL}amdocs/api/account/validate`,
                     'headers': {
                         'Content-Type': 'application/json',
-                        'X-Pldt-Auth-Token': baseConfig.AuthToken,
-                        'Cookie': baseConfig.Cookie
+                        'X-Pldt-Auth-Token': baseConfig.SwitchToken,
+                        'Cookie': baseConfig.SwitchCookies
                     },                
                     body: body
                 }

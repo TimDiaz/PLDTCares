@@ -1,6 +1,6 @@
 "use strict";
 
-const component = require('../../components/billingServices/autoCheckBalance/checkautobal');
+const component = require('../../components/billingServices/autoCheckBalance/autobal');
 const testing = require('@oracle/bots-node-sdk/testing');
 const customComponent = require('../helpers/invokeCustomComponent');
 

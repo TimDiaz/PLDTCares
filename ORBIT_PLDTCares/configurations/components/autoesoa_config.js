@@ -7,10 +7,10 @@ module.exports = {
             GetOptions: (svcNum, numMon) => {
                 return {
                     'method': 'GET',
-                    'url': `${baseConfig.BaseUrl}amdocs/api/sendeSOA/${svcNum}/${numMon}`,
+                    'url': `${baseConfig.SwitchURL}amdocs/api/sendeSOA/${svcNum}/${numMon}`,
                     'headers': {
-                        'X-Pldt-Auth-Token': baseConfig.AuthToken,
-                        'Cookie': baseConfig.Cookie
+                        'X-Pldt-Auth-Token': baseConfig.SwitchToken,
+                        'Cookie': baseConfig.SwitchCookies
                     }
                 }
             },

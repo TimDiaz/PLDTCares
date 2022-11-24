@@ -1,21 +1,21 @@
 class Eligibility_BussinessLogic {
 
-    constructor(log, elog, prop) {
+    constructor(log, prop) {
         this.logger = log;
-        this.emailLog = elog;
+        // this.emailLog = elog;
         this.globalProp = prop
     }
 
-    EmailLogError(result, resultCode, serviceNumber) {
-        const strResult = JSON.stringify(result);
-        this.emailLog.addContext("apierrorcode", strResult);
-        this.emailLog.addContext("apierrormsg", resultCode);
-        const message = this.globalProp.Email.EmailFormat(this.globalProp.AccountEligibility.API.Name, resultCode, strResult, serviceNumber);
+    // EmailLogError(result, resultCode, serviceNumber) {
+    //     const strResult = JSON.stringify(result);
+    //     this.emailLog.addContext("apierrorcode", strResult);
+    //     this.emailLog.addContext("apierrormsg", resultCode);
+    //     const message = this.globalProp.Email.EmailFormat(this.globalProp.AccountEligibility.API.Name, resultCode, strResult, serviceNumber);
 
-        this.logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`)
-        this.emailLog.error(message);
-        return { Transition: 'failure' };
-    }
+    //     this.logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`)
+    //     this.emailLog.error(message);
+    //     return { Transition: 'failure' };
+    // }
 
     ErrorResponse(code,) {
         let errormsg = '';

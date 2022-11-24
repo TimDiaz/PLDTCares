@@ -94,9 +94,9 @@ module.exports = {
 
         logger.sendEmail = ((result, resultCode) => {
             const strResult = JSON.stringify(result);
-            const message = globalProp.Email.EmailFormat(globalProp.TicketCreation.API.Validate.Name, resultCode, strResult, svcNumber);
+            const message = globalProp.Email.EmailFormat(globalProp.TicketCreation.API.Validate.Name, resultCode, strResult, serviceNumber);
             logger.error(`[ERROR]: ${strResult}`);
-            emailSender(globalProp.Email.Subjects.TicketCreation.CreateFT, message, globalProp.Logger.BCPLogging.AppNames.TicketCreation.TicketCreationCreateFt, strResult, resultCode, accNumber, svcNumber)
+            emailSender(globalProp.Email.Subjects.TicketCreation.CreateFT, message, globalProp.Logger.BCPLogging.AppNames.TicketCreation.TicketCreationCreateFt, strResult, resultCode, accntNumber, serviceNumber)
         })
 
         logger.start = (() => {
@@ -129,6 +129,8 @@ module.exports = {
         }
 
         let transition = 'failure';
+        let retry = 0;
+        const maxRetry = 3;
 
         logger.addContext("serviceNumber", serviceNumber);
         // #endregion
@@ -156,98 +158,89 @@ module.exports = {
 
         logger.info(`Starting to invoke the request.`)
 
-        request(options, function (error, response) {
-            if (error) {
-                transition = 'FAILURE';
-                logger.sendEmail(error, error.code);
-            }
-            else {
-                var result = response;
-                var createRes = JSON.parse(result.body);
-                const responseStr = JSON.stringify(createRes).replace('http://', '');
-
-                if (result.statusCode > 200) {
-                    if (result.statusCode === 406) {
-                        console.log("Stringify createRes data 406 " + JSON.stringify(createRes));
-                        logger.debug("Stringify createRes data 406 " + JSON.stringify(createRes));
-                        var spiel406 = JSON.stringify(createRes.spiel).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g, '');
-                        var msg406 = JSON.stringify(createRes.message).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g, '');
-                        // console.log("Stringify createRes data ticketnumber 406: " + JSON.stringify(createRes.ticketNumber).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,''));
-                        // var tcktNum = JSON.stringify(createRes.ticketNumber).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,'');
-                        console.log("Stringify createRes data 406 testing2 pipe " + JSON.stringify(createRes) + " | " + spiel406 + " | " + msg406);
-                        logger.debug("Stringify createRes data 406 testing2 pipe " + JSON.stringify(createRes) + " | " + spiel406 + " | " + msg406);
-                        // console.log(createRes);
-
-                        if (createRes.spiel) {
-                            // var spiel406 = JSON.stringify(createRes.spiel).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,'');
-                            UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR406", reportedBy, responseStr);
-                            console.log('Spiel is not null: ' + spiel406);
-                            logger.debug('Spiel is not null: ' + spiel406);
-                            conversation.variable('spielMsg', spiel406);
-                            //conversation.transition('FAILURE');
-                            //done();   
-                            transition = 'FAILURE';
+        var Process = () => {
+            logger.info(`[RETRY] Counter : ${retry}`);
+            request(options, function (error, response) {
+                if (typeof (response.body) === "string" && response.body.match(/<html>/i)) {
+                    logger.debug("[ERROR 500] Empty response from create ticket.");
+                    logger.end();
+                } else {
+                    if (error) {
+                        const errorreplaced = JSON.stringify(error).replace('http://', '');
+                        retry++;
+                        if (retry < maxRetry) {
+                            Process();
                         }
                         else {
-                            // var msg406 = JSON.stringify(createRes.message).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g,'');
-                            UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR406", reportedBy, responseStr);
-                            console.log('Spiel is not null: ' + spiel406);
-                            logger.debug('Spiel is not null: ' + spiel406);
-                            conversation.variable('spielMsg', msg406);
-                            //conversation.transition('FAILURE');
-                            //done();
-                            transition = 'FAILURE';
+                            UpdateCreateFT(accntNumber, serviceNumber, sysDate, transition, reportedBy, errorreplaced);
+                            logger.email(error, error.code, accntNumber, serviceNumber);
+                            logger.end();
                         }
-                        //done();
-                    }
-                    else if (result.statusCode === 500 || result.statusCode === 404) {
-                        console.log("response error raw 500 || 404", JSON.stringify(result));
-                        logger.debug("response error raw 500 || 404", JSON.stringify(result));
-                        UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR500", reportedBy, responseStr);
-                        //conversation.transition('500');
-                        //done();        
-                        transition = '500';
                     }
                     else {
-                        //  conversation.reply({ text: 'OOPS, Error Happened! Contact Administrator.'});
-                        console.log("response error raw else on 500 || 404", JSON.stringify(result));
-                        logger.debug("response error raw else on 500 || 404", JSON.stringify(result));
-                        UpdateCreateFT(accntNumber, serviceNumber, sysDate, "FAILURE", reportedBy, responseStr);
-                        //conversation.transition('FAILURE');
-                        //done();
-                        transition = 'FAILURE';
+                        var result = response;
+                        var createRes = JSON.parse(result.body);
+                        const responseStr = JSON.stringify(createRes).replace('http://', '');
+
+                        if (result.statusCode > 200) {
+                            logger.email(result.body, result.statusCode, accntNumber, serviceNumber)
+                            if (result.statusCode === 406) {
+                                logger.debug("Stringify createRes data 406 " + JSON.stringify(createRes));
+                                var spiel406 = JSON.stringify(createRes.spiel).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g, '');
+                                var msg406 = JSON.stringify(createRes.message).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g, '');
+                                logger.debug("Stringify createRes data 406 testing2 pipe " + JSON.stringify(createRes) + " | " + spiel406 + " | " + msg406);
+
+                                if (createRes.spiel) {
+                                    UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR406", reportedBy, responseStr);
+                                    logger.debug('Spiel is not null: ' + spiel406);
+                                    conversation.variable('spielMsg', spiel406);
+                                }
+                                else {
+                                    UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR406", reportedBy, responseStr);
+                                    logger.debug('Spiel is null: ' + msg406);
+                                    conversation.variable('spielMsg', msg406);
+                                }
+                            }
+                            else if (result.statusCode === 500 || result.statusCode === 404) {
+                                logger.debug("response error raw 500 || 404", JSON.stringify(result));
+                                UpdateCreateFT(accntNumber, serviceNumber, sysDate, "ERROR500", reportedBy, responseStr);
+                                transition = '500';
+                            }
+                            else {
+                                logger.debug("response error raw else on 500 || 404", JSON.stringify(result));
+                                UpdateCreateFT(accntNumber, serviceNumber, sysDate, "FAILURE", reportedBy, responseStr);
+                            }
+                        }
+                        else {
+                            logger.debug("Stringify createRes data: " + JSON.stringify(createRes));
+                            logger.debug("Stringify createRes data ticketnumber: " + JSON.stringify(createRes.ticketNumber).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g, ''));
+                            var tcktNum = JSON.stringify(createRes.ticketNumber).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g, '');
+                            var spiel200 = JSON.stringify(createRes.spiel).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g, '');
+
+                            if (tcktNum == null) {
+                                var tcktNumData = JSON.stringify(result);
+                                UpdateCreateFT(accntNumber, serviceNumber, sysDate, tcktNumData, reportedBy, responseStr);
+                            } else {
+                                var tcktNumData = tcktNum;
+                                UpdateCreateFT(accntNumber, serviceNumber, sysDate, tcktNumData, reportedBy, responseStr);
+                            }
+
+                            logger.debug("raw result FLY = ", result);
+                            logger.debug("spielMsg reply to Chat FLY= ", spiel200);
+                            conversation.variable('spielMsg', spiel200);
+                            conversation.variable('ticketNumber', tcktNum);
+                            transition = 'SUCCESS';
+                        }
+                        logger.end();
                     }
-                    logger.sendEmail(result.body, result.statusCode);
-                    // sendEmail(responseStr, result.statusCode, accntNumber, serviceNumber)
                 }
-                else {
-                    console.log("Stringify createRes data: " + JSON.stringify(createRes));
-                    console.log("Stringify createRes data ticketnumber: " + JSON.stringify(createRes.ticketNumber).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g, ''));
-                    logger.debug("Stringify createRes data ticketnumber: " + JSON.stringify(createRes.ticketNumber).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g, ''));
-                    var tcktNum = JSON.stringify(createRes.ticketNumber).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g, '');
-                    var spiel200 = JSON.stringify(createRes.spiel).replace(/[&\/\\#,+()$~%.'":*?<>{}]+/g, '');
+            });
+        };
+        Process();
 
-
-                    if (tcktNum == null) {
-                        var tcktNumData = JSON.stringify(result);
-                        UpdateCreateFT(accntNumber, serviceNumber, sysDate, tcktNumData, reportedBy, responseStr);
-                    } else {
-                        var tcktNumData = tcktNum;
-                        UpdateCreateFT(accntNumber, serviceNumber, sysDate, tcktNumData, reportedBy, responseStr);
-                    }
-
-                    console.log("raw result FLY = ", result);
-                    logger.debug("raw result FLY = ", result);
-                    // var JSONRes = JSON.parse(createRes);
-                    console.log("spielMsg reply to Chat FLY= ", spiel200); //OMH logger of success spiel
-                    logger.debug("spielMsg reply to Chat FLY= ", spiel200);
-                    conversation.variable('spielMsg', spiel200);
-                    conversation.variable('ticketNumber', tcktNum);
-                    //conversation.transition('SUCCESS');
-                    transition = 'SUCCESS';
-                }
-            }
-            logger.end();
-        });
+        // transition = 'SUCCESS';
+        // conversation.variable('spielMsg', 'We have created a repair request to further check and resolve your concern We will provide updates if needed Thank you Reference number 9000000');
+        // conversation.variable('ticketNumber', '9000000');
+        // logger.end();
     }
 };

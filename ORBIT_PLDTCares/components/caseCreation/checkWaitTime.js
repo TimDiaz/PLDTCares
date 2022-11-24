@@ -25,7 +25,7 @@ module.exports = {
         const serviceNumber = conversation.properties().serviceNumber;
         const deploymentid = conversation.properties().deploymentid;
         const buttonid = conversation.properties().buttonid;
-        const orgId = "00D0T0000000ce2";
+        // const orgId = "00D0T0000000ce2";
         // #endregion
 
         // #region Imports
@@ -41,9 +41,9 @@ module.exports = {
         
         logger.sendEmail = ((result, resultCode) => {
             const strResult = JSON.stringify(result);
-            const message = globalProp.Email.EmailFormat(globalProp.ChatAdCaseCreate.API.ChatAdToken.Name, resultCode, strResult, svcNumber);
+            const message = globalProp.Email.EmailFormat(globalProp.ChatAdCaseCreate.API.ChatAdToken.Name, resultCode, strResult, serviceNumber);
             logger.error(`[ERROR]: ${strResult}`);            
-            emailSender(globalProp.Email.Subjects.CaseCreation.CheckWaitTime, message, globalProp.Logger.BCPLogging.AppNames.CaseCreation.CheckWaitTime, strResult, resultCode, accNumber, svcNumber)
+            emailSender(globalProp.Email.Subjects.CaseCreation.CheckWaitTime, message, globalProp.Logger.BCPLogging.AppNames.CaseCreation.CheckWaitTime, strResult, resultCode, "NO DATA", serviceNumber)
         }) 
 
         logger.start = (() => {
@@ -70,7 +70,7 @@ module.exports = {
 
         logger.start();
         
-        var options = globalProp.CheckWaitTime.API.WaitTime.PostOptions(orgId, deploymentid, buttonid);
+        var options = globalProp.CheckWaitTime.API.WaitTime.PostOptions(deploymentid, buttonid);
         logger.debug(`Setting up the post option: ${JSON.stringify(options)}`);
         
         logger.info(`Starting to invoke the request for API Token.`);
@@ -94,7 +94,7 @@ module.exports = {
                     var waitTime = JSON.stringify(res.messages[0].message.results[0].estimatedWaitTime);
 
                     // var waitTime = 5; // seconds
-                     var waitTime = 120; // for testing with queue
+                    // var waitTime = 120; // for testing with queue
                     // var waitTime = 1500; // for testing with queue
                     // var waitTime = 1860; // for testing more than 30mins
                     // var waitTime = 2400; // for testing more than 40mins

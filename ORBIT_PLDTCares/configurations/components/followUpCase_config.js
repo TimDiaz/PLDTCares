@@ -7,7 +7,7 @@ module.exports = {
             PostOptions: () => {
                 return {
                     'method': 'POST',
-                    'url': `${baseConfig.CaseCreation.FollowUpCase.TokenBase.Url}services/oauth2/token'`,
+                    'url': `${baseConfig.CaseCreation.FollowUpCase.TokenBase.Url}services/oauth2/token`,
                     'headers': {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'Cookie': baseConfig.CaseCreation.FollowUpCase.TokenBase.Cookie

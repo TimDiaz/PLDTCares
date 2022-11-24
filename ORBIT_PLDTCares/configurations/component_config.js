@@ -1,7 +1,10 @@
 const baseConfig = require('./base_config');
 const config = {
     AccountValidation: `accountValidation.${baseConfig.Environment}`,
+    HomeRewards: `homerewards.${baseConfig.Environment}`,
+    Serviceability: `serviceability.${baseConfig.Environment}`,
     TSEligibility: `tseligibility.${baseConfig.Environment}`,
+    Reconnection: `reconnection.${baseConfig.Environment}`,
     NumberServiceabilityPARAM: `numberServiceabilityPARAM.${baseConfig.Environment}`,
     NumberServiceabilityRegion: `numberServiceabilityRegion.${baseConfig.Environment}`,
     NumberServiceabilityTechnology: `numberServiceabilityTechnology.${baseConfig.Environment}`,
@@ -20,8 +23,11 @@ const config = {
     TicketCreationFT: `ticketCreationFT.${baseConfig.Environment}`,
     TicketCreationProm: `ticketProm.${baseConfig.Environment}`,
     BSMPWhiteList: `BSMPWhitelistChecker.${baseConfig.Environment}`,
-    BSMPChecker: `BSMPChecker.${baseConfig.Environment}`
-,
+    BSMPChecker: `bsmpchecker.${baseConfig.Environment}`,
+    BSMPTimer: {
+        DSL: `bsmptimerdsl.${baseConfig.Environment}`,
+        FIBR: `bsmptimerfibr.${baseConfig.Environment}`
+    },
     BillingServices: {
         Autobal: `autobal.${baseConfig.Environment}`,
         Autoesoa: `autoesoa.${baseConfig.Environment}`,
@@ -31,7 +37,8 @@ const config = {
         CheckSType: `checkStype.${baseConfig.Environment}`,
         FMInternet: `fmInternet.${baseConfig.Environment}`,
         FMLandline: `fmLandline.${baseConfig.Environment}`
-    }
+    },
+    ESWUP: { GetDownTime: `eswupGetDownTime.${baseConfig.Environment}`},
 }
 
 module.exports = config;

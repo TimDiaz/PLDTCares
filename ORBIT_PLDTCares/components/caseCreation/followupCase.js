@@ -105,7 +105,6 @@ module.exports = {
             logger.info(`-------------------------------------------------------------------------------------------------------------`);
 
             _logger.shutdown();
-            _emailLog.shutdown();
         
             conversation.transition(transition);
             done();
@@ -147,14 +146,16 @@ module.exports = {
                     const authBearer = "Authorization : Bearer " + token;
 
                     const requestBody = JSON.stringify({
-                        'Description': trimmeddesc+',Fb Name: '+fullName +',fbid: '+fbId+',Channel Type: '+channelType,
+                        'Description': trimmeddesc+',Fb Name: '+fullName +',fbid: '+fbId+',Channel Type: '+channelType+ ',Source: PLDT Cares',
                         'Type':sName,
                         'Status':'Open - Unassigned',
-                        'Origin':'Facebook',
+                        'Origin':'Social Chat',
                         'RecordTypeId': recordTypeid,
                         'Subject': subj,
                         'PLDT_Case_Sub_Type__c': sMenu,
-                        'Customer_City__c': city
+                        'Customer_City__c': city,
+                        "Media_Provider__c": "Chatbot Ordertake",
+                        "Topic_Profile_Name__c": "PLDT Cares"
                     });
                     
                     var options = globalProp.FollowUpCase.API.CaseCreate.PostOptions(authBearer, requestBody);

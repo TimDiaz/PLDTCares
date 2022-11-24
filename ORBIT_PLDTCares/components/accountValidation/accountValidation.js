@@ -35,9 +35,9 @@ module.exports = {
 
         logger.sendEmail = ((result, resultCode) => {
             const strResult = JSON.stringify(result);
-            const message = globalProp.Email.EmailFormat(globalProp.AccountValidation.API.Validate.Name, resultCode, strResult, svcNumber);
+            const message = globalProp.Email.EmailFormat(globalProp.AccountValidation.API.Validate.Name, resultCode, strResult, serviceNumber);
             logger.error(`[ERROR]: ${strResult}`);
-            emailSender(globalProp.Email.Subjects.AccountValidation, message, globalProp.Logger.BCPLogging.AppNames.AccountValidation, strResult, resultCode, accNumber, svcNumber)
+            emailSender(globalProp.Email.Subjects.AccountValidation, message, globalProp.Logger.BCPLogging.AppNames.AccountValidation, strResult, resultCode, accountNumber, serviceNumber)
         })
 
         logger.start = (() => {
