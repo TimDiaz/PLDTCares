@@ -16,6 +16,10 @@ const fmGetFTDetailsConfig = require('../configurations/components/fmGetFTDetail
 const validateEmailFormatConfig = require('../configurations/components/validateEmailFormat_config');
 const ticketCreationConfig = require('../configurations/components/ticketCreation_config');
 const bsmpCheckerConfig = require('../configurations/components/bsmpChecker_config');
+const bsmpTimerConfig = require('../configurations/components/bsmpTimer_config');
+const reconnectionConfig = require('../configurations/components/reconnection_config');
+const serviceabilityConfig = require('../configurations/components/serviceability_config');
+const eswupConfig = require('../configurations/components/getDownTime_config');
 module.exports = {    
     APIBaseOption: baseConfig,
     Logger: loggerConfig,
@@ -23,6 +27,7 @@ module.exports = {
     AccountValidation: accountValidationConfig,
     AccountEligibility: accountEligibilityConfig,
     NumberServiceability: numberServiceabilityConfig,
+    Serviceability: serviceabilityConfig,
     ValidateAccountNumberFormat: validateAccountNumberFormatConfig,
     ValidateServiceNumberFormat: validateServiceNumberFormatConfig,
     CaseCreation: caseCreationConfig,
@@ -36,5 +41,8 @@ module.exports = {
         Autoesoa: autoesoaConfig
     },
     FMGetFTDetails: fmGetFTDetailsConfig,
-    BSMPChecker: bsmpCheckerConfig
+    BSMPChecker: bsmpCheckerConfig,
+    BSMPTimer: bsmpTimerConfig,
+    Reconnection: reconnectionConfig,
+    ESWUP: eswupConfig
 };

@@ -8,7 +8,7 @@ module.exports = {
             appenders: {
                 multi: {
                     type: "multiFile",
-                    base: "/home/opc/orbit_logger_server/logs/", //home/opc/orbit_logger_server/logs/
+                    base: "/home/opc/orbit_logger_cares_server/logs/", //home/opc/orbit_logger_server/logs/
                     property: "serviceNumber",
                     extension: ".log",
                     maxLogSize: 10485760,
@@ -37,7 +37,7 @@ module.exports = {
                     }
                 },
                 console: { type: 'console' },
-                server: { type: 'wss-server', port: 5000 },
+                server: { type: 'wss-server', port: 5001 },
             },
             categories: {
                 default: { appenders: ['multi', 'console'], level: 'all' },

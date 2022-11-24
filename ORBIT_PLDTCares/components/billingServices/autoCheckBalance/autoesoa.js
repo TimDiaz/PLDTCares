@@ -35,9 +35,9 @@ module.exports = {
 
     logger.sendEmail = ((result, resultCode) => {
       const strResult = JSON.stringify(result);
-      const message = globalProp.Email.EmailFormat(globalProp.BillingServices.Autobal.API.CheckBalance.Name, resultCode, strResult, svcNumber);
+      const message = globalProp.Email.EmailFormat(globalProp.BillingServices.Autobal.API.CheckBalance.Name, resultCode, strResult, svcNum);
       logger.error(`[ERROR]: ${strResult}`);
-      emailSender(globalProp.Email.Subjects.BillingServices.Autoesoa, message, globalProp.Logger.BCPLogging.AppNames.BillingServices.Autoesoa, strResult, resultCode, accNumber, svcNumber)
+      emailSender(globalProp.Email.Subjects.BillingServices.Autoesoa, message, globalProp.Logger.BCPLogging.AppNames.BillingServices.Autoesoa, strResult, resultCode, 'NO DATA', svcNum)
     })
 
     logger.start = (() => {
@@ -78,12 +78,12 @@ module.exports = {
     logger.debug(`Setting up the post option for API Token: ${JSON.stringify(options)}`);
 
     request(options, function (error, response) {
-      logger.info(response.body);
-      if (error) {
+      if (error) { 
         logger.sendEmail(error, error.code);
         transition = 'failed';
       }
       else {
+        logger.info(response);
         if (response.statusCode == 200) {
           transition = 'success';
         } //auto bal get email end

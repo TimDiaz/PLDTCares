@@ -13,6 +13,12 @@ initLogger.configure();
 
 emailer(app, initLogger);
 
-app.listen(7746, function () {
-    console.log("App running on port.", 7746);
+app.listen(7747, function () {
+    console.log("App running on port.", 7747);
 });
+
+//NOTE: 
+//PLDT CARES PORT: 7747
+//PLDT HOME PORT: 7746
+//PLDT CARES WEBSOCKET PORT: 5001
+//PLDT HOME WEBSOCKET PORT: 5000

@@ -37,9 +37,9 @@ module.exports = {
 
         logger.sendEmail = ((result, resultCode) => {
             const strResult = JSON.stringify(result);
-            const message = globalProp.Email.EmailFormat(globalProp.FMGetFTDetails.API.Name, resultCode, strResult, svcNumber);
+            const message = globalProp.Email.EmailFormat(globalProp.FMGetFTDetails.API.Name, resultCode, strResult, serviceNumber);
             logger.error(`[ERROR]: ${strResult}`);
-            emailSender(globalProp.Email.Subjects.FMgetFTDetails.FMLandline, message, globalProp.Logger.BCPLogging.AppNames.FMgetFTDetails.FMLandline, strResult, resultCode, accNumber, svcNumber)
+            emailSender(globalProp.Email.Subjects.FMgetFTDetails.FMLandline, message, globalProp.Logger.BCPLogging.AppNames.FMgetFTDetails.FMLandline, strResult, resultCode, accountNumber, serviceNumber)
         })
 
         logger.start = (() => {
@@ -66,7 +66,7 @@ module.exports = {
 
         logger.addContext("serviceNumber", serviceNumber);
 
-        const logic = new Logic(logger, emailLog, globalProp);
+        const logic = new Logic(logger, globalProp);
         // #endregion
 
         logger.start();
@@ -96,16 +96,22 @@ module.exports = {
                     var JSONRes = JSON.parse(respBody);
 
                     logger.debug(`[Response Body] ${respBody}`);
-                    logger.debug(`[Service Type] ${JSONRes.result.SERVICE_TYPE}`)
-                    logger.debug(`[Account Number] ${accountNumber}`)
+                    if(JSONRes.result.SERVICE_TYPE === undefined)
+                    {
+                        transition = 'failure';
+                    }
+                    else{
+                        logger.debug(`[Service Type] ${JSONRes.result.SERVICE_TYPE}`)
+                        logger.debug(`[Account Number] ${accountNumber}`)
 
-                    const result = logic.FMInternet(JSONRes.result.SERVICE_TYPE);
-                    transition = result.Transition;
+                        const result = logic.FMInternet(JSONRes.result.SERVICE_TYPE);
+                        transition = result.Transition;
 
-                    result.Variables.forEach(element => {
-                        conversation.variable(element.name, element.value);
-                        logger.info(`[Variable] Name: ${element.name} - Value ${element.value}`);
-                    });
+                        result.Variables.forEach(element => {
+                            conversation.variable(element.name, element.value);
+                            logger.info(`[Variable] Name: ${element.name} - Value ${element.value}`);
+                        });
+                    }
                 }
             }
             logger.end();

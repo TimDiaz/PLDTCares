@@ -1,19 +1,7 @@
 class FMGetFTDetails_BussinessLogic {
-    constructor(log, elog, prop) {
+    constructor(log, prop) {
         this.logger = log;
-        this.emailLog = elog;
         this.globalProp = prop
-    }
-
-    EmailLogError(result, resultCode, serviceNumber) {
-        const strResult = JSON.stringify(result);
-        this.emailLog.addContext("apierrorcode", strResult);
-        this.emailLog.addContext("apierrormsg", resultCode);
-        const message = this.globalProp.Email.EmailFormat(this.globalProp.FMGetFTDetails.API.Name, resultCode, strResult, serviceNumber);
-
-        this.logger.error(`[ERROR CODE: ${resultCode}] ${strResult}`)
-        this.emailLog.error(message);
-        return { Transition: 'failure' };
     }
 
     CheckSType(serviceType){

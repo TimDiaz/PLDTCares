@@ -34,7 +34,7 @@ module.exports = {
             const strResult = JSON.stringify(result);
             const message = globalProp.Email.EmailFormat(globalProp.AccountEligibility.API.Name, resultCode, strResult, svcNumber);
             logger.error(`[ERROR]: ${strResult}`);              
-            emailSender(globalProp.Email.Subjects.AccountEligibility, message, globalProp.Logger.BCPLogging.AppNames.AccountEligibility, strResult, resultCode, accNumber, svcNumber)
+            emailSender(globalProp.Email.Subjects.AccountEligibility, message, globalProp.Logger.BCPLogging.AppNames.AccountEligibility, strResult, resultCode, 'NO DATA', serviceNumber)
         }) 
 
         logger.start = (() => {
@@ -59,7 +59,7 @@ module.exports = {
 		
 	    logger.addContext("serviceNumber", serviceNumber);
 
-        const logic = new Logic(logger, emailLog, globalProp);
+        const logic = new Logic(logger, globalProp);
         // #endregion
 
         logger.start();
