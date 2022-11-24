@@ -95,6 +95,14 @@ module.exports = {
                     var respBody = response.body;
                     var JSONRes = JSON.parse(respBody);
 
+                    // JSONRes = {
+                    //     "result":{
+                    //         "ACCOUNT_NO":JSONRes.ACCOUNT_NO,
+                    //         "SERVICE_TYPE":"ADSL|POTS POSTPAID",
+                    //         "NE_TYPE":"NGN|NGN"
+                    //     }
+                    // };
+
                     logger.debug(`[Response Body] ${respBody}`);
                     if(JSONRes.result.SERVICE_TYPE === undefined)
                     {
