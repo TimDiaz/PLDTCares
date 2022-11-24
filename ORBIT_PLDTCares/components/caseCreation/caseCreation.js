@@ -145,7 +145,7 @@ module.exports = {
                     const authBearer = "Authorization : Bearer " + token;
 
                     const requestBody = JSON.stringify({
-                        'Description': trimmeddesc+',Fb Name: '+fullName +',fbid: '+fbId+',Channel Type: '+channelType,
+                        'Description': trimmeddesc+',Fb Name: '+fullName +',fbid: '+fbId+',Channel Type: '+channelType + ',Source: PLDT Cares',
                         'Type':sName,
                         'Status':'Open - Unassigned',
                         'Origin':'Social Chat',
@@ -154,7 +154,7 @@ module.exports = {
                         'PLDT_Case_Sub_Type__c': sMenu,
                         'Customer_City__c': city,
                         "Media_Provider__c": "Chatbot Ordertake",
-                        "Topic_Profile_Name__c": "PLDT Home"
+                        "Topic_Profile_Name__c": "PLDT Cares"
                     });
                     
                     var options = globalProp.CaseCreation.API.CaseCreate.PostOptions(authBearer, requestBody);
