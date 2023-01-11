@@ -18,7 +18,7 @@ module.exports = {
         InsertDataOptions: (body) => {
             return {
                 'method': 'POST',
-                'url': `${baseConfig.ChatBotBaseUrl}:7744/insertReconnectionSuccessResponse`,
+                'url': `${baseConfig.ChatBotBaseUrl}:7744/insertCaresReconnectionSuccessResponse`,
                 'headers': {
                     'Content-Type': 'application/json'
                 },
